@@ -5,9 +5,12 @@ import tkinter as tk
 # window size
 wXaxis = '500'
 wYaxis = '250'
-
+#  --------------- states --------------- #
+#state when app is run
 APP_DEFAULT_STATE = 0
+#when 'buttonStartStop' button is pressed
 APP_ACTIVE_RUNNING_STATE = 1
+#  --------------- states --------------- #
 
 class MyApp():
     """
@@ -24,11 +27,16 @@ class MyApp():
         self.fillerLabel = tk.Label(self.root,text='')
         self.inputLabel = tk.Label()
         self.inputEntry = tk.Entry()
-        self.buttonStart = tk.Button()
+        self.buttonStartStop = tk.Button()
         self.buttonLog = tk.Button()
-
+ 
         self.state = APP_DEFAULT_STATE
     pass
+
+#most likely gonna be in different module
+def showLog():
+    pass
+
 
 def key_pressed(event):
     if app.inputEntry.focus_get() != None:
@@ -48,8 +56,8 @@ def initWindowViewTrigger():
     #1BEE14 green
     #C4C4C4 light grey
     #9C9C9C dark grey
-    app.buttonStart = tk.Button(app.root, text="Start Activity",font=('times',13,'bold'),relief=tk.GROOVE,command=actStartedViewTrigger,pady=15,padx=15,bg='#C4C4C4',activebackground='#9C9C9C')
-    app.buttonLog = tk.Button(app.root, text="Show Log",font=('times',13,'bold'),relief=tk.GROOVE,pady=15,padx=15)
+    app.buttonStartStop = tk.Button(app.root, text="Start Activity",font=('times',13,'bold'),relief=tk.GROOVE,command=actStartedViewTrigger,pady=15,padx=15,bg='#C4C4C4',activebackground='#9C9C9C')
+    app.buttonLog = tk.Button(app.root, text="Show Log",font=('times',13,'bold'),relief=tk.GROOVE,pady=15,padx=15,command=showLog,bg='#C4C4C4',activebackground='#9C9C9C')
 
     # put it up on the screen 
     app.inputLabel.grid(row=0,pady=5,sticky='ew')
@@ -57,18 +65,25 @@ def initWindowViewTrigger():
 
     app.fillerLabel.grid(row=2,pady=20)
 
-    app.buttonStart.grid(row=4,padx=10,pady=45,sticky='w')
-    app.buttonLog.grid(row=4)
+    app.buttonStartStop.grid(row=4,padx=10,pady=45,sticky='w')
+    # app.buttonLog.grid(row=4) #didnt work for some reason, cant be padded to the side or negatively(left) 
+    app.buttonLog.place(y=166.5,x=75) #y=167#x=375
 
     app.inputEntry.bind("<Return>",key_pressed)
+    print(app.buttonStartStop.winfo_rootx(),app.buttonStartStop.winfo_rooty())
+
 
 def actStartedViewTrigger():
-    if app.state == APP_ACTIVE_RUNNING_STATE: #if is already running
+    if app.state == APP_ACTIVE_RUNNING_STATE: #if is already running - return
         return
+        
+    app.state = APP_ACTIVE_RUNNING_STATE
     # config
     inputVal = app.inputValActName.get()
-    app.inputEntry.config(state=tk.DISABLED,bd=0)
+    app.inputEntry.config(state=tk.DISABLED,bd=1)
     app.inputLabel.config(text="Currently Running")
+    app.buttonStartStop.config(text='Stop Activity')
+    print(inputVal)
     pass
 
 
@@ -78,8 +93,11 @@ if __name__ == "__main__":
 
     initWindowViewTrigger()
 
+    print(app.buttonStartStop.winfo_rootx(),app.buttonStartStop.winfo_rooty())
+
 # create a main loop (works until the program ends - close the window with X)
     app.root.mainloop()
+
 else:
     print("nopee, this program has been run second hand, that wont fly here")
     exit(0)
