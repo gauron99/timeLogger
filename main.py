@@ -30,7 +30,6 @@ class MyApp():
         self.buttonStartStop = tk.Button()
         self.buttonLog = tk.Button()
  
-        self.state = APP_DEFAULT_STATE
     pass
 
 #most likely gonna be in different module
@@ -50,7 +49,7 @@ def initWindowViewTrigger():
     app.root.resizable(0, 0) #dont allow resizing of the window
 
     # create a label widget for text input
-    app.inputLabel = tk.Label(app.root, text="Write your activity here", font=('times',13,'bold'))
+    app.inputLabel = tk.Label(app.root, text="State: Nothing is running", font=('times',13,'bold'))
     app.inputEntry = tk.Entry(app.root,textvariable = app.inputValActName,font=('times',15,'normal'),width=48,bd=3)
 
     #1BEE14 green
@@ -65,25 +64,33 @@ def initWindowViewTrigger():
 
     app.fillerLabel.grid(row=2,pady=20)
 
-    app.buttonStartStop.grid(row=4,padx=10,pady=45,sticky='w')
+    # app.buttonStartStop.grid(row=4,padx=10,pady=45,sticky='w')
+    app.buttonStartStop.place(y=169,x=10)
     # app.buttonLog.grid(row=4) #didnt work for some reason, cant be padded to the side or negatively(left) 
-    app.buttonLog.place(y=166.5,x=75) #y=167#x=375
+    app.buttonLog.place(y=169,x=375) #y=169#x=375
 
     app.inputEntry.bind("<Return>",key_pressed)
-    print(app.buttonStartStop.winfo_rootx(),app.buttonStartStop.winfo_rooty())
 
 
-def actStartedViewTrigger():
-    if app.state == APP_ACTIVE_RUNNING_STATE: #if is already running - return
-        return
-        
-    app.state = APP_ACTIVE_RUNNING_STATE
-    # config
+def actStartedViewTrigger(): #pressed START button
+
     inputVal = app.inputValActName.get()
-    app.inputEntry.config(state=tk.DISABLED,bd=1)
-    app.inputLabel.config(text="Currently Running")
-    app.buttonStartStop.config(text='Stop Activity')
-    print(inputVal)
+
+    # config
+    app.inputEntry.config(state=tk.DISABLED)
+    app.inputLabel.config(text="State: Currently Running")
+    app.buttonStartStop.config(text='Stop Activity',command=defWindowViewTrigger)
+
+    pass
+
+def defWindowViewTrigger(): #pressed STOP button
+
+    #config
+    app.inputEntry.config(state=tk.NORMAL)
+    app.inputLabel.config(text='State: Nothing is running')
+    app.buttonStartStop.config(text='Start Activity',command=actStartedViewTrigger)
+    app.inputEntry.delete(0,tk.END) #delete text inside entry
+        
     pass
 
 
@@ -92,8 +99,6 @@ if __name__ == "__main__":
     app = MyApp()
 
     initWindowViewTrigger()
-
-    print(app.buttonStartStop.winfo_rootx(),app.buttonStartStop.winfo_rooty())
 
 # create a main loop (works until the program ends - close the window with X)
     app.root.mainloop()
