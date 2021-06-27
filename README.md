@@ -7,12 +7,13 @@
         -- no activity can run over 24h (gonna screw up the times)
 
 ## TODO
-    File
-        * open,write etc.
-        * one file - all info ?
-        * log text format (below)
 
-    Time
+#### File
+* open,write etc.
+* one file - all info ?
+* log text format (below)
+
+#### Time
 * format
 * calculate time spent
 * what if act runs over 00:00
