@@ -13,9 +13,9 @@
         * log text format (below)
 
     Time
-        * format
-        * calculate time spent
-        * what if act runs over 00:00
+* format
+* calculate time spent
+* what if act runs over 00:00
         
     Redo the innit func in main.py -- init everything in class itself and call 
     only .config after (aka have only 2 funcs for operating not 3)
