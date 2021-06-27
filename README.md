@@ -6,21 +6,21 @@
         -- when activity is ended, calculates some stuff with time && log it in
         -- no activity can run over 24h (gonna screw up the times)
 
-# TODO
-    file
+## TODO
+    File
         * open,write etc.
         * one file - all info ?
         * log text format (below)
 
-
-    time
+    Time
         * format
         * calculate time spent
         * what if act runs over 00:00
         
-    redo the innit func in main.py -- init everything in class itself and call only .config after (aka have only 2 funcs for operating not 3)
+    Redo the innit func in main.py -- init everything in class itself and call 
+    only .config after (aka have only 2 funcs for operating not 3)
 
-# log format
+### log format
     possible ideas:
     I.
         day | time-spent | activity | time-start | time-end
