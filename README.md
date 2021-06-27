@@ -4,9 +4,18 @@
         -- input a name of the activity and 'start it' by clicking <Return> or 'start' button
         -- sets up time of start a locks in the name
         -- when activity is ended, calculates some stuff with time && log it in
-        -- no activity can run over 24h (gonna screw up the times)
+        -- no activity can run over 24h (gonna screw up the times) - actually maybe you can?
 
 ## TODO
+-- Ordered by importance/priority
+
+1. Create tests.py
+2. TEST timeDifference.py module with tests.py module
+3. test integration of timeDifference.py
+3. Stuff below
+
+Low prio -- Redo the innit func in main.py -- init everything in class itself and call 
+only .config after (aka have only 2 funcs for operating not 3)
 
 #### File
 * open,write etc.
@@ -14,13 +23,9 @@
 * log text format (below)
 
 #### Time
-* format
-* calculate time spent
-* what if act runs over 00:00
+* what if act runs over 00:00 - needs to be tested
+* test new
         
-    Redo the innit func in main.py -- init everything in class itself and call 
-    only .config after (aka have only 2 funcs for operating not 3)
-
 ### log format
     possible ideas:
     I.

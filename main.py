@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 import os
 import tkinter as tk
+from datetime import datetime as dt
+import timeDifference
 
 # window size
 wXaxis = '500'
@@ -12,7 +14,7 @@ APP_DEFAULT_STATE = 0
 APP_ACTIVE_RUNNING_STATE = 1
 #  --------------- states --------------- #
 
-class MyApp():
+class MyApp:
     """
     All variables needed by functions are saved in a class for easier manipulation
     since editting needs to be used by ex.: mainWindowViewTrigger & actStartedViewTrigger()
@@ -26,19 +28,36 @@ class MyApp():
         
         self.fillerLabel = tk.Label(self.root,text='')
         self.inputLabel = tk.Label()
+        self.lastAct = tk.Label(self.root,text='',font=('times',13,'bold'))
+        
         self.inputEntry = tk.Entry()
+
         self.buttonStartStop = tk.Button()
         self.buttonLog = tk.Button()
- 
+        
+        self.timeStarted = None
+
     pass
 
 #most likely gonna be in different module
 def showLog():
     pass
 
+def timeSpent(start,end):
+    #TODO
+    # if(end < start): #if time went over 00:00
+    #     tmp = dt.today().replace(hour=23,minute=59,second=59,microsecond=999999)
+    #     timeDiff = tmp-(start-end)
+    # else:
+    timeDiff = end - start
 
-def key_pressed(event):
-    if app.inputEntry.focus_get() != None:
+    print(timeDiff)
+    #use timeDifference.py module
+    return timeDiff
+
+
+def return_key_pressed_on_input(event):
+    if app.inputEntry.focus_get() != None: # if focus is on the window (not pressed enter randomly)
         actStartedViewTrigger() #as if "start-activity button was pressed"
 
 # call this at the beginning of the program to set up a window
@@ -69,12 +88,13 @@ def initWindowViewTrigger():
     # app.buttonLog.grid(row=4) #didnt work for some reason, cant be padded to the side or negatively(left) 
     app.buttonLog.place(y=169,x=375) #y=169#x=375
 
-    app.inputEntry.bind("<Return>",key_pressed)
+    app.inputEntry.bind("<Return>",return_key_pressed_on_input) #bind enter (return) to call same func as 'START button
 
 
 def actStartedViewTrigger(): #pressed START button
 
-    inputVal = app.inputValActName.get()
+    app.timeStarted = dt.now()
+    # print(app.timeStarted)
 
     # config
     app.inputEntry.config(state=tk.DISABLED)
@@ -85,14 +105,23 @@ def actStartedViewTrigger(): #pressed START button
 
 def defWindowViewTrigger(): #pressed STOP button
 
+    timeEnd = dt.now()
     #config
     app.inputEntry.config(state=tk.NORMAL)
     app.inputLabel.config(text='State: Nothing is running')
     app.buttonStartStop.config(text='Start Activity',command=actStartedViewTrigger)
-    app.inputEntry.delete(0,tk.END) #delete text inside entry
         
-    pass
+    app.lastAct.place(y=100,x=10)
+    # print(dt.now())
 
+    timeDiff = timeSpent(app.timeStarted,timeEnd)
+    app.lastAct.config(text='Last: '+app.inputValActName.get()+' | ' + str(timeEnd)[:-5])
+
+
+    # TODO call log info func here
+
+    app.inputEntry.delete(0,tk.END) #delete text inside entry
+    pass
 
 if __name__ == "__main__":
     
