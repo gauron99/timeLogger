@@ -9,10 +9,11 @@
 ## TODO
 -- Ordered by importance/priority
 
-1. Create tests.py
-2. TEST timeDifference.py module with tests.py module
-3. test integration of timeDifference.py
-3. Stuff below
+1. ~~Create tests.py~~ -- Done
+2. ~~TEST timeDifference.py module with tests.py module~~ -- Done
+3. TEST timeDifference.py module MORE
+4. test integration of timeDifference.py
+5. Stuff below
 
 Low prio -- Redo the innit func in main.py -- init everything in class itself and call 
 only .config after (aka have only 2 funcs for operating not 3)

@@ -1,10 +1,11 @@
-from datetime import datetime as dt 
+import datetime as dt 
 
-class TimeDifference(time):
+class TimeDifference:
     def __init__(self):
         self.res=''
         self.minute=dt.time(0,1,0)
-        self.fifteenmins=dt.time(0,5,0)
+        self.fivemins=dt.time(0,5,0)
+        self.fifteenmins=dt.time(0,15,0)
         self.thirtymins=dt.time(0,30,0)
         self.hour=dt.time(1,0,0)
         self.hourthirty=dt.time(1,30,0)
@@ -21,44 +22,58 @@ class TimeDifference(time):
         self.twentyhrs=dt.time(20,0,0)
         self.day=dt.time(23,59,59)
 
+# just to debug stuff
+    def log(self,str):
+        print(">log: (module)%s: %s" % (__name__,str))
+
+# absolute time difference between the two
+# (doesn't accept anything more than time -- no dates from datetime etc.)
     def absTimeDif(self,one,two):
-        if(self.one > self.two):
-            return self.one - self.two
+        #combine into datetime (not only time) to allow subtraction
+        one = dt.datetime.combine(dt.date.today(),one)
+        two = dt.datetime.combine(dt.date.today(),two)
+        
+        # self.log("one: %s| two: %s" % (one, two))
+        
+        if(one > two):
+            return one - two
         else:
-            return self.two - self.one
+            return two - one
 
     def timeAprox(self,time):
         if(time < self.minute):
-            return 'less than a minute(what kind of activity is this)'
-        elif(absTimeDif(self.fifteenmins,time) < absTimeDif(self.thirtymins,time)):
+            return 'less than a minute'
+        elif(self.absTimeDif(self.fivemins,time) < self.absTimeDif(self.fifteenmins,time)):
+            return 'around 5 mins'
+        elif(self.absTimeDif(self.fifteenmins,time) < self.absTimeDif(self.thirtymins,time)):
             return 'around 15 mins'
-        elif(absTimeDif(self.thirtymins,time) < absTimeDif(self.hour,time)):
+        elif(self.absTimeDif(self.thirtymins,time) < self.absTimeDif(self.hour,time)):
             return 'around 30 mins'
-        elif(absTimeDif(self.hour,time) < absTimeDif(self.hourthirty,time)):
+        elif(self.absTimeDif(self.hour,time) < self.absTimeDif(self.hourthirty,time)):
             return 'around an hour'
-        elif(absTimeDif(self.hourthirty,time) < absTimeDif(self.twohrs,time)):
+        elif(self.absTimeDif(self.hourthirty,time) < self.absTimeDif(self.twohrs,time)):
             return 'around hour and 30 mins'
-        elif(absTimeDif(self.twohrs,time) < absTimeDif(self.threehrs,time)):
+        elif(self.absTimeDif(self.twohrs,time) < self.absTimeDif(self.threehrs,time)):
             return 'around 2 hours'
-        elif(absTimeDif(self.threehrs,time) < absTimeDif(self.fourhrs,time)):
+        elif(self.absTimeDif(self.threehrs,time) < self.absTimeDif(self.fourhrs,time)):
             return 'around 3 hours'
-        elif(absTimeDif(self.fourhrs,time) < absTimeDif(self.fivehrs,time)):
+        elif(self.absTimeDif(self.fourhrs,time) < self.absTimeDif(self.fivehrs,time)):
             return 'around 4 hours'
-        elif(absTimeDif(self.fivehrs,time) < absTimeDif(self.sixhrs,time)):
+        elif(self.absTimeDif(self.fivehrs,time) < self.absTimeDif(self.sixhrs,time)):
             return 'around 5 hours'
-        elif(absTimeDif(self.sixhrs,time) < absTimeDif(self.sevenhrs,time)):
+        elif(self.absTimeDif(self.sixhrs,time) < self.absTimeDif(self.sevenhrs,time)):
             return 'around 6 hours'
-        elif(absTimeDif(self.sevenhrs,time) < absTimeDif(self.eighthrs,time)):
+        elif(self.absTimeDif(self.sevenhrs,time) < self.absTimeDif(self.eighthrs,time)):
             return 'around 7 hours'
-        elif(absTimeDif(self.eighthrs,time) < absTimeDif(self.ninehrs,time)):
+        elif(self.absTimeDif(self.eighthrs,time) < self.absTimeDif(self.ninehrs,time)):
             return 'around 8 hours'
-        elif(absTimeDif(self.ninehrs,time) < absTimeDif(self.tenhrs,time)):
+        elif(self.absTimeDif(self.ninehrs,time) < self.absTimeDif(self.tenhrs,time)):
             return 'around 9 hours'
-        elif(absTimeDif(self.tenhrs,time) < absTimeDif(self.fifteenhrs,time)):
+        elif(self.absTimeDif(self.tenhrs,time) < self.absTimeDif(self.fifteenhrs,time)):
             return 'around 10 hours'
-        elif(absTimeDif(self.fifteenhrs,time) < absTimeDif(self.twentyhrs,time)):
+        elif(self.absTimeDif(self.fifteenhrs,time) < self.absTimeDif(self.twentyhrs,time)):
             return 'around 15 hours'
-        elif(absTimeDif(self.twentyhrs,time) < absTimeDif(self.day,time)):
+        elif(self.absTimeDif(self.twentyhrs,time) < self.absTimeDif(self.day,time)):
             return 'around 20 hours'
         elif(self.day < time):
             return 'almost a whole day, damn'

@@ -2,7 +2,7 @@
 import os
 import tkinter as tk
 from datetime import datetime as dt
-import timeDifference
+# import timeDifference
 
 # window size
 wXaxis = '500'
@@ -133,5 +133,5 @@ if __name__ == "__main__":
     app.root.mainloop()
 
 else:
-    print("nopee, this program has been run second hand, that wont fly here")
+    print("nopee, this program has been run second hand, that won't fly here")
     exit(0)
