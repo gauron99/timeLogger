@@ -15,7 +15,7 @@ td = timeDiff.TimeDifference()
 class TestTimeDifferenceModule(unittest.TestCase):
 
     def test_easy_under_minute(self):
-        "first test try"
+        "first easy tests, nothing crazy"
         # td = timeDiff.TimeDifference()
         self.assertEqual('less than a minute',td.timeAprox(time(0,0,1)))
         self.assertEqual('less than a minute',td.timeAprox(time(0,0,20)))
@@ -57,7 +57,97 @@ class TestTimeDifferenceModule(unittest.TestCase):
         self.assertEqual('around hour and 30 mins',td.timeAprox(time(1,35,5)))
         self.assertEqual('around hour and 30 mins',td.timeAprox(time(1,44,59)))
 
+    def test_easy_around_two_hours(self):
+        # td = timeDiff.TimeDifference()
+        self.assertEqual('around 2 hours',td.timeAprox(time(1,45,0)))
+        self.assertEqual('around 2 hours',td.timeAprox(time(1,59,44)))
+        self.assertEqual('around 2 hours',td.timeAprox(time(2,15,17)))
+        self.assertEqual('around 2 hours',td.timeAprox(time(2,29,59)))
 
+    def test_easy_around_3_hours(self):
+        # td = timeDiff.TimeDifference()
+        self.assertEqual('around 3 hours',td.timeAprox(time(2,45,0)))
+        self.assertEqual('around 3 hours',td.timeAprox(time(3,0,0)))
+        self.assertEqual('around 3 hours',td.timeAprox(time(3,15,48)))
+        self.assertEqual('around 3 hours',td.timeAprox(time(3,29,59)))
+
+    def test_easy_around_4_hours(self):
+        # td = timeDiff.TimeDifference()
+        self.assertEqual('around 4 hours',td.timeAprox(time(3,30,0)))
+        self.assertEqual('around 4 hours',td.timeAprox(time(4,0,0)))
+        self.assertEqual('around 4 hours',td.timeAprox(time(4,15,49)))
+        self.assertEqual('around 4 hours',td.timeAprox(time(4,29,59)))
+
+    def test_easy_around_5_hours(self):
+        # td = timeDiff.TimeDifference()
+        self.assertEqual('around 5 hours',td.timeAprox(time(4,30,0)))
+        self.assertEqual('around 5 hours',td.timeAprox(time(5,0,0)))
+        self.assertEqual('around 5 hours',td.timeAprox(time(5,15,49)))
+        self.assertEqual('around 5 hours',td.timeAprox(time(5,29,59)))
+
+
+    def test_easy_around_6_hours(self):
+        # td = timeDiff.TimeDifference()
+        self.assertEqual('around 6 hours',td.timeAprox(time(5,30,0)))
+        self.assertEqual('around 6 hours',td.timeAprox(time(6,0,0)))
+        self.assertEqual('around 6 hours',td.timeAprox(time(6,14,47)))
+        self.assertEqual('around 6 hours',td.timeAprox(time(6,29,59)))
+
+    def test_easy_around_7_hours(self):
+        # td = timeDiff.TimeDifference()
+        self.assertEqual('around 7 hours',td.timeAprox(time(6,30,0)))
+        self.assertEqual('around 7 hours',td.timeAprox(time(7,0,0)))
+        self.assertEqual('around 7 hours',td.timeAprox(time(7,10,40)))
+        self.assertEqual('around 7 hours',td.timeAprox(time(7,29,59)))
+
+    def test_easy_around_8_hours(self):
+        # td = timeDiff.TimeDifference()
+        self.assertEqual('around 8 hours',td.timeAprox(time(7,30,0)))
+        self.assertEqual('around 8 hours',td.timeAprox(time(8,0,0)))
+        self.assertEqual('around 8 hours',td.timeAprox(time(8,17,28)))
+        self.assertEqual('around 8 hours',td.timeAprox(time(8,29,59)))
+
+    def test_easy_around_9_hours(self):
+        # td = timeDiff.TimeDifference()
+        self.assertEqual('around 9 hours',td.timeAprox(time(8,30,0)))
+        self.assertEqual('around 9 hours',td.timeAprox(time(9,0,0)))
+        self.assertEqual('around 9 hours',td.timeAprox(time(9,21,49)))
+        self.assertEqual('around 9 hours',td.timeAprox(time(9,29,59)))
+
+    def test_easy_around_10_hours(self):
+        # td = timeDiff.TimeDifference()
+        self.assertEqual('around 10 hours',td.timeAprox(time(9,30,0)))
+        self.assertEqual('around 10 hours',td.timeAprox(time(10,0,0)))
+        self.assertEqual('around 10 hours',td.timeAprox(time(11,45,19)))
+        self.assertEqual('around 10 hours',td.timeAprox(time(12,29,59)))
+
+    def test_easy_around_15_hours(self):
+        # td = timeDiff.TimeDifference()
+        self.assertEqual('around 15 hours',td.timeAprox(time(12,30,0)))
+        self.assertEqual('around 15 hours',td.timeAprox(time(14,59,59)))
+        self.assertEqual('around 15 hours',td.timeAprox(time(15,0,0)))
+        self.assertEqual('around 15 hours',td.timeAprox(time(17,29,59)))
+
+    def test_easy_around_20_hours(self):
+        # td = timeDiff.TimeDifference()
+        self.assertEqual('around 20 hours',td.timeAprox(time(17,30,0)))
+        self.assertEqual('around 20 hours',td.timeAprox(time(19,59,40)))
+        self.assertEqual('around 20 hours',td.timeAprox(time(20,20,20)))
+        self.assertEqual('around 20 hours',td.timeAprox(time(21,59,59)))
+
+    def test_easy_almost_a_day(self):
+        # td = timeDiff.TimeDifference()
+        self.assertEqual('almost a whole day, damn',td.timeAprox(time(22,0,0)))
+        self.assertEqual('almost a whole day, damn',td.timeAprox(time(23,45,19)))
+        self.assertEqual('almost a whole day, damn',td.timeAprox(time(23,59,59)))
+
+# is it even possible to make this one? (.time method is limited to 0..23 hrs)
+    # def test_easy_over_a_day(self):
+    #     # td = timeDiff.TimeDifference()
+    #     self.assertEqual('more than a day -- chill bro',td.timeAprox(time(25,0,0)))
+    #     self.assertEqual('more than a day -- chill bro',td.timeAprox(time(,,)))
+    #     self.assertEqual('more than a day -- chill bro',td.timeAprox(time(,,)))
+    #     self.assertEqual('more than a day -- chill bro',td.timeAprox(time(,,)))
 
 if __name__ == "__main__":
     unittest.main()

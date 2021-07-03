@@ -20,7 +20,7 @@ class TimeDifference:
         self.tenhrs=dt.time(10,0,0)
         self.fifteenhrs=dt.time(15,0,0)
         self.twentyhrs=dt.time(20,0,0)
-        self.day=dt.time(23,59,59)
+        self.day=dt.time(23,59,59,999999)
 
 # just to debug stuff
     def log(self,str):
@@ -75,7 +75,7 @@ class TimeDifference:
             return 'around 15 hours'
         elif(self.absTimeDif(self.twentyhrs,time) < self.absTimeDif(self.day,time)):
             return 'around 20 hours'
-        elif(self.day < time):
+        elif(time <= self.day):
             return 'almost a whole day, damn'
         else:
             return 'more than a day -- chill bro'
