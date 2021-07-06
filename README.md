@@ -1,5 +1,5 @@
 # TimeLogger
-    App for logging activity time-wise and activity-wise
+    App for logging activity
         -- Little app to log time activities manually
         -- input a name of the activity and 'start it' by clicking <Return> or 'start' button
         -- sets up time of start a locks in the name
@@ -9,13 +9,13 @@
 ## TODO
 -- Ordered by importance/priority
 
-1. ~~Create tests.py~~ -- Done
-2. ~~TEST timeDifference.py module with tests.py module~~ -- Done
-3. Add config option for running the program where it will be possible to
-edit almost everything, like: dir of log, name of log(if necessary)
-4. TEST timeDifference.py module MORE
-5. test integration of timeDifference.py
-6. Stuff below
+-- currently working on: highest on the list
+
+1. Add config option for running the program where it will be possible to edit stuff, like: dir of log, name of log etc.
+2. log file work, create & begin process
+3. TEST timeDifference.py module MORE
+4. test integration of timeDifference.py
+5. Stuff below
 
 Low prio -- Redo the innit func in main.py -- init everything in class itself and call 
 only .config after (aka have only 2 funcs for operating not 3)
