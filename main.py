@@ -1,7 +1,8 @@
 #!/usr/bin/python3
-import os
+import os, sys
 import tkinter as tk
 from datetime import datetime as dt
+import config as Config
 # import timeDifference
 
 # window size
@@ -123,14 +124,18 @@ def defWindowViewTrigger(): #pressed STOP button
     app.inputEntry.delete(0,tk.END) #delete text inside entry
     pass
 
+
 if __name__ == "__main__":
     
-    app = MyApp()
+    if len(sys.argv) > 1:
+        Config.handleConfig()
 
-    initWindowViewTrigger()
+    else:            
+        app = MyApp()
+        initWindowViewTrigger()
 
-# create a main loop (works until the program ends - close the window with X)
-    app.root.mainloop()
+    # create a main loop (works until the program ends - close the window with X)
+        app.root.mainloop()
 
 else:
     print("nopee, this program has been run second hand, that won't fly here")
