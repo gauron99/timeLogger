@@ -1,7 +1,7 @@
 .PHONY: run test help
 
-PRG_RUN=./main.py
-PRG_RUN_TEST=./tests.py
+PRG_RUN=./source/main.py
+PRG_RUN_TEST=./source/tests.py
 
 run:
 	rm -f __pycache__ ; $(PRG_RUN)

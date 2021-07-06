@@ -31,9 +31,9 @@ Below is both information about specified topics and/or TODO etc.
 * config file containts --help prints etc. because control is given to it by having arguments on CL(change this? -- not for now) 
 * when mistake is made in some arguments, try to provide with actual arguments that can be used !!
 
-#### File
-* open,write etc.
-* one file - all info ?
+#### Filework
+* **HARD CODE** - subdirectory '/source' needs to STAY UNCHANGED because there is one hard search 
+for it in order to try to find config.txt file as it's possible to run the program with  
 * log text format (below)
 
 #### Time
