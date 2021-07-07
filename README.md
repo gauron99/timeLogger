@@ -5,6 +5,7 @@
         -- sets up time of start a locks in the name
         -- when activity is ended, calculates some stuff with time && log it in
         -- no activity can run over 24h (gonna screw up the times) - actually maybe you can?
+        -- always run the app from main dir (by makefile)
 
 ## TODO
 -- Ordered by importance/priority

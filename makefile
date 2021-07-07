@@ -1,6 +1,6 @@
 .PHONY: run test help
 
-PRG_RUN=./source/main.py
+PRG_RUN=./source/timeLogger.py
 PRG_RUN_TEST=./source/tests.py
 
 run:

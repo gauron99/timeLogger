@@ -38,6 +38,21 @@ Run with 'config' or 'edit' to open "config mode"
     -- fast config: ./main.py config log_dir=/home/timeLogger/ ###change dir
                     ./main.py config log_name=log.log ### rename/create
 
+Create config.txt manually:
+    -- should be in main folder
+    -- should contain values: 
+        - log_dir (path to directory where log file is located)
+        - log_name (name of log file)
+        such as:
+        
+           ┌⎯  config.txt
+           ├⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+           | log_dir=/home/path/to/dir
+           | log_name=log.log
+           ╰⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ 
+
+            [ ^ this can be your whole config.txt]
+
 Run with '--help' or 'help' to show this message
     -- ./main.py -h
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
