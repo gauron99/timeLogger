@@ -16,15 +16,15 @@
 2. think of additions to config -- add eventually
 3. TEST timeDifference.py module MORE
 4. test integration of timeDifference.py
-5. Stuff below
 
-Low prio -- Redo the innit func in main.py -- init everything in class itself and call 
+6. when 'Show Log' is clicked(ref 'Filework') 
+7. Low prio -- Redo the innit func in timeLogger.py -- init everything in class itself and call 
 only .config after (aka have only 2 funcs for operating not 3)
 
 Below is both information about specified topics and/or TODO etc.
 
 #### Config
-* create init view of config ( run with ./main.py config)
+* create init view of config ( run with make config)
 * source code found in config.py
 * rename variables, change dirs or something, maybe how to run it
 * user can use default config by giving 'config' arg
@@ -33,8 +33,6 @@ Below is both information about specified topics and/or TODO etc.
 * when mistake is made in some arguments, try to provide with actual arguments that can be used !!
 
 #### Filework
-* **HARD CODE** - subdirectory '/source' needs to STAY UNCHANGED because there is one hard search 
-for it in order to try to find config.txt file as it's possible to run the program with  
 * log text format (below)
 
 #### Time
@@ -51,3 +49,5 @@ for it in order to try to find config.txt file as it's possible to run the progr
         
     II.
         day | time-spent | activity | category | notes | time start->end
+### References
+    # if needed later

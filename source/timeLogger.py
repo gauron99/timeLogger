@@ -1,10 +1,14 @@
 #!/usr/bin/python3
-import os, sys
+import os
+import sys
 import tkinter as tk
 from datetime import datetime as dt
+
 import config as Config
 import filework as fw
+
 # import timeDifference
+
 
 # window size
 wXaxis = '500'
@@ -41,7 +45,6 @@ class MyApp:
 
     pass
 
-#most likely gonna be in different module
 def showLog():
     fw.openLog()
     pass
@@ -52,11 +55,10 @@ def timeSpent(start,end):
     #     tmp = dt.today().replace(hour=23,minute=59,second=59,microsecond=999999)
     #     timeDiff = tmp-(start-end)
     # else:
-    timeDiff = end - start
 
-    print(timeDiff)
+    print("Time spent:",end - start)
     #use timeDifference.py module
-    return timeDiff
+    return end - start
 
 
 def return_key_pressed_on_input(event):

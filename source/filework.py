@@ -1,12 +1,38 @@
-import os
+import os,sys
 from pathlib import Path
 import string
 
-class fileConfiguration:
-    configFile = None
-
 def logFileW(str):
     print("filework.py: log: %s" %str)
+
+class fileConfiguration:
+    def __init__(self):
+        self.log_dir=''
+        self.log_name=''
+
+    def configurate(self,**kwargs):
+        """ 
+        pass arguments below as: new_dir="your value" \n
+        new_dir = path to new dir where log can be found \n
+        new_name = new name of log"""
+        for key,value in kwargs.items():
+            if(key == "new_dir"):    
+                if( (self.log_dir == '' and value != '') or self.log_dir != value):
+                    logFileW("Rewriting log_dir data...")
+                    self.log_dir=value
+            elif(key == 'new_name'):
+                if( (self.log_name == '' and value != '') or self.log_name != value):
+                    logFileW("Rewriting log_name data...")
+                    self.log_name=value
+            else:
+                printErr("Unkown variable provided to 'configurate()'",1)
+
+    def getLogDir(self):
+        return self.log_dir
+
+    def getLogName(self):
+        return self.log_name
+
 
 def printErr(str,errcode):
     print("filework.py: Error: %s" % str)
@@ -27,10 +53,15 @@ def openLog():
             log_dir="log_dir="+os.getcwd()
             log_name="log_name=log.log"
             file.writelines([log_dir+"\n",log_name+"\n"])
+
+            #keep info in Class
+            fileConfiguration.log_dir=os.getcwd()
+            fileConfiguration.log_name='log.log'
         except:
             printErr("Trying to write into config file failed",1)
         logFileW("Success!")
-
+    else:
+        printErr("Unknown identif value, this message shouldn't be printed ever, basically",1)
     pass
 
 def readFromConfig():
@@ -38,8 +69,8 @@ def readFromConfig():
     fToOpen = os.path.join(toopen,"config.txt")
         #check if filework.py is a file in a current dir and check if config.py is a file in current dir
         #in order to establish if current dir is /source - aka - subdir in timeLogger dir
-    if (os.path.isfile(Path(os.getcwd()+"/filework.py")) and (os.path.isfile(Path(os.getcwd()+"/config.py")))): #im in ./source subdir
-
+    if (os.path.isfile(Path(os.getcwd()+sys.argv[0]))): #im in ./source subdir
+        logFileW("warning: If you get this message you might've run the program from subdir - use make commands in main dir")
         try:
             file = open(fToOpen, 'rw')
             return file
