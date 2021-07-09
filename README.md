@@ -12,8 +12,8 @@
 
 -- currently working on: highest on the list
 
-1. Add config option for running the program where it will be possible to edit stuff, like: dir of log, name of log etc.
-2. log file work, create & begin process
+1. log file work, create & begin process
+2. think of additions to config -- add eventually
 3. TEST timeDifference.py module MORE
 4. test integration of timeDifference.py
 5. Stuff below
