@@ -59,8 +59,12 @@ def printErr(str,errcode):
 def openActualLog():
 
     if sys.platform.startswith('linux'):
+        try:
+            #try to open the actual log file
+            os.system('xdg-open %s'%fConf.getLogFileFullPath())
+        except:
+            printErr("Couldn't open log file, look in filework.py->openActualLog() for info")
         # webbrowser.open_new_tab(fConf.getLogFileFullPath())
-        os.system('xdg-open %s'%fConf.getLogFileFullPath())
 
 def openLog():
     #log info is already updated locally
