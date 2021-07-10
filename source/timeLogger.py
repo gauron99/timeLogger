@@ -136,6 +136,7 @@ if __name__ == "__main__":
 
     else:            
         app = MyApp()
+        
         initWindowViewTrigger()
 
     # create a main loop (works until the program ends - close the window with X)

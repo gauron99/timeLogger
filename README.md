@@ -12,7 +12,7 @@
 
 -- currently working on: highest on the list
 
-1. log file work, create & begin process
+1. log file work, 
 2. think of additions to config -- add eventually
 3. TEST timeDifference.py module MORE
 4. test integration of timeDifference.py
@@ -25,12 +25,9 @@ Below is both information about specified topics and/or TODO etc.
 
 #### Config
 * create init view of config ( run with make config)
-* source code found in config.py
-* rename variables, change dirs or something, maybe how to run it
-* user can use default config by giving 'config' arg
 * user can use fast config option by giving aditional arguments after 'config' on CL
 * config file containts --help prints etc. because control is given to it by having arguments on CL(change this? -- not for now) 
-* when mistake is made in some arguments, try to provide with actual arguments that can be used !!
+* when mistake is made in some arguments, try to provide correct arguments that can be used !!
 
 #### Filework
 * log text format (below)

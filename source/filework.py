@@ -1,14 +1,17 @@
-import os,sys
-from pathlib import Path
+import os
 import string
+import sys
+import webbrowser
+from pathlib import Path
+
 
 def logFileW(str):
     print("filework.py: log: %s" %str)
 
-class fileConfiguration:
-    def __init__(self):
-        self.log_dir=''
-        self.log_name=''
+class fileConfiguration(object):
+    
+    log_dir=''
+    log_name=''
 
     def configurate(self,**kwargs):
         """ 
@@ -25,7 +28,12 @@ class fileConfiguration:
                     logFileW("Rewriting log_name data...")
                     self.log_name=value
             else:
-                printErr("Unkown variable provided to 'configurate()'",1)
+                printErr("Unknown variable provided to 'configurate'",1)
+
+    def getLogFileFullPath(self):
+        if(self.log_dir != '' and self.log_name != ''):
+            return (self.log_dir+"/"+self.log_name)
+        return None
 
     def getLogDir(self):
         return self.log_dir
@@ -33,37 +41,73 @@ class fileConfiguration:
     def getLogName(self):
         return self.log_name
 
+    def loadConfigFile(self,file):
+        for line in file.readlines():
+            if line.startswith("log_dir="): #log_dir
+                self.log_dir = line.replace("log_dir=",'').replace("\n",'')
+            elif line.startswith("log_name="):
+                self.log_name = line.replace("log_name=",'').replace("\n",'')
+
+
+fConf = fileConfiguration()
 
 def printErr(str,errcode):
     print("filework.py: Error: %s" % str)
-    exit(errcode) # ENOENT - no such file or directory
+    # errcode = 2 --> ENOENT - no such file or directory
+    exit(errcode)
+
+def openActualLog():
+
+    if sys.platform.startswith('linux'):
+        # webbrowser.open_new_tab(fConf.getLogFileFullPath())
+        os.system('xdg-open %s'%fConf.getLogFileFullPath())
 
 def openLog():
-    # returns None if program is to be exited, otherwise returns opened file for 'rw'
-    #identif == 0 if file exists and has been opened successfuly
-    #identif == 1 if file was asked to be generated automatically - fill with predetermined values
-    file,identif = readFromConfig()
-    if file == None:
-        exit(0)
-    elif identif == 0:
-        pass
-    elif identif == 1:
-        try:    
-            logFileW("Trying to generate basic config file(writing in)...")
-            log_dir="log_dir="+os.getcwd()
-            log_name="log_name=log.log"
-            file.writelines([log_dir+"\n",log_name+"\n"])
-
-            #keep info in Class
-            fileConfiguration.log_dir=os.getcwd()
-            fileConfiguration.log_name='log.log'
-        except:
-            printErr("Trying to write into config file failed",1)
-        logFileW("Success!")
+    #log info is already updated locally
+    if fConf.log_dir != '' and fConf.log_name != '':
+        openActualLog()
+        
     else:
-        printErr("Unknown identif value, this message shouldn't be printed ever, basically",1)
+        file,identif = readFromConfig()
+        if file == None:
+            exit(0)
+        elif identif == 0:
+            fConf.loadConfigFile(file)
+        elif identif == 1:
+            try:    
+                logFileW("Trying to generate basic config file(writing in)...")
+                log_dir="log_dir="+os.getcwd()+"\n"
+                log_name="log_name=log.log\n"
+                file.writelines([log_dir,log_name])
+
+                #keep info in Class
+                fConf.log_dir=os.getcwd()
+                fConf.log_name='log.log'
+            except:
+                printErr("Trying to write into config file failed",1)
+            logFileW("Success!")
+        else:
+            printErr("Unknown identif value, this message shouldn't be printed ever, basically",1)
+        
+        #open the file
+        try:
+            logFile = open(fConf.getLogFileFullPath(),"r+")
+        except FileNotFoundError as e:
+            print("Log File doesn't exist, wanna create it? [y][n]",end=' ')
+            tmp = input()
+            if tmp.lower() in ['yes','y','']:
+                logFile = open(fConf.getLogFileFullPath(),'w')
+            else:
+                print("Create the log file first please... exiting")
+                exit(0)
+
+        openActualLog()
+
     pass
 
+# returns None if program is to be exited, otherwise returns opened file for 'rw'
+#identif == 0 if file exists and has been opened successfuly
+#identif == 1 if file was asked to be generated automatically - fill with predetermined values
 def readFromConfig():
     toopen = Path(os.getcwd())
     fToOpen = os.path.join(toopen,"config.txt")
@@ -72,7 +116,7 @@ def readFromConfig():
     if (os.path.isfile(Path(os.getcwd()+sys.argv[0]))): #im in ./source subdir
         logFileW("warning: If you get this message you might've run the program from subdir - use make commands in main dir")
         try:
-            file = open(fToOpen, 'rw')
+            file = open(fToOpen, 'r+')
             return file
 
         except:
@@ -90,7 +134,7 @@ def readFromConfig():
                     logFileW("File doesn't exist... trying to create one")
                     return open(fToOpen,'a+'),1
                 elif answer.lower() in ['n','no']:
-                    print("Please create file manualy to continue,use '--help' for help...exiting")
+                    print("Please create file manualy to continue, use '--help' for help...exiting")
                     return None,None
                 else:
                     printErr("Unknown input given",1)
@@ -101,13 +145,14 @@ def readFromConfig():
 def writeToConfig():
     pass
 
+#only changes where to look for the config file, doesnt actually move the file itself
 def changeLogDir(newdir):
     
     if os.path.isdir(newdir):
-        log_dir=newdir
+        fileConfiguration.log_dir=newdir
     else:
         printErr("Given path is not a valid directory: %s" % newdir,2)
-pass
+    pass
 
 if __name__ == '__main__':
     printErr("Can't run filework.py as main, sorry",1)
