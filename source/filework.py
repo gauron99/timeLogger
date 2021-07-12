@@ -169,23 +169,19 @@ def writeToLog(activity,tBegin,tEnd,tDiff,tNow):
 
     print("LOG: %s | %s | %s | from:%s | to:%s " %(str(tNow)[:-7],activity,str(tDiff)[:-7],str(tBegin)[:-7],str(tEnd)[:-7]))
     if fConf.log == None:
-        #open file first
-        try:
-            logFile = open(fConf.getLogFileFullPath(),'a')
-            fConf.log = logFile.name
-        except:
-            ## to be merged
-            configFile,_ = getConfigFile()
-            if(configFile == None):
-                exit(0)
-            fConf.loadConfigFile(configFile)
-            ## to be merged
+        ### to be merged ###
+        configFile,_ = getConfigFile()
+        if(configFile == None):
+            exit(0)
+        fConf.loadConfigFile(configFile)
+        ### to be merged ###
 
-            try:
-                fConf.log = open(fConf.getLogFileFullPath(),'a')
-            except:
-                printErr("Couldn't open log file",2)
-        pass
+    try:
+        logFile = open(fConf.getLogFileFullPath(),'a')
+        fConf.log = logFile
+    except:
+        printErr("Couldn't open log file",2)
+        
 
     if os.stat("%s"%fConf.getLogFileFullPath()).st_size == 0:
         fConf.log.write("TimeOfLog | Activity | TimeSpent | timeBegin | TimeEnd\n")

@@ -4,7 +4,7 @@ PRG_RUN=./source/timeLogger.py
 PRG_RUN_TEST=./source/tests.py
 
 run:
-	rm -f __pycache__ ; $(PRG_RUN)
+	rm -f __pycache__ ; $(PRG_RUN) &
 
 help:
 	$(PRG_RUN) help
