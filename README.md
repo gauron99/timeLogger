@@ -10,13 +10,17 @@
 
 ## TODO
 -- Ordered by importance/priority
--- currently working on: highest on the list
+-- currently working on: highest on the list(or one of top 3)
 
-1. make word wrap for Last shown activity when its too long it overflows off the window
-2. think of additions to config -- add eventually
-3. make loadConfigFile() & getConfigFile() merged in filework.py
-4. TEST timeDifference.py module MORE
-5. Redo the innit func in timeLogger.py -- init everything in class itself and call 
+
+1. show aprox time during running
+2. rework visual of 'running' state of app
+3. if its a new day, make a distinction in log file
+4. make word wrap for Last shown activity when its too long it overflows off the window
+5. think of additions to config -- add eventually
+6. make loadConfigFile() & getConfigFile() merged in filework.py
+7. TEST timeDifference.py module MORE
+8. Redo the innit func in timeLogger.py -- init everything in class itself and call 
 only .config after (aka have only 2 funcs for operating not 3)
 
 Below is both information about specified topics and/or TODO etc.
