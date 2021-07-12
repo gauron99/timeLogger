@@ -9,9 +9,9 @@ def logFileW(str):
     print("filework.py: log: %s" %str)
 
 class fileConfiguration(object):
-    
     log_dir=''
     log_name=''
+    log=None
 
     def configurate(self,**kwargs):
         """ 
@@ -29,11 +29,14 @@ class fileConfiguration(object):
                     self.log_name=value
             else:
                 printErr("Unknown variable provided to 'configurate'",1)
+            
 
     def getLogFileFullPath(self):
-        if(self.log_dir != '' and self.log_name != ''):
+        if(self.log_dir == '' or self.log_name == ''):
+            pass #TODO
+        else:
             return (self.log_dir+"/"+self.log_name)
-        return None
+        
 
     def getLogDir(self):
         return self.log_dir
@@ -47,7 +50,6 @@ class fileConfiguration(object):
                 self.log_dir = line.replace("log_dir=",'').replace("\n",'')
             elif line.startswith("log_name="):
                 self.log_name = line.replace("log_name=",'').replace("\n",'')
-
 
 fConf = fileConfiguration()
 
@@ -72,7 +74,7 @@ def openLog():
         openActualLog()
         
     else:
-        file,identif = readFromConfig()
+        file,identif = getConfigFile()
         if file == None:
             exit(0)
         elif identif == 0:
@@ -95,12 +97,13 @@ def openLog():
         
         #open the file
         try:
-            logFile = open(fConf.getLogFileFullPath(),"r+")
+            fConf.log = open(fConf.getLogFileFullPath(),"r+")
         except FileNotFoundError as e:
             print("Log File doesn't exist, wanna create it? [y][n]",end=' ')
             tmp = input()
             if tmp.lower() in ['yes','y','']:
-                logFile = open(fConf.getLogFileFullPath(),'w')
+                fConf.log = open(fConf.getLogFileFullPath(),'w')
+
             else:
                 print("Create the log file first please... exiting")
                 exit(0)
@@ -111,8 +114,8 @@ def openLog():
 
 # returns None if program is to be exited, otherwise returns opened file for 'rw'
 #identif == 0 if file exists and has been opened successfuly
-#identif == 1 if file was asked to be generated automatically - fill with predetermined values
-def readFromConfig():
+#identif == 1 if file was asked to be generated automatically - fill with predetermined values -- opened successfully
+def getConfigFile():
     toopen = Path(os.getcwd())
     fToOpen = os.path.join(toopen,"config.txt")
         #check if filework.py is a file in a current dir and check if config.py is a file in current dir
@@ -138,12 +141,13 @@ def readFromConfig():
                     logFileW("File doesn't exist... trying to create one")
                     return open(fToOpen,'a+'),1
                 elif answer.lower() in ['n','no']:
-                    print("Please create file manualy to continue, use '--help' for help...exiting")
+                    print("Please create config file manualy to continue, use '--help' for help...exiting")
                     return None,None
                 else:
                     printErr("Unknown input given",1)
         except:
             printErr("Couldn't open/create a config file.",2)
+    
     pass
 
 def writeToConfig():
@@ -161,3 +165,35 @@ def changeLogDir(newdir):
 if __name__ == '__main__':
     printErr("Can't run filework.py as main, sorry",1)
     
+def writeToLog(activity,tBegin,tEnd,tDiff,tNow):
+
+    print("LOG: %s | %s | %s | from:%s | to:%s " %(str(tNow)[:-7],activity,str(tDiff)[:-7],str(tBegin)[:-7],str(tEnd)[:-7]))
+    if fConf.log == None:
+        #open file first
+        try:
+            logFile = open(fConf.getLogFileFullPath(),'a')
+            fConf.log = logFile.name
+        except:
+            ## to be merged
+            configFile,_ = getConfigFile()
+            if(configFile == None):
+                exit(0)
+            fConf.loadConfigFile(configFile)
+            ## to be merged
+
+            try:
+                fConf.log = open(fConf.getLogFileFullPath(),'a')
+            except:
+                printErr("Couldn't open log file",2)
+        pass
+
+    if os.stat("%s"%fConf.getLogFileFullPath()).st_size == 0:
+        fConf.log.write("TimeOfLog | Activity | TimeSpent | timeBegin | TimeEnd\n")
+
+    # write into log
+    fConf.log.write("%s | %s | %s | from:%s | to:%s\n" %(str(tNow)[:-7],activity,str(tDiff)[:-7],str(tBegin)[:-7],str(tEnd)[:-7]))
+
+    #close the file
+    fConf.log.close()
+    fConf.log == None
+    pass

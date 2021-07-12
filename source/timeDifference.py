@@ -24,7 +24,7 @@ class TimeDifference:
 
 # just to debug stuff
     def log(self,str):
-        print(">log: (module)%s: %s" % (__name__,str))
+        print("timeDifference.py> log: %s" % str)
 
 # absolute time difference between the two
 # (doesn't accept anything more than time -- no dates from datetime etc.)

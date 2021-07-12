@@ -13,12 +13,7 @@ import filework as fw
 # window size
 wXaxis = '500'
 wYaxis = '250'
-#  --------------- states --------------- #
-#state when app is run
-APP_DEFAULT_STATE = 0
-#when 'buttonStartStop' button is pressed
-APP_ACTIVE_RUNNING_STATE = 1
-#  --------------- states --------------- #
+
 
 class MyApp:
     """
@@ -60,10 +55,32 @@ def timeSpent(start,end):
     #use timeDifference.py module
     return end - start
 
-
+# ~~~~~~~~~~~~~~~~~~~~~ functions binds for specific keys ~~~~~~~~~~~~~~~~~~~~~ #
+# ~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~ #
+ 
 def return_key_pressed_on_input(event):
     if app.inputEntry.focus_get() != None: # if focus is on the window (not pressed enter randomly)
         actStartedViewTrigger() #as if "start-activity button was pressed"
+
+def select_all_text_on_input(event):
+    app.inputEntry.select_range(0,'end')
+    app.inputEntry.icursor('end')
+
+    #universal / general approach thanks to event variable
+    # event.widget.select_range(0,'end')
+    # event.widget.icursor('end')
+
+def delete_ctr_backspace_on_input(event):
+    ent = event.widget
+    endIndx = ent.index(tk.INSERT)
+    startIndx = ent.get().rfind(" ",None,endIndx)
+    ent.select_range(startIndx,endIndx)
+
+def ctrl_e_bring_focus_on_input(event):
+    if app.inputEntry.focus_get() != None:
+        app.inputEntry.focus()
+# ~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~ #
+
 
 # call this at the beginning of the program to set up a window
 def initWindowViewTrigger():
@@ -73,7 +90,7 @@ def initWindowViewTrigger():
     app.root.resizable(0, 0) #dont allow resizing of the window
 
     # create a label widget for text input
-    app.inputLabel = tk.Label(app.root, text="State: Nothing is running", font=('times',13,'bold'))
+    app.inputLabel = tk.Label(app.root, text="Doing nothing", font=('times',13,'bold'))
     app.inputEntry = tk.Entry(app.root,textvariable = app.inputValActName,font=('times',15,'normal'),width=48,bd=3)
 
     #1BEE14 green
@@ -93,17 +110,25 @@ def initWindowViewTrigger():
     # app.buttonLog.grid(row=4) #didnt work for some reason, cant be padded to the side or negatively(left) 
     app.buttonLog.place(y=169,x=375) #y=169#x=375
 
-    app.inputEntry.bind("<Return>",return_key_pressed_on_input) #bind enter (return) to call same func as 'START button
+# binds for text - easier use (select all, ctrl delete, enter press)
+    app.inputEntry.bind("<Return>",return_key_pressed_on_input) #bind enter (return) to call same func as 'START' button
+    app.inputEntry.bind("<Control-KeyRelease-a>",select_all_text_on_input)
+    app.inputEntry.bind("<Control-BackSpace>",delete_ctr_backspace_on_input)
 
+    app.root.bind("<Control-e>",ctrl_e_bring_focus_on_input)
 
 def actStartedViewTrigger(): #pressed START button
+
+    #cant start activity with no name
+    if(app.inputValActName.get() == ''):
+        return
 
     app.timeStarted = dt.now()
     # print(app.timeStarted)
 
     # config
     app.inputEntry.config(state=tk.DISABLED)
-    app.inputLabel.config(text="State: Currently Running")
+    app.inputLabel.config(text="Currently Running: %s" %app.inputValActName.get())
     app.buttonStartStop.config(text='Stop Activity',command=defWindowViewTrigger)
 
     pass
@@ -111,9 +136,10 @@ def actStartedViewTrigger(): #pressed START button
 def defWindowViewTrigger(): #pressed STOP button
 
     timeEnd = dt.now()
+
     #config
     app.inputEntry.config(state=tk.NORMAL)
-    app.inputLabel.config(text='State: Nothing is running')
+    app.inputLabel.config(text='Doing nothing')
     app.buttonStartStop.config(text='Start Activity',command=actStartedViewTrigger)
         
     app.lastAct.place(y=100,x=10)
@@ -122,8 +148,8 @@ def defWindowViewTrigger(): #pressed STOP button
     timeDiff = timeSpent(app.timeStarted,timeEnd)
     app.lastAct.config(text='Last: '+app.inputValActName.get()+' | ' + str(timeEnd)[:-5])
 
-
-    # TODO call log info func here
+    # log info
+    fw.writeToLog(app.inputValActName.get(),app.timeStarted,timeEnd,timeDiff,dt.now())
 
     app.inputEntry.delete(0,tk.END) #delete text inside entry
     pass
