@@ -9,13 +9,9 @@ import config as Config
 import filework as fw
 import timeDifference as td
 
-# import timeDifference
-
-
 # window size
 wXaxis = '500'
 wYaxis = '250'
-
 
 class MyApp:
     """
