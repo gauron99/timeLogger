@@ -176,12 +176,13 @@ def writeToLog(activity,tBegin,tEnd,tDiff,tNow):
         fConf.loadConfigFile(configFile)
         ### to be merged ###
 
+    #open file
     try:
         logFile = open(fConf.getLogFileFullPath(),'a')
-        fConf.log = logFile
     except:
         printErr("Couldn't open log file",2)
         
+    fConf.log = logFile
 
     if os.stat("%s"%fConf.getLogFileFullPath()).st_size == 0:
         fConf.log.write("TimeOfLog | Activity | TimeSpent | timeBegin | TimeEnd\n")
@@ -191,5 +192,4 @@ def writeToLog(activity,tBegin,tEnd,tDiff,tNow):
 
     #close the file
     fConf.log.close()
-    fConf.log == None
     pass

@@ -3,19 +3,20 @@
         -- Little app to log time activities manually
         -- input a name of the activity and 'start it' by clicking <Return> or 'start' button
         -- sets up time of start a locks in the name
-        -- when activity is ended, calculates some stuff with time && log it in
-        -- no activity can run over 24h (gonna screw up the times) - what u gonna do that long anyways
+        -- when activity is ended, calculates time && logs it in
+        -- no activity can run over 24h - what u gonna do that long anyways
         -- always run the app from main dir (by makefile)
+        -- create log/ dir for your logs
 
 ## TODO
 -- Ordered by importance/priority
 -- currently working on: highest on the list
 
-1. think of additions to config -- add eventually
-2. TEST timeDifference.py module MORE
-3. test integration of timeDifference.py
-4. make loadConfigFile() & getConfigFile() merged in filework.py
-5. Low prio -- Redo the innit func in timeLogger.py -- init everything in class itself and call 
+1. make word wrap for Last shown activity when its too long it overflows off the window
+2. think of additions to config -- add eventually
+3. make loadConfigFile() & getConfigFile() merged in filework.py
+4. TEST timeDifference.py module MORE
+5. Redo the innit func in timeLogger.py -- init everything in class itself and call 
 only .config after (aka have only 2 funcs for operating not 3)
 
 Below is both information about specified topics and/or TODO etc.
@@ -31,13 +32,11 @@ Below is both information about specified topics and/or TODO etc.
 * It will still be logged as two different separate activities? - time calculations/time-spent?
         
 ### log format
+
+    currently in use: 
+        time of write | activity | time-spent | time-start | time-end
+    
     possible ideas:
-    I.
-        time of write | time-spent | activity | time-start | time-end
-        --- //next day
-        time of write | time-spent | activity | time-start | time-end   
-        
-    II.
         time of write | time-spent | activity | category | notes | time start->end
 ### References
     # if needed later

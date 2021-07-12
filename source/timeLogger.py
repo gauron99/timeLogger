@@ -3,9 +3,11 @@ import os
 import sys
 import tkinter as tk
 from datetime import datetime as dt
+import datetime as dtOG
 
 import config as Config
 import filework as fw
+import timeDifference as td
 
 # import timeDifference
 
@@ -117,6 +119,7 @@ def initWindowViewTrigger():
 
     app.root.bind("<Control-e>",ctrl_e_bring_focus_on_input)
 
+
 def actStartedViewTrigger(): #pressed START button
 
     #cant start activity with no name
@@ -133,6 +136,12 @@ def actStartedViewTrigger(): #pressed START button
 
     pass
 
+def convertSecondsToDT_Time(seconds):
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    seconds = seconds % 60
+    return dtOG.time(int(hours),int(minutes),int(seconds))
+
 def defWindowViewTrigger(): #pressed STOP button
 
     timeEnd = dt.now()
@@ -146,7 +155,20 @@ def defWindowViewTrigger(): #pressed STOP button
     # print(dt.now())
 
     timeDiff = timeSpent(app.timeStarted,timeEnd)
-    app.lastAct.config(text='Last: '+app.inputValActName.get()+' | ' + str(timeEnd)[:-5])
+
+    ## this is kinda complex ##
+    # tDifMod.timeAprox is class func from timeDifference module & it takes in dt.time struct
+    #
+    # When performing arithmetics [datetime.datetime - datetime.datetime] object returned
+    # is datetime.timedelta BUT in timeDifference.py module it is to be compared to
+    # datetime.time because thats how they are created manualy(look in __init__ @timeDIfference.py).
+    #
+    # Therefore timeDiff is datetime.timedelta it's value in seconds is sent to
+    # convertSecondsToDT_Time() which simply converts seconds to hours & minutes & seconds
+    # respectively AND returns datetime.time object. It is passed to timeAprox func where
+    # it can be properly compared and it returns string with given value which is simply printed out
+    timeDiffAproximation = tDifMod.timeAprox(convertSecondsToDT_Time(timeDiff.total_seconds()))
+    app.lastAct.config(text='Last: '+app.inputValActName.get()+' | ' + str(timeEnd)[10:-7] + ' | ' + timeDiffAproximation)
 
     # log info
     fw.writeToLog(app.inputValActName.get(),app.timeStarted,timeEnd,timeDiff,dt.now())
@@ -162,6 +184,7 @@ if __name__ == "__main__":
 
     else:            
         app = MyApp()
+        tDifMod = td.TimeDifference()
         
         initWindowViewTrigger()
 

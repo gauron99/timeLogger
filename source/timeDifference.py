@@ -1,6 +1,6 @@
 import datetime as dt 
 
-class TimeDifference:
+class TimeDifference(object):
     def __init__(self):
         self.res=''
         self.minute=dt.time(0,1,0)
