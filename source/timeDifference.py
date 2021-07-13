@@ -43,6 +43,8 @@ class TimeDifference(object):
     def timeAprox(self,time):
         if(time < self.minute):
             return 'less than a minute'
+        elif(self.absTimeDif(self.minute,time) < self.absTimeDif(self.fivemins,time)):
+            return 'around 1 minute'
         elif(self.absTimeDif(self.fivemins,time) < self.absTimeDif(self.fifteenmins,time)):
             return 'around 5 mins'
         elif(self.absTimeDif(self.fifteenmins,time) < self.absTimeDif(self.thirtymins,time)):

@@ -167,7 +167,7 @@ if __name__ == '__main__':
     
 def writeToLog(activity,tBegin,tEnd,tDiff,tNow):
 
-    print("LOG: %s | %s | %s | from:%s | to:%s " %(str(tNow)[:-7],activity,str(tDiff)[:-7],str(tBegin)[:-7],str(tEnd)[:-7]))
+    # print("LOG: %s | %s | %s | from:%s | to:%s " %(str(tNow)[:-7],activity,str(tDiff)[:-7],str(tBegin)[:-7],str(tEnd)[:-7]))
     if fConf.log == None:
         ### to be merged ###
         configFile,_ = getConfigFile()

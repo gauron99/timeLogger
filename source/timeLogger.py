@@ -28,7 +28,10 @@ class MyApp:
         self.fillerLabel = tk.Label(self.root,text='')
         self.inputLabel = tk.Label()
         self.lastAct = tk.Label(self.root,text='',font=('times',13,'bold'))
-        
+        self.runningTimeLabel = tk.Label(self.root,text='',font=('times',13,'bold'))
+        self.runningAproxTime = None
+        self.activityIsRunning = False
+
         self.inputEntry = tk.Entry()
 
         self.buttonStartStop = tk.Button()
@@ -39,6 +42,7 @@ class MyApp:
     pass
 
 def showLog():
+    # go to filework module
     fw.openLog()
     pass
 
@@ -49,9 +53,23 @@ def timeSpent(start,end):
     #     timeDiff = tmp-(start-end)
     # else:
 
-    print("Time spent:",end - start)
-    #use timeDifference.py module
-    return end - start
+    # print("Time spent:",end - start)
+
+    timeDiff = end - start
+    ## this is kinda complex ##
+    # tDifMod.timeAprox is class func from timeDifference module & it takes in dt.time struct
+    #
+    # When performing arithmetics [datetime.datetime - datetime.datetime] object returned
+    # is datetime.timedelta BUT in timeDifference.py module it is to be compared to
+    # datetime.time because thats how they are created manualy(look in __init__ @timeDIfference.py).
+    #
+    # Therefore timeDiff is datetime.timedelta it's value in seconds is sent to
+    # convertSecondsToDT_Time() which simply converts seconds to hours & minutes & seconds
+    # respectively AND returns datetime.time object. It is passed to timeAprox func where
+    # it can be properly compared and it returns string with given value(see in timeDifference.py).
+    timeDiffAproximation = tDifMod.timeAprox(convertSecondsToDT_Time(timeDiff.total_seconds()))
+
+    return timeDiff,timeDiffAproximation
 
 # ~~~~~~~~~~~~~~~~~~~~~ functions binds for specific keys ~~~~~~~~~~~~~~~~~~~~~ #
 # ~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~ #
@@ -108,6 +126,7 @@ def initWindowViewTrigger():
     # app.buttonLog.grid(row=4) #didnt work for some reason, cant be padded to the side or negatively(left) 
     app.buttonLog.place(y=169,x=375) #y=169#x=375
 
+
 # binds for text - easier use (select all, ctrl delete, enter press)
     app.inputEntry.bind("<Return>",return_key_pressed_on_input) #bind enter (return) to call same func as 'START' button
     app.inputEntry.bind("<Control-KeyRelease-a>",select_all_text_on_input)
@@ -115,6 +134,19 @@ def initWindowViewTrigger():
 
     app.root.bind("<Control-e>",ctrl_e_bring_focus_on_input)
 
+def checkRunningTime():
+    if app.activityIsRunning:
+        # time is datetime.time object
+        timeNow = dt.now()
+        timeDelta = timeNow - app.timeStarted
+        time = convertSecondsToDT_Time(timeDelta.total_seconds())
+        tmp = tDifMod.timeAprox(time)
+        if app.runningAproxTime != tmp:
+            app.runningAproxTime = tmp
+            app.runningTimeLabel.config(text='Started @ %s | Running for %s'%(str(app.timeStarted)[10:-7],app.runningAproxTime))
+        app.root.after(300000,checkRunningTime)
+    else:
+        app.runningTimeLabel.config(text='')
 
 def actStartedViewTrigger(): #pressed START button
 
@@ -126,9 +158,14 @@ def actStartedViewTrigger(): #pressed START button
     # print(app.timeStarted)
 
     # config
+    app.activityIsRunning = True
     app.inputEntry.config(state=tk.DISABLED)
     app.inputLabel.config(text="Currently Running: %s" %app.inputValActName.get())
     app.buttonStartStop.config(text='Stop Activity',command=defWindowViewTrigger)
+
+    # place the running info about activity (when started, how long running for)
+    app.runningTimeLabel.place(y=100,x=10)
+    checkRunningTime()
 
     pass
 
@@ -143,27 +180,20 @@ def defWindowViewTrigger(): #pressed STOP button
     timeEnd = dt.now()
 
     #config
+    app.activityIsRunning = False
     app.inputEntry.config(state=tk.NORMAL)
     app.inputLabel.config(text='Doing nothing')
     app.buttonStartStop.config(text='Start Activity',command=actStartedViewTrigger)
         
-    app.lastAct.place(y=100,x=10)
+    app.lastAct.place(y=130,x=10)
     # print(dt.now())
 
-    timeDiff = timeSpent(app.timeStarted,timeEnd)
+    checkRunningTime()
 
-    ## this is kinda complex ##
-    # tDifMod.timeAprox is class func from timeDifference module & it takes in dt.time struct
-    #
-    # When performing arithmetics [datetime.datetime - datetime.datetime] object returned
-    # is datetime.timedelta BUT in timeDifference.py module it is to be compared to
-    # datetime.time because thats how they are created manualy(look in __init__ @timeDIfference.py).
-    #
-    # Therefore timeDiff is datetime.timedelta it's value in seconds is sent to
-    # convertSecondsToDT_Time() which simply converts seconds to hours & minutes & seconds
-    # respectively AND returns datetime.time object. It is passed to timeAprox func where
-    # it can be properly compared and it returns string with given value which is simply printed out
-    timeDiffAproximation = tDifMod.timeAprox(convertSecondsToDT_Time(timeDiff.total_seconds()))
+    #timeDiff == time spent;; timeDiffAproximation == string, compared time with predetermined values in timeDifference.py
+    #check timeSpent func to see how timeDiffAproximation is got
+    timeDiff,timeDiffAproximation = timeSpent(app.timeStarted,timeEnd)
+
     app.lastAct.config(text='Last: '+app.inputValActName.get()+' | ' + str(timeEnd)[10:-7] + ' | ' + timeDiffAproximation)
 
     # log info
