@@ -36,11 +36,10 @@ Below is both information about specified topics and/or TODO etc.
 * It will still be logged as two different separate activities? - time calculations/time-spent?
         
 ### log format
-
-    currently in use: 
-        time of write | activity | time-spent | time-start | time-end
-    
-    possible ideas:
-        time of write | time-spent | activity | category | notes | time start->end
+    new day:
+        2021-07-12 16:53:29 | Watching twitch       | 0:20:00   | from:2021-07-12 16:33:29  | to:2021-07-12 16:53:29
+        ----
+        2021-07-13 16:53:29 | Watching twitch       | 0:20:00   | from:2021-07-12 16:33:29  | to:2021-07-12 16:53:29
+        
 ### References
     # if needed later
