@@ -13,7 +13,7 @@
 -- currently working on: highest on the list(or one of top 3)
 
 
-1. show aprox time during running
+1. add categories so its easier to sort and stuff
 2. rework visual of 'running' state of app
 3. if its a new day, make a distinction in log file
 4. make word wrap for Last shown activity when its too long it overflows off the window
@@ -40,6 +40,8 @@ Below is both information about specified topics and/or TODO etc.
         2021-07-12 16:53:29 | Watching twitch       | 0:20:00   | from:2021-07-12 16:33:29  | to:2021-07-12 16:53:29
         ----
         2021-07-13 16:53:29 | Watching twitch       | 0:20:00   | from:2021-07-12 16:33:29  | to:2021-07-12 16:53:29
-        
+    categories:
+        2021-07-13 16:53:29 | Watching twitch       | 0:20:00   | from:2021-07-12 16:33:29  | to:2021-07-12 16:53:29 | chill #category
+
 ### References
     # if needed later
