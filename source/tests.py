@@ -141,13 +141,5 @@ class TestTimeDifferenceModule(unittest.TestCase):
         self.assertEqual('almost a whole day, damn',td.timeAprox(time(23,45,19)))
         self.assertEqual('almost a whole day, damn',td.timeAprox(time(23,59,59)))
 
-# is it even possible to make this one? (.time method is limited to 0..23 hrs)
-    # def test_easy_over_a_day(self):
-    #     # td = timeDiff.TimeDifference()
-    #     self.assertEqual('more than a day -- chill bro',td.timeAprox(time(25,0,0)))
-    #     self.assertEqual('more than a day -- chill bro',td.timeAprox(time(,,)))
-    #     self.assertEqual('more than a day -- chill bro',td.timeAprox(time(,,)))
-    #     self.assertEqual('more than a day -- chill bro',td.timeAprox(time(,,)))
-
 if __name__ == "__main__":
     unittest.main()

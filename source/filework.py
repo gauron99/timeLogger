@@ -1,3 +1,4 @@
+import datetime as dt
 import os
 import string
 import sys
@@ -99,15 +100,23 @@ def openLog():
         try:
             fConf.log = open(fConf.getLogFileFullPath(),"r+")
         except FileNotFoundError as e:
-            print("Log File doesn't exist, wanna create it? [y][n]",end=' ')
-            tmp = input()
-            if tmp.lower() in ['yes','y','']:
-                fConf.log = open(fConf.getLogFileFullPath(),'w')
+            try:
+                print("Log File doesn't exist, wanna create it? [y][n]",end=' ')
+                tmp = input()
+                if tmp.lower() in ['yes','y','']:
+                    fConf.log = open(fConf.getLogFileFullPath(),'w')
 
-            else:
-                print("Create the log file first please... exiting")
-                exit(0)
-
+                else:
+                    print("Create the log file first please... exiting")
+                    exit(0)
+            except:
+                print("Input couldn't be provided, trying to create log file...",end='')
+                try:
+                    fConf.log = open(fConf.getLogFileFullPath(),'w')
+                except:
+                    printErr("Couldn't create/open log file",2)
+            finally:
+                print("done")
         openActualLog()
 
     pass
@@ -162,8 +171,27 @@ def changeLogDir(newdir):
         printErr("Given path is not a valid directory: %s" % newdir,2)
     pass
 
-if __name__ == '__main__':
-    printErr("Can't run filework.py as main, sorry",1)
+# 
+def addNewLineForNewDayInLog(logFile,dateOfCurrLog):
+    """param: logFile -- valid opened log file
+       
+       returns: nothing
+
+       Function is to separate/divide log into days
+
+       Reads last line from log, extracts date of the last log(first parameter)
+       and compares to current message-to-be-logged's date. If the date is different,
+       write a separate line indicating a new day beggining with "---" followed by the date
+       AND ONLY THEN write the log message
+    """
+    #check if last log is same day
+    lastLineLog = logFile.readlines()
+    lastLineLog = lastLineLog[-1]
+    lastDateStringLog = lastLineLog.split(" | ")[0]      #2021-07-14 13:35:02 
+    lastDateLog = dt.datetime.strptime(lastDateStringLog,'%Y-%m-%d %H:%M:%S')
+
+    if lastDateLog.date() != dateOfCurrLog.date():
+        logFile.write("--- %s ---\n"% str(dateOfCurrLog)[:-16])
     
 def writeToLog(activity,tBegin,tEnd,tDiff,tNow):
 
@@ -178,7 +206,7 @@ def writeToLog(activity,tBegin,tEnd,tDiff,tNow):
 
     #open file
     try:
-        logFile = open(fConf.getLogFileFullPath(),'a')
+        logFile = open(fConf.getLogFileFullPath(),'r+')
     except:
         printErr("Couldn't open log file",2)
         
@@ -187,9 +215,15 @@ def writeToLog(activity,tBegin,tEnd,tDiff,tNow):
     if os.stat("%s"%fConf.getLogFileFullPath()).st_size == 0:
         fConf.log.write("TimeOfLog | Activity | TimeSpent | timeBegin | TimeEnd\n")
 
+    #check if new day
+    addNewLineForNewDayInLog(fConf.log,tNow)
+
     # write into log
     fConf.log.write("%s | %s | %s | from:%s | to:%s\n" %(str(tNow)[:-7],activity,str(tDiff)[:-7],str(tBegin)[:-7],str(tEnd)[:-7]))
 
     #close the file
     fConf.log.close()
     pass
+
+if __name__ == '__main__':
+    printErr("Can't run filework.py as main, sorry",1)

@@ -119,7 +119,7 @@ def initWindowViewTrigger():
     app.inputLabel.grid(row=0,pady=5,sticky='ew')
     app.inputEntry.grid(row=1,padx=5)
 
-    app.fillerLabel.grid(row=2,pady=20)
+    # app.fillerLabel.grid(row=2,pady=20)
 
     # app.buttonStartStop.grid(row=4,padx=10,pady=45,sticky='w')
     app.buttonStartStop.place(y=169,x=10)
@@ -141,12 +141,13 @@ def checkRunningTime():
         timeDelta = timeNow - app.timeStarted
         time = convertSecondsToDT_Time(timeDelta.total_seconds())
         tmp = tDifMod.timeAprox(time)
-        if app.runningAproxTime != tmp:
+        if app.runningAproxTime != tmp or app.runningAproxTime == None:
             app.runningAproxTime = tmp
-            app.runningTimeLabel.config(text='Started @ %s | Running for %s'%(str(app.timeStarted)[10:-7],app.runningAproxTime))
-        app.root.after(300000,checkRunningTime)
+            app.runningTimeLabel.config(text='Started @%s | Running for %s'%(str(app.timeStarted)[10:-7],app.runningAproxTime))
+        app.root.after(300000,checkRunningTime)# after 5 mins
     else:
         app.runningTimeLabel.config(text='')
+        app.runningAproxTime = None
 
 def actStartedViewTrigger(): #pressed START button
 
@@ -163,8 +164,10 @@ def actStartedViewTrigger(): #pressed START button
     app.inputLabel.config(text="Currently Running: %s" %app.inputValActName.get())
     app.buttonStartStop.config(text='Stop Activity',command=defWindowViewTrigger)
 
-    # place the running info about activity (when started, how long running for)
+    # place the label
     app.runningTimeLabel.place(y=100,x=10)
+    
+    #invoke check if to show info about 'running activity'
     checkRunningTime()
 
     pass
@@ -188,6 +191,7 @@ def defWindowViewTrigger(): #pressed STOP button
     app.lastAct.place(y=130,x=10)
     # print(dt.now())
 
+    #invoke check for 'running' info text display or not
     checkRunningTime()
 
     #timeDiff == time spent;; timeDiffAproximation == string, compared time with predetermined values in timeDifference.py
