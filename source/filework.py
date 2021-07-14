@@ -5,6 +5,7 @@ import sys
 import webbrowser
 from pathlib import Path
 
+_categories = ['gaming','programming','food','outside','showers_hygiene']
 
 def logFileW(str):
     print("filework.py: log: %s" %str)
@@ -191,7 +192,7 @@ def addNewLineForNewDayInLog(logFile,dateOfCurrLog):
     lastDateLog = dt.datetime.strptime(lastDateStringLog,'%Y-%m-%d %H:%M:%S')
 
     if lastDateLog.date() != dateOfCurrLog.date():
-        logFile.write("--- %s ---\n"% str(dateOfCurrLog)[:-16])
+        logFile.write("--- %s ---\n"% str(dateOfCurrLog).replace("-",' ')[:-16])
     
 def writeToLog(activity,tBegin,tEnd,tDiff,tNow):
 
