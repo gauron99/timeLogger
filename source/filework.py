@@ -35,7 +35,7 @@ class fileConfiguration(object):
 
     def getLogFileFullPath(self):
         if(self.log_dir == '' or self.log_name == ''):
-            pass #TODO
+            printErr("No path, dunno what to do here, check[def getLogFileFullPath() in filework.py] ")
         else:
             return (self.log_dir+"/"+self.log_name)
         
