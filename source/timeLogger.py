@@ -1,9 +1,11 @@
 #!/usr/bin/python3
-import os
-import sys
 import tkinter as tk
-from datetime import datetime as dt
+import os
+import string
+import sys
+
 import datetime as dtOG
+from datetime import datetime as dt
 
 import config as Config
 import filework as fw
@@ -12,6 +14,9 @@ import timeDifference as td
 # window size
 wXaxis = '500'
 wYaxis = '250'
+
+_categories = ['gaming','programming','food','outside','hygiene','nothing']
+
 
 class MyApp:
     """
@@ -24,7 +29,9 @@ class MyApp:
 
         # variable for input text for name of activity
         self.inputValActName = tk.StringVar()
-        
+        self.dropboxVariable = tk.StringVar()
+        #set ?
+
         self.fillerLabel = tk.Label(self.root,text='')
         self.inputLabel = tk.Label()
         self.lastAct = tk.Label(self.root,text='',font=('times',13,'bold'))
@@ -33,6 +40,8 @@ class MyApp:
         self.activityIsRunning = False
 
         self.inputEntry = tk.Entry()
+
+        self.dropBoxCategory = tk.OptionMenu(self.root,self.dropboxVariable,*_categories)
 
         self.buttonStartStop = tk.Button()
         self.buttonLog = tk.Button()
@@ -95,6 +104,16 @@ def delete_ctr_backspace_on_input(event):
 def ctrl_e_bring_focus_on_input(event):
     if app.inputEntry.focus_get() != None:
         app.inputEntry.focus()
+
+def key_release_category_suggest(event):
+    string = app.inputEntry.get()
+    if string == None or string == '':
+        return
+
+    matched = [i for i in _categories if string in i]
+    if len(matched) == 1:
+        app.dropboxVariable.set(matched)
+    pass
 # ~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~ #
 
 
@@ -107,7 +126,7 @@ def initWindowViewTrigger():
 
     # create a label widget for text input
     app.inputLabel = tk.Label(app.root, text="Doing nothing", font=('times',13,'bold'))
-    app.inputEntry = tk.Entry(app.root,textvariable = app.inputValActName,font=('times',15,'normal'),width=48,bd=3)
+    app.inputEntry = tk.Entry(app.root,textvariable = app.inputValActName,font=('times',15,'normal'),width=35,bd=3)
 
     #1BEE14 green
     #C4C4C4 light grey
@@ -118,6 +137,7 @@ def initWindowViewTrigger():
     # put it up on the screen 
     app.inputLabel.grid(row=0,pady=5,sticky='ew')
     app.inputEntry.grid(row=1,padx=5)
+    app.dropBoxCategory.grid(row=1,column=2)
 
     # app.fillerLabel.grid(row=2,pady=20)
 
@@ -131,8 +151,10 @@ def initWindowViewTrigger():
     app.inputEntry.bind("<Return>",return_key_pressed_on_input) #bind enter (return) to call same func as 'START' button
     app.inputEntry.bind("<Control-KeyRelease-a>",select_all_text_on_input)
     app.inputEntry.bind("<Control-BackSpace>",delete_ctr_backspace_on_input)
+    app.inputEntry.bind("<KeyRelease>",key_release_category_suggest)
 
     app.root.bind("<Control-e>",ctrl_e_bring_focus_on_input)
+
 
 def checkRunningTime():
     if app.activityIsRunning:

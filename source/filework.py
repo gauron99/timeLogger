@@ -5,7 +5,6 @@ import sys
 import webbrowser
 from pathlib import Path
 
-_categories = ['gaming','programming','food','outside','showers_hygiene']
 
 def logFileW(str):
     print("filework.py: log: %s" %str)
@@ -172,7 +171,7 @@ def changeLogDir(newdir):
         printErr("Given path is not a valid directory: %s" % newdir,2)
     pass
 
-# 
+
 def addNewLineForNewDayInLog(logFile,dateOfCurrLog):
     """param: logFile -- valid opened log file
        
@@ -186,14 +185,18 @@ def addNewLineForNewDayInLog(logFile,dateOfCurrLog):
        AND ONLY THEN write the log message
     """
     #check if last log is same day
-    lastLineLog = logFile.readlines()
-    lastLineLog = lastLineLog[-1]
-    lastDateStringLog = lastLineLog.split(" | ")[0]      #2021-07-14 13:35:02 
-    lastDateLog = dt.datetime.strptime(lastDateStringLog,'%Y-%m-%d %H:%M:%S')
-
-    if lastDateLog.date() != dateOfCurrLog.date():
+    try:
+        lastLineLog = logFile.readlines()
+        lastLineLog = lastLineLog[-1]
+        lastDateStringLog = lastLineLog.split(" | ")[0]      #2021-07-14 13:35:02 
+        lastDateLog = dt.datetime.strptime(lastDateStringLog,'%Y-%m-%d %H:%M:%S')
+    except (IndexError, ValueError) as e:
+        #file is empty and/or there is only initial line
         logFile.write("--- %s ---\n"% str(dateOfCurrLog).replace("-",' ')[:-16])
-    
+    else: #no errors were raised
+        if lastDateLog.date() != dateOfCurrLog.date():
+            logFile.write("--- %s ---\n"% str(dateOfCurrLog).replace("-",' ')[:-16])
+
 def writeToLog(activity,tBegin,tEnd,tDiff,tNow):
 
     # print("LOG: %s | %s | %s | from:%s | to:%s " %(str(tNow)[:-7],activity,str(tDiff)[:-7],str(tBegin)[:-7],str(tEnd)[:-7]))
