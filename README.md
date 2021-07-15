@@ -13,7 +13,7 @@
 -- currently working on: highest on the list(or one of top 3)
 
 
-1. add categories so its easier to sort and stuff
+1. add key words under categories so if those words are writen in & only one category is matched, choose it in dropBox
 2. visually update log file (match "|" or something) to make it look more readable 
 3. rework visual of 'running' state of app
 4. make word wrap for Last shown activity when its too long it overflows off the window
