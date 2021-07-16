@@ -218,7 +218,7 @@ def writeToLog(activity,tBegin,tEnd,tDiff,tNow,category):
     fConf.log = logFile
 
     if os.stat("%s"%fConf.getLogFileFullPath()).st_size == 0:
-        fConf.log.write("TimeOfLog | Activity | TimeSpent | timeBegin | TimeEnd\n")
+        fConf.log.write("TimeOfLog | Activity | TimeSpent | timeBegin | TimeEnd | Category\n")
 
     #check if new day
     addNewLineForNewDayInLog(fConf.log,tNow)
