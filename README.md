@@ -13,14 +13,15 @@
 -- currently working on: highest on the list(or one of top 3)
 
 
-1. add key words under categories so if those words are writen in & only one category is matched, choose it in dropBox
-2. visually update log file (match "|" or something) to make it look more readable 
-3. rework visual of 'running' state of app
-4. make word wrap for Last shown activity when its too long it overflows off the window
+1. visually update log file (match "|" or something) to make it look more readable 
+2. rework visual of 'running' state of app
+3. make word wrap for Last shown activity when its too long it overflows off the window
 
+4. script to make log look prettier
 5. think of additions to config -- add eventually
 6. make loadConfigFile() & getConfigFile() merged in filework.py
-7. Redo the innit func in timeLogger.py -- init everything in class itself and call 
+7. Debug file made & debug prints added to code
+8. Redo the innit func in timeLogger.py -- init everything in class itself and call 
 only .config after (aka have only 2 funcs for operating not 3)
 
 Below is both information about specified topics and/or TODO etc.
@@ -38,7 +39,7 @@ Below is both information about specified topics and/or TODO etc.
 ### log format
     new day:
         2021-07-12 16:53:29 | Watching twitch       | 0:20:00   | from:2021-07-12 16:33:29  | to:2021-07-12 16:53:29
-        --- 2021-07-13 --- #this indicates a new/different day
+        --- 2021 07 13 --- #this indicates a new/different day (its without '-' so it is colored in log highlights)
         2021-07-13 16:53:29 | Watching twitch       | 0:20:00   | from:2021-07-12 16:33:29  | to:2021-07-12 16:53:29
 
     categories:

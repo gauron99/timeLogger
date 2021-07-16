@@ -15,8 +15,33 @@ import timeDifference as td
 wXaxis = '500'
 wYaxis = '250'
 
-_categories = ['gaming','programming','food','outside','hygiene','nothing']
+_categories = ['gaming','programming','food','outside','hygiene','school','nothing']
 
+_keywords = ['rocket league','horizon zero dawn','games','gaming',
+            'coding','code','testing code','programming',
+            'lunch','breakfast','dinner','food','eating',
+            'running','exercise','workout','walk','outside',
+            'hygiene','shower',
+            'studying','school','learning',
+            'watching tv','watching twitch']
+
+def GiveKeyWordGetCategory(word):
+    if word in ['rocket league','horizon zero dawn','games','gaming']:
+        return 'gaming'
+    elif word in ['coding','code','testing code','programming']:
+        return 'programming'
+    elif word in ['lunch','breakfast','dinner','food','eating']:
+        return 'food'
+    elif word in ['running','exercise','workout','walk','outside']:
+        return 'outside'
+    elif word in ['hygiene','shower']:
+        return 'hygiene'
+    elif word in ['studying','school','learning']:
+        return 'school'
+    elif word in ['watching tv','watching twitch']:
+        return 'nothing'
+    else:
+        return 'nothing'
 
 class MyApp:
     """
@@ -56,11 +81,6 @@ def showLog():
     pass
 
 def timeSpent(start,end):
-    #TODO
-    # if(end < start): #if time went over 00:00
-    #     tmp = dt.today().replace(hour=23,minute=59,second=59,microsecond=999999)
-    #     timeDiff = tmp-(start-end)
-    # else:
 
     # print("Time spent:",end - start)
 
@@ -110,9 +130,9 @@ def key_release_category_suggest(event):
     if string == None or string == '':
         return
 
-    matched = [i for i in _categories if string in i]
+    matched = [i for i in _keywords if string in i]
     if len(matched) == 1:
-        app.dropboxVariable.set(matched)
+        app.dropboxVariable.set(GiveKeyWordGetCategory("".join(matched)))
     pass
 # ~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~ #
 
@@ -183,12 +203,14 @@ def actStartedViewTrigger(): #pressed START button
     # config
     app.activityIsRunning = True
     app.inputEntry.config(state=tk.DISABLED)
-    app.inputLabel.config(text="Currently Running: %s" %app.inputValActName.get())
+    app.inputLabel.config(text="%s" %app.inputValActName.get().upper())
     app.buttonStartStop.config(text='Stop Activity',command=defWindowViewTrigger)
 
     # place the label
     app.runningTimeLabel.place(y=100,x=10)
     
+    app.dropBoxCategory.config(state='disabled')
+
     #invoke check if to show info about 'running activity'
     checkRunningTime()
 
@@ -213,17 +235,19 @@ def defWindowViewTrigger(): #pressed STOP button
     app.lastAct.place(y=130,x=10)
     # print(dt.now())
 
+    app.dropBoxCategory.config(state='normal')
+
     #invoke check for 'running' info text display or not
     checkRunningTime()
 
     #timeDiff == time spent;; timeDiffAproximation == string, compared time with predetermined values in timeDifference.py
-    #check timeSpent func to see how timeDiffAproximation is got
+    #check timeSpent func to see how timeDiffAproximation is calculated
     timeDiff,timeDiffAproximation = timeSpent(app.timeStarted,timeEnd)
 
     app.lastAct.config(text='Last: '+app.inputValActName.get()+' | ' + str(timeEnd)[10:-7] + ' | ' + timeDiffAproximation)
 
     # log info
-    fw.writeToLog(app.inputValActName.get(),app.timeStarted,timeEnd,timeDiff,dt.now())
+    fw.writeToLog(app.inputValActName.get(),app.timeStarted,timeEnd,timeDiff,dt.now(),app.dropboxVariable.get())
 
     app.inputEntry.delete(0,tk.END) #delete text inside entry
     pass

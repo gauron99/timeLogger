@@ -197,10 +197,11 @@ def addNewLineForNewDayInLog(logFile,dateOfCurrLog):
         if lastDateLog.date() != dateOfCurrLog.date():
             logFile.write("--- %s ---\n"% str(dateOfCurrLog).replace("-",' ')[:-16])
 
-def writeToLog(activity,tBegin,tEnd,tDiff,tNow):
+def writeToLog(activity,tBegin,tEnd,tDiff,tNow,category):
 
     # print("LOG: %s | %s | %s | from:%s | to:%s " %(str(tNow)[:-7],activity,str(tDiff)[:-7],str(tBegin)[:-7],str(tEnd)[:-7]))
     if fConf.log == None:
+        
         ### to be merged ###
         configFile,_ = getConfigFile()
         if(configFile == None):
@@ -223,7 +224,7 @@ def writeToLog(activity,tBegin,tEnd,tDiff,tNow):
     addNewLineForNewDayInLog(fConf.log,tNow)
 
     # write into log
-    fConf.log.write("%s | %s | %s | from:%s | to:%s\n" %(str(tNow)[:-7],activity,str(tDiff)[:-7],str(tBegin)[:-7],str(tEnd)[:-7]))
+    fConf.log.write("%s | %s | %s | from:%s | to:%s | %s\n" %(str(tNow)[:-7],activity,str(tDiff)[:-7],str(tBegin)[:-7],str(tEnd)[:-7],category))
 
     #close the file
     fConf.log.close()
