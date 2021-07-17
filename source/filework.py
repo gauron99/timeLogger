@@ -223,7 +223,9 @@ def writeToLog(activity,tBegin,tEnd,tDiff,tNow,category):
     fConf.log = logFile
 
     if os.stat("%s"%fConf.getLogFileFullPath()).st_size == 0:
-        fConf.log.write("TimeOfLog | Activity | TimeSpent | timeBegin | TimeEnd | Category\n")
+        # if file is empty, write this init line. This starts with '---' because
+        # every line starting with '---' will be ignored (its not log data, it's simply for better visual look)
+        fConf.log.write("--- TimeOfLog       | Activity            | TimeSpent | TimeBegin                | TimeEnd                | Category\n")
 
     #check if new day
     addNewLineForNewDayInLog(fConf.log,tNow)
