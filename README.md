@@ -18,6 +18,7 @@
 3. make word wrap for Last shown activity when its too long it overflows off the window
 
 4. script to make log look prettier
+
 5. think of additions to config -- add eventually
 6. make loadConfigFile() & getConfigFile() merged in filework.py
 7. Debug file made & debug prints added to code

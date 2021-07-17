@@ -99,13 +99,15 @@ def configDefault(file,fileVar):
         #switch
         if readStr == "1":
             fileVar.log_dir = input("New log file directory> log_dir=")
-            updateConfig(file)
+            updateConfig(file,fileVar)
         elif readStr == '2':
             fileVar.log_name = input("New log file name> log_name=")
-            updateConfig(file)
-        elif readStr == 'quit':
+            updateConfig(file,fileVar)
+        elif readStr in ['quit','q']:
             exit(0)
+        print("-- Success! -- \n\n")
 
+    print("Exiting config...")
     pass
 
 # initial func to handle Config - we get here by knowing there are some arguments
@@ -118,7 +120,9 @@ def handleConfig():
 
     try:
         #get opened config file
-        configFile = fw.getConfigFile()
+        configFile,_ = fw.getConfigFile()
+        if(configFile == None): # file cant be None
+            exit(0)
     except:
         printErr("Config file not properly opened",2)
 
