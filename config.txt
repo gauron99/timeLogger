@@ -1,2 +1,3 @@
+#this is a comment
 log_dir=/home/donnovan/fun/timeLogger/log
 log_name=log.log

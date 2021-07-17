@@ -34,20 +34,25 @@ class fileConfiguration(object):
 
     def getLogFileFullPath(self):
         if(self.log_dir == '' or self.log_name == ''):
-            printErr("No path, dunno what to do here, check[def getLogFileFullPath() in filework.py] ")
+            printErr("Not full path loaded, gotta load it first, check [def getLogFileFullPath() in filework.py] ")
         else:
             return (self.log_dir+"/"+self.log_name)
         
 
     def getLogDir(self):
+        "return log dir from Class (aka it must be already loaded)"
         return self.log_dir
 
     def getLogName(self):
+        "return log name from Class (aka it must be already loaded)"
         return self.log_name
 
     def loadConfigFile(self,file):
+        "give opened config file, load log info into Class variables"
         for line in file.readlines():
-            if line.startswith("log_dir="): #log_dir
+            if line.startswith("#"):
+                continue
+            elif line.startswith("log_dir="): #log_dir
                 self.log_dir = line.replace("log_dir=",'').replace("\n",'')
             elif line.startswith("log_name="):
                 self.log_name = line.replace("log_name=",'').replace("\n",'')
@@ -159,7 +164,7 @@ def getConfigFile():
     
     pass
 
-def writeToConfig():
+def writeToConfig(file):
     pass
 
 #only changes where to look for the config file, doesnt actually move the file itself

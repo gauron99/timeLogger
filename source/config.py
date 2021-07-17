@@ -1,11 +1,15 @@
-import os,sys 
+import os
+import sys
+
+import filework as fw
+
 
 def logConfig(str):
     print("logConf> %s" % str)
 
-def printErr(str):
+def printErr(str,errC):
     print("config.py: Error: %s" % str)
-    exit(1)
+    exit(errC)
 
 def printHelp():
     print("""
@@ -59,39 +63,48 @@ Run with '--help' or 'help' to show this message
     """)
     exit(0)
 
+def updateConfig(file,fConf):
+    """param1: give opened config file handler
+       param2: class of fileConfiguration()"""
+
+    #TODO
+    # fw.writeToConfig()
+    pass
+
 # if user uses fast config option
 def configFastEdit():
     "parse command line arguments to quickly edit something + give suggestions if not correct"
     pass
 
-def configDefaultPrint():
-    # "while True to create 'config space'. Type number of what you want to change -> press Enter / type quit to hop out" 
-    ## TODO ##
-    # while(True):
-    #     print("~~ TimeLogger Config! ~~")
-    #     print()
-    #     print("[1] Directory of log file: log_dir=%s" % log_dir)
-    #     print("[2] Name of log file: log_name=%s" % log_name)
-    #     print("[quit] Exit from config")
-    #     print()
-    #     print("Write an [identifier] of what you want to change:",end=' ')
-    #     readStr = input()
+def configDefaultPrint(file,fileVar):
+
+    print("~~ TimeLogger Config! ~~")
+    print()
+    print("[1] Directory of log file: log_dir=%s" % fileVar.log_dir)
+    print("[2] Name of log file: log_name=%s" % fileVar.log_name)
+    print("[quit] Exit from config")
+    print()
+    print("Write an [identifier] of what you want to change:",end=' ')
         
-    #     #switch
-    #     if readStr == "1":
-    #         pass
-    #     elif readStr == '2':
-    #         pass
-    #     elif readStr == 'quit':
-    #         break
-    # exit(0)
     pass
 
-def configDefault():
+def configDefault(file,fileVar):
     print("~~ Welcome to TimeLogger Config! ~~\n")
-    configDefaultPrint()
-
-
+    # "while True to create 'config space'. Type number of what you want to change -> press Enter / type quit to hop out" 
+    ## TODO ##
+    while(True):
+        configDefaultPrint(file,fileVar)
+        readStr = input()
+        
+        #switch
+        if readStr == "1":
+            fileVar.log_dir = input("New log file directory> log_dir=")
+            updateConfig(file)
+        elif readStr == '2':
+            fileVar.log_name = input("New log file name> log_name=")
+            updateConfig(file)
+        elif readStr == 'quit':
+            exit(0)
 
     pass
 
@@ -100,20 +113,30 @@ def configDefault():
 def handleConfig():
     "begin config stuff"
 
-    logConfig("beginning configuring stuff, checking command line args...")
+    #init class variable #DEBUG
+    fileVar = fw.fileConfiguration()
+
+    try:
+        #get opened config file
+        configFile = fw.getConfigFile()
+    except:
+        printErr("Config file not properly opened",2)
+
+    #load into Class
+    fileVar.loadConfigFile(configFile)#now fileVar should have log dir and name (AKA its path)
 
     if len(sys.argv) > 2:
-        configFastEdit()
+        configFastEdit(configFile,fileVar)
     elif len(sys.argv) == 2:
         firstArg = (sys.argv[1]).lower()
         if(firstArg == "config" or firstArg == "edit"):
-            configDefault()
+            configDefault(configFile,fileVar)
         elif(firstArg == "-h" or firstArg == "--help" or firstArg == "help"):
             printHelp()
         else:
-            printErr("Argument not recognied, use '--help'. Arg given: '%s'" %sys.argv[1])
+            printErr("Argument not recognied, use '--help'. Arg given: '%s'" %sys.argv[1],1)
     else:
-        printErr("Unknown number of arguments :-(")
+        printErr("Unknown number of arguments :-(",1)
 
 
 if __name__ == "__main__":
