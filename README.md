@@ -13,9 +13,11 @@
 -- currently working on: highest on the list(or one of top 3)
 
 
-1. visually update log file (match "|" or something) to make it look more readable 
-2. rework visual of 'running' state of app
-3. make word wrap for Last shown activity when its too long it overflows off the window
+
+1. google chrome extension baby
+2. visually update log file (match "|" or something) to make it look more readable 
+3. rework visual of 'running' state of app
+4. make word wrap for Last shown activity when its too long it overflows off the window
 
 4. script to make log look prettier
 
