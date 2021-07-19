@@ -244,7 +244,7 @@ def defWindowViewTrigger(): #pressed STOP button
     #check timeSpent func to see how timeDiffAproximation is calculated
     timeDiff,timeDiffAproximation = timeSpent(app.timeStarted,timeEnd)
 
-    app.lastAct.config(text='Last: '+app.inputValActName.get()+' | ' + str(timeEnd)[10:-7] + ' | ' + timeDiffAproximation)
+    app.lastAct.config(text='Last: ' + app.inputValActName.get() + ' |' + str(timeEnd)[10:-7] + ' | ' + timeDiffAproximation)
 
     # log info
     fw.writeToLog(app.inputValActName.get(),app.timeStarted,timeEnd,timeDiff,dt.now(),app.dropboxVariable.get())
