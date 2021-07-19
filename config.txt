@@ -1,4 +1,3 @@
-#this is a comment
 #everything up to '=' is to be catched including '=' -> rest of the line is used
 #therefore there cannot be anything else on these lines (such as comments)
 log_dir=/home/donnovan/fun/timeLogger/log

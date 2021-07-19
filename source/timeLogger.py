@@ -15,8 +15,22 @@ import timeDifference as td
 wXaxis = '500'
 wYaxis = '250'
 
+
+# ------------------- ADD YOUR OWN CATEGORIES AND KEYWORDS ------------------- #
+#       -- new category -> add to _categories list
+#                       -> create keywords for said category
+#       -- new key words-> add them in _keywords list
+#                       -> pair categories & keyowrds in (GiveKeyWordGetCategory())
+#
+# --> can we I add this as config options? :thinking:
+# ------------------- ADD YOUR OWN CATEGORIES AND KEYWORDS ------------------- #
+
+
 _categories = ['gaming','programming','food','outside','hygiene','school','nothing']
 
+# list of all keaywords, they are separated by categories for better visual orientation
+# each line represents different category(add your own here & in func GiveKeyWordGetCategory()
+# so they can be asigned to given category)
 _keywords = ['rocket league','horizon zero dawn','games','gaming',
             'coding','code','testing code','programming',
             'lunch','breakfast','dinner','food','eating',
@@ -55,7 +69,7 @@ class MyApp:
         # variable for input text for name of activity
         self.inputValActName = tk.StringVar()
         self.dropboxVariable = tk.StringVar()
-        #set ?
+        
 
         self.fillerLabel = tk.Label(self.root,text='')
         self.inputLabel = tk.Label()
@@ -70,7 +84,11 @@ class MyApp:
 
         self.buttonStartStop = tk.Button()
         self.buttonLog = tk.Button()
-        
+
+        #when activity is running, press this to delete it
+        #instead of adding it to log(basically -> don't log this)
+        self.buttonDelAct = tk.Button() 
+
         self.timeStarted = None
 
     pass
@@ -134,6 +152,20 @@ def key_release_category_suggest(event):
     if len(matched) == 1:
         app.dropboxVariable.set(GiveKeyWordGetCategory("".join(matched)))
     pass
+
+# ~~~~~~~~~~~~~~~~~~~~~ popWindow on del press binds ~~~~~~~~~~~~~~~~~~~~~ #
+def pop_window_confirm_yes(event):
+    # print("pop_window_confirm_yes")
+    ent = event.widget
+    if ent.focus_get() != None:
+        actDelete()
+        ent.destroy()
+
+def pop_window_confirm_no(event):
+    # print("pop_window_confirm_no")
+    ent = event.widget
+    if ent.focus_get() != None:
+        ent.destroy()
 # ~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~ #
 
 
@@ -151,21 +183,26 @@ def initWindowViewTrigger():
     #1BEE14 green
     #C4C4C4 light grey
     #9C9C9C dark grey
+    #FF2929 light red
+    #E20000 dark red
+
+    # ---- INIT BUTTONS ---- #
     app.buttonStartStop = tk.Button(app.root, text="Start Activity",font=('times',13,'bold'),relief=tk.GROOVE,command=actStartedViewTrigger,pady=15,padx=15,bg='#C4C4C4',activebackground='#9C9C9C')
     app.buttonLog = tk.Button(app.root, text="Show Log",font=('times',13,'bold'),relief=tk.GROOVE,pady=15,padx=15,command=showLog,bg='#C4C4C4',activebackground='#9C9C9C')
+    app.buttonDelAct = tk.Button(app.root,text="del",font=('times',13,'italic'),relief=tk.GROOVE,command=popupDeleteConfirm,bg="#C4C4C4",activebackground="#FF2929")
 
+    # ---- PLACE WIDGETS IN THE WINDOW ---- #
     # put it up on the screen 
     app.inputLabel.grid(row=0,pady=5,sticky='ew')
     app.inputEntry.grid(row=1,padx=5)
     app.dropBoxCategory.grid(row=1,column=2)
-
-    # app.fillerLabel.grid(row=2,pady=20)
 
     # app.buttonStartStop.grid(row=4,padx=10,pady=45,sticky='w')
     app.buttonStartStop.place(y=169,x=10)
     # app.buttonLog.grid(row=4) #didnt work for some reason, cant be padded to the side or negatively(left) 
     app.buttonLog.place(y=169,x=375) #y=169#x=375
 
+    app.buttonDelAct.place(y=1,x=450)
 
 # binds for text - easier use (select all, ctrl delete, enter press)
     app.inputEntry.bind("<Return>",return_key_pressed_on_input) #bind enter (return) to call same func as 'START' button
@@ -174,6 +211,41 @@ def initWindowViewTrigger():
     app.inputEntry.bind("<KeyRelease>",key_release_category_suggest)
 
     app.root.bind("<Control-e>",ctrl_e_bring_focus_on_input)
+
+    #delete BUTTON CONFIG
+    app.buttonDelAct.config(state=tk.DISABLED)
+
+#when del button is pressed popup confirm window
+def popupDeleteConfirm():
+    popWindow = tk.Toplevel()
+    popLabel = tk.Label(popWindow,text='DELETE this activity?',font=('times',13,'bold'))
+    popLabel.grid(row=0,pady=8,padx=12,columnspan = 2)
+
+    popButtonYes = tk.Button(popWindow,text='Yes',font=('times',13,'bold'),bg='green',activebackground="green",padx=20,pady=10,command=actDelete)
+    popButtonYes.grid(row=1,column=0)
+
+    popButtonNo = tk.Button(popWindow,text='No',font=('times',13,'bold'),bg='red',activebackground="red",padx=20,pady=10,command=lambda e: e.widget.destroy())
+    popButtonNo.grid(row=1,column=1)
+
+    popWindow.bind("<Return>",pop_window_confirm_yes)
+
+    popWindow.bind("<Escape>",pop_window_confirm_no)
+    popWindow.bind("<FocusOut>",lambda e: e.widget.destroy())
+
+
+# delete current activity, and DON'T log it
+def actDelete():
+    #config
+    app.activityIsRunning = False
+    app.inputEntry.config(state=tk.NORMAL)
+    app.inputLabel.config(text='Doing nothing')
+    app.buttonStartStop.config(text='Start Activity',command=actStartedViewTrigger)
+        
+    app.dropBoxCategory.config(state='normal')
+
+    checkRunningTime()
+
+    app.inputEntry.delete(0,tk.END) #delete text inside entry
 
 
 def checkRunningTime():
@@ -214,6 +286,8 @@ def actStartedViewTrigger(): #pressed START button
     #invoke check if to show info about 'running activity'
     checkRunningTime()
 
+    #delete BUTTON CONFIG
+    app.buttonDelAct.config(state=tk.NORMAL)
     pass
 
 def convertSecondsToDT_Time(seconds):
@@ -250,6 +324,9 @@ def defWindowViewTrigger(): #pressed STOP button
     fw.writeToLog(app.inputValActName.get(),app.timeStarted,timeEnd,timeDiff,dt.now(),app.dropboxVariable.get())
 
     app.inputEntry.delete(0,tk.END) #delete text inside entry
+
+    #delete BUTTON CONFIG
+    app.buttonDelAct.config(state=tk.DISABLED)
     pass
 
 
