@@ -39,7 +39,11 @@ _keywords = ['rocket league','horizon zero dawn','games','gaming',
             'studying','school','learning',
             'watching tv','watching twitch']
 
+
 def GiveKeyWordGetCategory(word):
+    # person can write 2 word activity with '_' so it doesnt screw up the search
+    word = word.replace("_"," ")
+
     if word in ['rocket league','horizon zero dawn','games','gaming']:
         return 'gaming'
     elif word in ['coding','code','testing code','programming']:
@@ -73,7 +77,7 @@ class MyApp:
 
         self.fillerLabel = tk.Label(self.root,text='')
         self.inputLabel = tk.Label()
-        self.lastAct = tk.Label(self.root,text='',font=('times',13,'bold'))
+        self.lastAct = tk.Label(self.root,text='',font=('times',13,'bold'),justify=tk.LEFT,wraplength=480)
         self.runningTimeLabel = tk.Label(self.root,text='',font=('times',13,'bold'))
         self.runningAproxTime = None
         self.activityIsRunning = False
@@ -257,7 +261,7 @@ def checkRunningTime():
         tmp = tDifMod.timeAprox(time)
         if app.runningAproxTime != tmp or app.runningAproxTime == None:
             app.runningAproxTime = tmp
-            app.runningTimeLabel.config(text='Started @%s | Running for %s'%(str(app.timeStarted)[10:-7],app.runningAproxTime))
+            app.runningTimeLabel.config(text='Started %s | Running for %s'%(str(app.timeStarted)[10:-7],app.runningAproxTime))
         app.root.after(300000,checkRunningTime)# after 5 mins
     else:
         app.runningTimeLabel.config(text='')

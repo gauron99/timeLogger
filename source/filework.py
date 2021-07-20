@@ -230,6 +230,9 @@ def writeToLog(activity,tBegin,tEnd,tDiff,tNow,category):
     #check if new day
     addNewLineForNewDayInLog(fConf.log,tNow)
 
+    # its possible to write an activity by 2 words, just replace spaces for '_' 
+    # for easier manipulation (& its possible to have multiple activities, divided by ',')
+    activity = activity.replace(" ","_").replace(",_",", ")
     # write into log
     fConf.log.write("%s | %s | %s | from:%s | to:%s | %s\n" %(str(tNow)[:-7],activity,str(tDiff)[:-7],str(tBegin)[:-7],str(tEnd)[:-7],category))
 

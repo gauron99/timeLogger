@@ -1,7 +1,9 @@
-.PHONY: run test help
+.PHONY: run test help prettylog
 
 PRG_RUN=./source/timeLogger.py
 PRG_RUN_TEST=./source/tests.py
+PRG_LOG=./source/processLog.py
+LOG_FILE=log/log.log
 
 run:
 	rm -f __pycache__ ; $(PRG_RUN) &
@@ -14,3 +16,7 @@ config:
 
 test:
 	$(PRG_RUN_TEST)
+
+# take log file and output some info to console
+readlog:
+	$(PRG_LOG) $(LOG_FILE)

@@ -29,20 +29,15 @@ only .config after (aka have only 2 funcs for operating not 3)
 
 Below is both information about specified topics and/or TODO etc.
 
-#### Config
-* create init view of config ( run with make config)
-* user can use fast config option by giving aditional arguments after 'config' on CL
-* when mistake is made in some arguments, try to provide correct arguments that can be used !!
+### Categories
+If multiple activities are started ("act1,act2"), the category is chosen by the first
+keyword, second act is secondary & is differentiated from being primary when processing
+log in processLog.py
 
-#### Time
-* what if act runs over 00:00 - needs to be tested
-* add pause button, so the activity can be paused and theres no need to create a new one after.
-* It will still be logged as two different separate activities? - time calculations/time-spent?
-        
 ### log format
     new day:
         2021-07-12 16:53:29 | Watching twitch       | 0:20:00   | from:2021-07-12 16:33:29  | to:2021-07-12 16:53:29
-        --- 2021 07 13 --- #this indicates a new/different day (its without '-' so it is colored in log highlights)
+        --- 2021 07 13 --- #this indicates a new/different day (its without '-' in between so it is colored in log highlights)
         2021-07-13 16:53:29 | Watching twitch       | 0:20:00   | from:2021-07-12 16:33:29  | to:2021-07-12 16:53:29
 
     categories:
