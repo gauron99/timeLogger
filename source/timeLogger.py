@@ -1,9 +1,8 @@
 #!/usr/bin/python3
-import tkinter as tk
 import os
 import string
 import sys
-
+import tkinter as tk
 import datetime as dtOG
 from datetime import datetime as dt
 
@@ -159,17 +158,22 @@ def key_release_category_suggest(event):
 
 # ~~~~~~~~~~~~~~~~~~~~~ popWindow on del press binds ~~~~~~~~~~~~~~~~~~~~~ #
 def pop_window_confirm_yes(event):
-    # print("pop_window_confirm_yes")
-    ent = event.widget
-    if ent.focus_get() != None:
+    try:
+        ent = event.widget
+        if ent.focus_get() != None:
+            actDelete()
+            ent.destroy()
+    except:
         actDelete()
-        ent.destroy()
+        event.destroy()
 
 def pop_window_confirm_no(event):
-    # print("pop_window_confirm_no")
-    ent = event.widget
-    if ent.focus_get() != None:
-        ent.destroy()
+    try:
+        ent = event.widget
+        if ent.focus_get() != None:
+            ent.destroy()
+    except:
+        event.destroy()
 # ~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~ #
 
 
@@ -219,22 +223,34 @@ def initWindowViewTrigger():
     #delete BUTTON CONFIG
     app.buttonDelAct.config(state=tk.DISABLED)
 
-#when del button is pressed popup confirm window
+
+#when del button is pressed popup confirm window appears!
 def popupDeleteConfirm():
-    popWindow = tk.Toplevel()
+    x=app.root.winfo_rootx()
+    y=app.root.winfo_rooty()
+
+    popWindow = tk.Toplevel(bd=3)
+    popWindow.geometry("+%d+%d" %(x+285,y))
+
+    # popWindow.wm_attributes('-type','splash')
+
     popLabel = tk.Label(popWindow,text='DELETE this activity?',font=('times',13,'bold'))
     popLabel.grid(row=0,pady=8,padx=12,columnspan = 2)
 
-    popButtonYes = tk.Button(popWindow,text='Yes',font=('times',13,'bold'),bg='green',activebackground="green",padx=20,pady=10,command=actDelete)
+    popButtonYes = tk.Button(popWindow,text='Yes',font=('times',13,'bold'),
+        bg='green',activebackground="green",padx=20,pady=10,command=lambda: pop_window_confirm_yes(popWindow))
+
     popButtonYes.grid(row=1,column=0)
 
-    popButtonNo = tk.Button(popWindow,text='No',font=('times',13,'bold'),bg='red',activebackground="red",padx=20,pady=10,command=lambda e: e.widget.destroy())
+    popButtonNo = tk.Button(popWindow,text='No',font=('times',13,'bold'),bg='red',
+        activebackground="red",padx=20,pady=10,command=lambda: pop_window_confirm_no(popWindow))
+
     popButtonNo.grid(row=1,column=1)
 
     popWindow.bind("<Return>",pop_window_confirm_yes)
 
     popWindow.bind("<Escape>",pop_window_confirm_no)
-    popWindow.bind("<FocusOut>",lambda e: e.widget.destroy())
+    popWindow.bind("<FocusOut>",lambda e: popWindow.destroy())
 
 
 # delete current activity, and DON'T log it
@@ -250,6 +266,7 @@ def actDelete():
     checkRunningTime()
 
     app.inputEntry.delete(0,tk.END) #delete text inside entry
+    
 
 
 def checkRunningTime():
