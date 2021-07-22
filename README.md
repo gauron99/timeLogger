@@ -16,7 +16,8 @@
 
 1. log statistics 
 2. divide logs to months
-25. adding activities manually (if missed or not at PC etc.)
+2.  1. adding activities manually (if missed or not at PC etc.)
+    2. merge _categories _keywords for easier manipulation(adding etc.)
 3. rework visual of 'running' state of app
 4. make word wrap for Last shown activity when its too long it overflows off the window
 

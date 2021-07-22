@@ -37,7 +37,7 @@ _keywords = ['rocket league','horizon zero dawn','games','gaming',
             'running','exercise','workout','walk','outside',
             'hygiene','shower',
             'studying','school','learning',
-            'watching tv','watching twitch']
+            'watching tv','watching twitch','watching youtube','chilling']
 
 
 def GiveKeyWordGetCategory(word):
@@ -56,7 +56,7 @@ def GiveKeyWordGetCategory(word):
         return 'hygiene'
     elif word in ['studying','school','learning']:
         return 'school'
-    elif word in ['watching tv','watching twitch']:
+    elif word in ['watching tv','watching twitch','watching youtube','chilling']:
         return 'nothing'
     else:
         return 'nothing'
