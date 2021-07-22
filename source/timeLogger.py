@@ -181,7 +181,7 @@ def initWindowViewTrigger():
     app.root.resizable(0, 0) #dont allow resizing of the window
 
     # create a label widget for text input
-    app.inputLabel = tk.Label(app.root, text="Doing nothing", font=('times',13,'bold'))
+    app.inputLabel = tk.Label(app.root, text="Doing nothing", font=('American Typewriter',13,'bold'))
     app.inputEntry = tk.Entry(app.root,textvariable = app.inputValActName,font=('times',15,'normal'),width=35,bd=3)
 
     #1BEE14 green
@@ -322,7 +322,7 @@ def defWindowViewTrigger(): #pressed STOP button
     #check timeSpent func to see how timeDiffAproximation is calculated
     timeDiff,timeDiffAproximation = timeSpent(app.timeStarted,timeEnd)
 
-    app.lastAct.config(text='Last: ' + app.inputValActName.get() + ' |' + str(timeEnd)[10:-7] + ' | ' + timeDiffAproximation)
+    app.lastAct.config(text='Last: ' + app.inputValActName.get() + ' |' + str(timeEnd)[10:-7] + ' | ' + "elapsed: "+str(timeDiff)[:-7])
 
     # log info
     fw.writeToLog(app.inputValActName.get(),app.timeStarted,timeEnd,timeDiff,dt.now(),app.dropboxVariable.get())

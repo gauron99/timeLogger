@@ -14,16 +14,16 @@
 
 
 
-1. google chrome extension baby
-2. visually update log file (match "|" or something) to make it look more readable 
+1. log statistics 
+2. divide logs to months
+25. adding activities manually (if missed or not at PC etc.)
 3. rework visual of 'running' state of app
 4. make word wrap for Last shown activity when its too long it overflows off the window
 
 4. script to make log look prettier
 
-5. think of additions to config -- add eventually
-6. make loadConfigFile() & getConfigFile() merged in filework.py
-7. Debug file made & debug prints added to code
+6. think of additions to config -- add eventually
+7. make loadConfigFile() & getConfigFile() merged in filework.py
 8. Redo the innit func in timeLogger.py -- init everything in class itself and call 
 only .config after (aka have only 2 funcs for operating not 3)
 

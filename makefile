@@ -20,3 +20,5 @@ test:
 # take log file and output some info to console
 readlog:
 	$(PRG_LOG) $(LOG_FILE)
+# log just last day
+#logtoday: # or just add parameter argument for processLog.py (last day + debug levels)
