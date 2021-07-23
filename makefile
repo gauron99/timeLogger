@@ -1,4 +1,4 @@
-.PHONY: run test help prettylog
+.PHONY: run test help readlog config
 
 PRG_RUN=./source/timeLogger.py
 PRG_RUN_TEST=./source/tests.py
@@ -20,5 +20,7 @@ test:
 # take log file and output some info to console
 readlog:
 	$(PRG_LOG) $(LOG_FILE)
-# log just last day
+
+readlogall:
+	$(PRG_LOG) $(LOG_FILE) -d 2
 #logtoday: # or just add parameter argument for processLog.py (last day + debug levels)

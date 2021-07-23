@@ -234,7 +234,7 @@ def popupDeleteConfirm():
 
     # popWindow.wm_attributes('-type','splash')
 
-    popLabel = tk.Label(popWindow,text='DELETE this activity?',font=('times',13,'bold'))
+    popLabel = tk.Label(popWindow,text='Delete this activity?',font=('times',13,'bold'))
     popLabel.grid(row=0,pady=8,padx=12,columnspan = 2)
 
     popButtonYes = tk.Button(popWindow,text='Yes',font=('times',13,'bold'),

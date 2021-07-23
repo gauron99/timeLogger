@@ -12,7 +12,9 @@
 # TODO add another option -- to "make log look prettier" -- align "|" and such
 
 import os,sys,re
-import inspect
+import datetime as dt
+from timeControl import DateTimeConvertor as dtc
+
 
 class LogOutputConfig(object):
   def __init__(self,debug_lvl=0):
@@ -34,16 +36,40 @@ class LogOutputConfig(object):
     self.time_spent_in_activity_day = {}
     self.standard_log_day = {}
 
-  def presets(self):
-    print('##### ⎯⎯⎯ LOG PRESETS ⎯⎯⎯ #####')
-    print('debug_lvl %s: '%self.debug_lvl)
-    print('##### ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ #####')
-
-  def addData(activity,category,time):
+  def printActDay(self):
+    x = self.time_spent_in_activity_day
+    print("├ ACTIVITIES ⎯⎯")
+    for key in x:
+      print("| ",key, x[key])
+  
+  def clearActDay(self):
     pass
+
+  def presetsShow(self):
+    print('##### ⎯⎯⎯ LOG PRESETS ⎯⎯⎯ #####')
+    print('debug_lvl %s'%self.debug_lvl)
+    print('##### ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ #####')
+    print()
+
+  def addData(self,what,info,time):
+    info = info.lower() #info is activity/category -- determined by 'what'
+    if what == "activity":
+      if info in self.time_spent_in_activity_day:
+        self.time_spent_in_activity_day[info] = \
+          dtc.addTdelta(self.time_spent_in_activity_day[info],time)
+      else:
+        self.time_spent_in_activity_day[info] = dtc.tdeltaTime(time)
+
+    elif what == 'category':
+      if info in self.time_spent_in_category_day:
+        self.time_spent_in_category_day[info] += time
+      else:
+        self.time_spent_in_category_day[info] = time
+
   def __repr__(self):
 
-    return '##### ⎯⎯⎯ BASIC INFO ⎯⎯⎯ #####\nVersion: %s\nAuthor: %s\n##### ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ #####\n' %(self.version,self.author)
+    return '##### ⎯⎯⎯ BASIC INFO ⎯⎯⎯ #####\nVersion: %s\nAuthor: %s\n##### \
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ #####\n' %(self.version,self.author)
 
   def printErr(self,msg):
     print("Error in %s: %s"%("processLog.py",msg))
@@ -63,20 +89,41 @@ def printHelp():
 
 
 # LOG FORMAT 
-# --- TimeOfLog       | Activity            | TimeSpent | TimeBegin                | TimeEnd                | Category
-# 2021-07-20 08:47:07 | breakfast           | 0:47:22   | from:2021-07-20 07:59:44 | to:2021-07-20 08:47:07 | food
+# --- TimeOfLog       | Activity | TimeSpent | TimeBegin                | TimeEnd                | Category
+# 2021-07-20 08:47:07 | breakfast| 0:47:22   | from:2021-07-20 07:59:44 | to:2021-07-20 08:47:07 | food
+
+def convertSecondsToDatetime(seconds):
+    days = seconds // (3600*24)
+    seconds = seconds % (3600*24)
+
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    seconds = seconds % 60
+
+    print( days,hours,minutes,seconds)
+    return dt.datetime(day=days,hour=hours,minute=minutes,second=seconds)
 
 def newData(data):
   """
-  If debug_info is >3 print standard log & save info
+  If debug_info is >=3 print standard log & save info
   otherwise just save info to print later (per activity etc.)
   """
-  parsed = data.split(" | ")
+  # print(data)
+  parsed = data.replace("\n",'').split(" | ")
   parsed = [i.strip() for i in parsed]
-  if(logConfig.debug_lvl >= 3):
+  if(logConfig.debug_lvl >= 3):# standard log out
     time = parsed[0].split(' ')[1]
-    print("| ",time,'-',parsed[1],"("+parsed[2]+")")
+    print("| ",time,'-',parsed[1],"("+parsed[2]+") ["+parsed[5]+']')
 
+  if(logConfig.debug_lvl >= 2):#save activities per day
+    # print("<<",parsed[2],parsed[2].__class__)
+    timeDeltaObj = dtc.convertAny(parsed[2],dt.timedelta)
+    # print(">>",timeDeltaObj,timeDeltaObj.__class__)
+    logConfig.addData("activity",parsed[1],timeDeltaObj)
+
+  if logConfig.debug_lvl >= 1:#save categories per day
+    logConfig.time_spent_in_category_day
+    
 
 def newDay(data):
   """
@@ -91,13 +138,19 @@ def newDay(data):
 def parser_processor():
   with open(sys.argv[1],'r+') as log:
     print(logConfig) # call __repr__
-    logConfig.presets()
+    logConfig.presetsShow()
+    _ = log.readline() #read first line of log (which is just info for user)
+    first = log.readline()
+    first = first.split(" | ")
+    newDay(first[0].replace("-","").replace('\n','').strip())
     for data in log.readlines():
       if data.startswith('---'):
-        if re.match(".*[0-9]+",data): #if its not the first line in log
-          print()
-          data = data.split(" | ")
-          newDay(data[0].replace("-","").replace('\n','').strip())
+        logConfig.printActDay()
+        logConfig.clearActDay()
+        print()
+        
+        data = data.split(" | ")
+        newDay(data[0].replace("-","").replace('\n','').strip())
       else:
         newData(data)
         
