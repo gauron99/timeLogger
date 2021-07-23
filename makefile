@@ -22,5 +22,5 @@ readlog:
 	$(PRG_LOG) $(LOG_FILE)
 
 readlogall:
-	$(PRG_LOG) $(LOG_FILE) -d 2
+	$(PRG_LOG) $(LOG_FILE) -d 3
 #logtoday: # or just add parameter argument for processLog.py (last day + debug levels)
