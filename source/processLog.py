@@ -43,6 +43,7 @@ class LogOutputConfig(object):
       print("| ",key, x[key])
   
   def clearActDay(self):
+    self.time_spent_in_activity_day.clear()
     pass
 
   def presetsShow(self):
@@ -52,17 +53,31 @@ class LogOutputConfig(object):
     print()
 
   def addData(self,what,info,time):
+    #try to collect data together
+    if "," in info:
+      info = info.split(',')[0]
+    if "_(" in info:
+      info = info.split("_(")[0]
+    if "(" in info:
+      info = info.split("(")[0]
+
+
     info = info.lower() #info is activity/category -- determined by 'what'
     if what == "activity":
       if info in self.time_spent_in_activity_day:
         self.time_spent_in_activity_day[info] = \
           dtc.addTdelta(self.time_spent_in_activity_day[info],time)
+        print(" +",info,time)
+
       else:
         self.time_spent_in_activity_day[info] = dtc.tdeltaTime(time)
+        print(" =",info,time)
+
 
     elif what == 'category':
       if info in self.time_spent_in_category_day:
         self.time_spent_in_category_day[info] += time
+        print(" +",info,time)
       else:
         self.time_spent_in_category_day[info] = time
 
