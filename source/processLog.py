@@ -52,8 +52,8 @@ class LogOutputConfig(object):
     sortedList = logConfig.sortDict(self.time_spent_in_category_day)
     print("├ CATEGORIES ⎯⎯")
     for key in sortedList:
-      print("| (",int(key[1])/int(self.time_spent_day),")",key[0],key[1])
-  
+      part, total = dtc.timeToSecs(key[1]), dtc.timeToSecs(self.time_spent_day)
+      print('| (%.2f%%)'%(part/total*100),key[0],key[1])
   def clearCatDay(self):
     self.time_spent_in_category_day.clear()
 
@@ -196,7 +196,16 @@ def parserProcessor():
         newDay(data[0].replace("-","").replace('\n','').strip())
       else:
         newData(data)
-        
+    if(logConfig.debug_lvl>=2):
+      logConfig.printActDay()
+      logConfig.clearActDay()
+      print("|") # separate ACTIVITIES & CATEGORIES in output
+
+    if(logConfig.debug_lvl>=1):
+      logConfig.printCatDay()
+      logConfig.clearCatDay()
+
+
 if __name__ == "__main__":
   
   if len(sys.argv) >= 2:

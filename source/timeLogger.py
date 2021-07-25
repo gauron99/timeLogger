@@ -335,14 +335,17 @@ def defWindowViewTrigger(): #pressed STOP button
     #invoke check for 'running' info text display or not
     checkRunningTime()
 
-    #timeDiff == time spent;; timeDiffAproximation == string, compared time with predetermined values in timeDifference.py
+    #timeDiff == time spent;; timeDiffAproximation == string, compared time with 
+    # predetermined values in timeDifference.py
     #check timeSpent func to see how timeDiffAproximation is calculated
     timeDiff,timeDiffAproximation = timeSpent(app.timeStarted,timeEnd)
 
-    app.lastAct.config(text='Last: ' + app.inputValActName.get() + ' |' + str(timeEnd)[10:-7] + ' | ' + "elapsed: "+str(timeDiff)[:-7])
+    app.lastAct.config(text='Last: ' + app.inputValActName.get() + ' |' + \
+        str(timeEnd)[10:-7] + ' | ' + "elapsed: "+str(timeDiff)[:-7])
 
     # log info
-    fw.writeToLog(app.inputValActName.get(),app.timeStarted,timeEnd,timeDiff,dt.now(),app.dropboxVariable.get())
+    fw.writeToLog(app.inputValActName.get(),app.timeStarted,timeEnd,timeDiff,
+        dt.now(),app.dropboxVariable.get())
 
     app.inputEntry.delete(0,tk.END) #delete text inside entry
 

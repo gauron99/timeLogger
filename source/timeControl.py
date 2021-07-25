@@ -3,19 +3,23 @@ import datetime as dt
 class DateTimeConvertor:
 
   @staticmethod
-  def addTdelta(t,tdelta):
+  def timeToSecs(t: dt.time):
+    return (dt.datetime.combine(dt.date.min,t) - dt.datetime.min).total_seconds()
+
+  @staticmethod
+  def addTdelta(t: dt.time, tdelta: dt.timedelta):
     return (dt.datetime.combine(dt.date.today(),t) + tdelta).time()  
 
   @staticmethod
-  def tdeltaTime(timeD):
+  def tdeltaTime(timeD: dt.timedelta):
     return (dt.datetime.min + timeD).time()
 
   @staticmethod
-  def timeTimeDelta(time):
+  def timeTimeDelta(time: dt.time):
     return dt.datetime.combine(dt.date.min,time) - dt.datetime.min
 
   @staticmethod
-  def strTime(s):
+  def strTime(s: str):
     #delimeter must be ":"
     try:
       return dt.datetime.strptime(s,"%H:%M:%S").time()
@@ -37,6 +41,9 @@ class DateTimeConvertor:
         time = DateTimeConvertor.strTime(data)#str to time
         return DateTimeConvertor.timeTimeDelta(time)#time to timedelta
 
+    if outCls is dt.datetime:
+      if inCls is dt.time:
+        return 
     # datetime
     # date
     #  -- seconds?
