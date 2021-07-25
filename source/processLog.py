@@ -11,6 +11,7 @@
 
 import os,sys,re
 import datetime as dt
+import operator as op
 from timeControl import DateTimeConvertor as dtc
 
 
@@ -25,29 +26,33 @@ class LogOutputConfig(object):
     self.author = "gauron {David Fridrich}"
 
     self.debug_lvl = debug_lvl
-    # dictionary -> { 'category' : time-spent }
-    self.time_spent_in_category = {}
-    # dictionary -> { 'activity' : time-spent }
-    self.time_spent_in_activity = {}    
 
+    # all time combined together spent in categories
+    self.time_spent_day = dt.time(0,0,0)
+
+    # { 'activity': dt.time(spent), ...}
     self.time_spent_in_category_day = {}
+    # { 'category': dt.time(spent), ...}
     self.time_spent_in_activity_day = {}
-    self.standard_log_day = {}
+
+  def sortDict(self,d):
+    return sorted(d.items(),key=op.itemgetter(1),reverse=True)
 
   def printActDay(self):
+    percentage = []
     x = self.time_spent_in_activity_day
     print("├ ACTIVITIES ⎯⎯⎯")
     for key in x:
       print("| ",key, x[key])
-  
+
   def clearActDay(self):
     self.time_spent_in_activity_day.clear()
 
   def printCatDay(self):
-    x = self.time_spent_in_category_day
+    sortedList = logConfig.sortDict(self.time_spent_in_category_day)
     print("├ CATEGORIES ⎯⎯")
-    for key in x:
-      print("| ",key,x[key])
+    for key in sortedList:
+      print("| (",int(key[1])/int(self.time_spent_day),")",key[0],key[1])
   
   def clearCatDay(self):
     self.time_spent_in_category_day.clear()
@@ -68,6 +73,7 @@ class LogOutputConfig(object):
       info = info.split("(")[0]
 
     info = info.lower() #info is activity/category -- determined by 'what'
+
     if what == "activity":
       if info in self.time_spent_in_activity_day:
         self.time_spent_in_activity_day[info] = \
@@ -139,6 +145,10 @@ def newData(data):
     print("| ",time,'-',parsed[1],"("+parsed[2]+") ["+parsed[5]+']')
 
   timeDeltaObj = dtc.convertAny(parsed[2],dt.timedelta)
+
+  # print('+',logConfig.time_spent_day,timeDeltaObj,"(time_spent_all_day)")
+  logConfig.time_spent_day = dtc.addTdelta(logConfig.time_spent_day,timeDeltaObj)
+
   if(logConfig.debug_lvl >= 2):#save activities per day
     # print("<<",parsed[2],parsed[2].__class__)
     # print(">>",timeDeltaObj,timeDeltaObj.__class__)
@@ -159,7 +169,7 @@ def newDay(data):
   print(data)
   pass
 
-def parser_processor():
+def parserProcessor():
   with open(sys.argv[1],'r+') as log:
     print(logConfig) # call __repr__
     logConfig.presetsShow()
@@ -178,8 +188,10 @@ def parser_processor():
           logConfig.printCatDay()
           logConfig.clearCatDay()
 
-        print()
+        print()#newline between days
         
+        logConfig.time_spent_day = dt.time(0,0,0)
+
         data = data.split(" | ")
         newDay(data[0].replace("-","").replace('\n','').strip())
       else:
@@ -198,7 +210,7 @@ if __name__ == "__main__":
       except ValueError:
         logConfig.printErr("Debug_lvl must be a number, not '%s'" %sys.argv[3])
       
-    parser_processor()
+    parserProcessor()
 
   else:
     printHelp()

@@ -3,8 +3,8 @@ import datetime as dt
 class DateTimeConvertor:
 
   @staticmethod
-  def addTdelta(time,tdelta):
-    return (dt.datetime.combine(dt.date.today(),time) + tdelta).time()  
+  def addTdelta(t,tdelta):
+    return (dt.datetime.combine(dt.date.today(),t) + tdelta).time()  
 
   @staticmethod
   def tdeltaTime(timeD):
