@@ -8,6 +8,9 @@ LOG_FILE=log/log.log
 run:
 	rm -f __pycache__ ; $(PRG_RUN) &
 
+runf:
+	rm -f __pycache__ ; $(PRG_RUN)
+
 help:
 	$(PRG_RUN) help
 
@@ -19,8 +22,14 @@ test:
 
 # take log file and output some info to console
 readlog:
-	$(PRG_LOG) $(LOG_FILE)
+	@$(PRG_LOG) $(LOG_FILE)
 
-readlogall:
-	$(PRG_LOG) $(LOG_FILE) -d 3
+readlog1:
+	@$(PRG_LOG) $(LOG_FILE) -d 1
 #logtoday: # or just add parameter argument for processLog.py (last day + debug levels)
+
+readlog2:
+	@$(PRG_LOG) $(LOG_FILE) -d 2
+
+readlog3:
+	@$(PRG_LOG) $(LOG_FILE) -d 3

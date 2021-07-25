@@ -8,8 +8,6 @@
 #
 # takes one command line argument -- path to log file
 # simply prints the results to console
-#
-# TODO add another option -- to "make log look prettier" -- align "|" and such
 
 import os,sys,re
 import datetime as dt
@@ -18,10 +16,10 @@ from timeControl import DateTimeConvertor as dtc
 
 class LogOutputConfig(object):
   def __init__(self,debug_lvl=0):
-    # --- lvl 3 = everything
-    # -- lvl 2 = activities
-    # - lvl 1 = categories
-    # lvl 0 = statistics
+    # --- lvl 3 = everything (print every line of log + lvl 2)
+    # -- lvl 2 = activities (act time in each day + lvl 1)
+    # - lvl 1 = categories (see category-time in each day + lvl 0)
+    # lvl 0 = statistics (most compressed one - just overall info)
     # each level up contains the previous lvl info + it's new (0 is least info)
     self.version = "1.0"
     self.author = "gauron {David Fridrich}"
@@ -38,13 +36,21 @@ class LogOutputConfig(object):
 
   def printActDay(self):
     x = self.time_spent_in_activity_day
-    print("├ ACTIVITIES ⎯⎯")
+    print("├ ACTIVITIES ⎯⎯⎯")
     for key in x:
       print("| ",key, x[key])
   
   def clearActDay(self):
     self.time_spent_in_activity_day.clear()
-    pass
+
+  def printCatDay(self):
+    x = self.time_spent_in_category_day
+    print("├ CATEGORIES ⎯⎯")
+    for key in x:
+      print("| ",key,x[key])
+  
+  def clearCatDay(self):
+    self.time_spent_in_category_day.clear()
 
   def presetsShow(self):
     print('##### ⎯⎯⎯ LOG PRESETS ⎯⎯⎯ #####')
@@ -53,14 +59,13 @@ class LogOutputConfig(object):
     print()
 
   def addData(self,what,info,time):
-    #try to collect data together
+    #collect data together
     if "," in info:
       info = info.split(',')[0]
     if "_(" in info:
       info = info.split("_(")[0]
     if "(" in info:
       info = info.split("(")[0]
-
 
     info = info.lower() #info is activity/category -- determined by 'what'
     if what == "activity":
@@ -73,13 +78,15 @@ class LogOutputConfig(object):
         self.time_spent_in_activity_day[info] = dtc.tdeltaTime(time)
         # print(" =",info,time)
 
-
     elif what == 'category':
       if info in self.time_spent_in_category_day:
-        self.time_spent_in_category_day[info] += time
+        self.time_spent_in_category_day[info] = \
+          dtc.addTdelta(self.time_spent_in_category_day[info],time)
         # print(" +",info,time)
+
       else:
-        self.time_spent_in_category_day[info] = time
+        self.time_spent_in_category_day[info] = dtc.tdeltaTime(time)
+        # print(" =",info,time)
 
   def __repr__(self):
 
@@ -89,6 +96,7 @@ class LogOutputConfig(object):
   def printErr(self,msg):
     print("Error in %s: %s"%("processLog.py",msg))
     exit(1)
+############## end of class LogOutputConfig ##############
 
 def printHelp():
   print("""
@@ -130,22 +138,23 @@ def newData(data):
     time = parsed[0].split(' ')[1]
     print("| ",time,'-',parsed[1],"("+parsed[2]+") ["+parsed[5]+']')
 
+  timeDeltaObj = dtc.convertAny(parsed[2],dt.timedelta)
   if(logConfig.debug_lvl >= 2):#save activities per day
     # print("<<",parsed[2],parsed[2].__class__)
-    timeDeltaObj = dtc.convertAny(parsed[2],dt.timedelta)
     # print(">>",timeDeltaObj,timeDeltaObj.__class__)
     logConfig.addData("activity",parsed[1],timeDeltaObj)
 
   if logConfig.debug_lvl >= 1:#save categories per day
-    logConfig.time_spent_in_category_day
+    logConfig.addData("category",parsed[5],timeDeltaObj)
+
     
 
 def newDay(data):
   """
   @param1: data - expected format is '2021 07 21'
-  this prints new days
+  prints new days with format
   """
-# '⊢'
+# '⊢ ╭'
   data = '╭ '+data+' ⎯⎯⎯⎯⎯⎯⎯⎯⎯'
   print(data)
   pass
@@ -160,8 +169,15 @@ def parser_processor():
     newDay(first[0].replace("-","").replace('\n','').strip())
     for data in log.readlines():
       if data.startswith('---'):
-        logConfig.printActDay()
-        logConfig.clearActDay()
+        if(logConfig.debug_lvl>=2):
+          logConfig.printActDay()
+          logConfig.clearActDay()
+          print("|") # separate ACTIVITIES & CATEGORIES in output
+
+        if(logConfig.debug_lvl>=1):
+          logConfig.printCatDay()
+          logConfig.clearCatDay()
+
         print()
         
         data = data.split(" | ")

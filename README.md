@@ -13,8 +13,9 @@
 -- currently working on: highest on the list(or one of top 3)
 
 
-
-1. log statistics 
+0. add tickbox (with text) for timer (like every 30mins to take a break etc.)
+1.  1. make lv4 for all; lv3 == extended activities
+    2. log statistics
 2. divide logs to months
 2.  1. adding activities manually (if missed or not at PC etc.)
     2. merge _categories _keywords for easier manipulation(adding etc.)

@@ -217,15 +217,23 @@ def writeToLog(activity,tBegin,tEnd,tDiff,tNow,category):
     #open file
     try:
         logFile = open(fConf.getLogFileFullPath(),'r+')
-    except:
-        printErr("Couldn't open log file",2)
-        
+    except FileNotFoundError:
+        a = input("File not found, you want to create it?[y][n]")
+        if a.lower() in ['y','yes','']:
+            try:
+                logFile = open(fConf.getLogFileFullPath(),'a+')
+            except:
+                printErr("Couldn't open log file[def writeToLog]",2)
+            finally:
+                print('done')
+
     fConf.log = logFile
 
     if os.stat("%s"%fConf.getLogFileFullPath()).st_size == 0:
         # if file is empty, write this init line. This starts with '---' because
         # every line starting with '---' will be ignored (its not log data, it's simply for better visual look)
-        fConf.log.write("--- TimeOfLog       | Activity            | TimeSpent | TimeBegin                | TimeEnd                | Category\n")
+        fConf.log.write("--- TimeOfLog       | Activity            | TimeSpent |\
+ TimeBegin                | TimeEnd                | Category\n")
 
     #check if new day
     addNewLineForNewDayInLog(fConf.log,tNow)
@@ -234,10 +242,10 @@ def writeToLog(activity,tBegin,tEnd,tDiff,tNow,category):
     # for easier manipulation (& its possible to have multiple activities, divided by ',')
     activity = activity.replace(" ","_").replace(",_",", ")\
         .replace("_(","(").replace("_)",")").replace("(_","(")
-    fConf.log.write('aft: %s\n'%activity)
 
     # write into log
-    fConf.log.write("%s | %s | %s | from:%s | to:%s | %s\n" %(str(tNow)[:-7],activity,str(tDiff)[:-7],str(tBegin)[:-7],str(tEnd)[:-7],category))
+    fConf.log.write("%s | %s | %s | from:%s | to:%s | %s\n" 
+    %(str(tNow)[:-7], activity,str(tDiff)[:-7],str(tBegin)[:-7],str(tEnd)[:-7],category))
 
     #close the file
     fConf.log.close()
