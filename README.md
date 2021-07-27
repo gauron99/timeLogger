@@ -16,6 +16,8 @@
 0. add tickbox (with text) for timer (like every 30mins to take a break etc.)
 1.  1. make lv4 for all; lv3 == extended activities
     2. log statistics
+    3. add time frames
+    4. add Meta category of (inside(@PC), outside)
 2. divide logs to months
 2.  1. adding activities manually (if missed or not at PC etc.)
     2. merge _categories _keywords for easier manipulation(adding etc.)

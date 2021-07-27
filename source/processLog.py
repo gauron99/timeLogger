@@ -9,13 +9,16 @@
 # takes one command line argument -- path to log file
 # simply prints the results to console
 
-import os,sys,re
 import datetime as dt
-import operator as op
+import operator as op  # for itemgetter
+import os
+import re
+import sys
+
 from timeControl import DateTimeConvertor as dtc
 
 
-class LogOutputConfig(object):
+class LogOutputConfig:
   def __init__(self,debug_lvl=0):
     # --- lvl 3 = everything (print every line of log + lvl 2)
     # -- lvl 2 = activities (act time in each day + lvl 1)
@@ -32,36 +35,64 @@ class LogOutputConfig(object):
 
     # { 'activity': dt.time(spent), ...}
     self.time_spent_in_category_day = {}
-    # { 'category': dt.time(spent), ...}
+    #these hold datetime.time values
     self.time_spent_in_activity_day = {}
+
+    # this holds datetime.datetime values!! -> this can go above 24h therefore
+    # if only datetime.time was used, it overflows and starts at 00.00 and doesnt
+    # add any days, datetime.datetime can hold more than hours
+    self.time_spent_in_category_all = {}
+
+#there is something wrong with '⎯' -> it shows shorter than it actually is in 
+#the output when there are multiple of '⎯' on next to each other
+# (aka the closing lines of BASIC INFO & LOG PRESENTS) therefore they are longer
+# in here so they appear how they should in the output 
+  def __repr__(self):
+    return '\
+##### ⎯⎯⎯ BASIC INFO ⎯⎯⎯ #####\n\
+Version: %s\nAuthor: %s\n\
+##### ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ #####\n\n\
+##### ⎯⎯⎯ LOG PRESETS ⎯⎯⎯ #####\n\
+debug_lvl %s\n\
+##### ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ #####\n\n' %(self.version,self.author,self.debug_lvl)
+
+  def printErr(self,msg):
+    print("Error in %s: %s"%("processLog.py",msg))
+    exit(1)
 
   def sortDict(self,d):
     return sorted(d.items(),key=op.itemgetter(1),reverse=True)
 
   def printActDay(self):
-    percentage = []
-    x = self.time_spent_in_activity_day
-    print("├ ACTIVITIES ⎯⎯⎯")
-    for key in x:
-      print("| ",key, x[key])
-
-  def clearActDay(self):
-    self.time_spent_in_activity_day.clear()
+    sortedList = logConfig.sortDict(self.time_spent_in_activity_day)
+    print("├ ACTIVITIES ⎯⎯⎯⎯")
+    for key in sortedList:
+      part, total = dtc.timeToSecs(key[1]), dtc.timeToSecs(self.time_spent_day)
+      print("| (%.2f%%)"%(part/total*100),key[0],key[1])
 
   def printCatDay(self):
     sortedList = logConfig.sortDict(self.time_spent_in_category_day)
-    print("├ CATEGORIES ⎯⎯")
+    print("├ CATEGORIES ⎯⎯⎯")
     for key in sortedList:
       part, total = dtc.timeToSecs(key[1]), dtc.timeToSecs(self.time_spent_day)
       print('| (%.2f%%)'%(part/total*100),key[0],key[1])
+
+  def printSummary(self):
+    sortedList = logConfig.sortDict(self.time_spent_in_category_all)
+    #add all times from list to one variable
+    total = dtc.sumTime(sortedList)
+    print("╭ SUMMARY ⎯⎯")
+    
+    for name,time in sortedList:
+      days,timeTmp = convertSecondsToDatetime(time)
+      print("| (%.2f%%)"%(time/total*100),name,"| spent " + str(days)+" days, "+str(timeTmp))
+      pass
+
+  def clearActDay(self):
+    self.time_spent_in_activity_day.clear()
+  
   def clearCatDay(self):
     self.time_spent_in_category_day.clear()
-
-  def presetsShow(self):
-    print('##### ⎯⎯⎯ LOG PRESETS ⎯⎯⎯ #####')
-    print('debug_lvl %s'%self.debug_lvl)
-    print('##### ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ #####')
-    print()
 
   def addData(self,what,info,time):
     #collect data together
@@ -94,14 +125,15 @@ class LogOutputConfig(object):
         self.time_spent_in_category_day[info] = dtc.tdeltaTime(time)
         # print(" =",info,time)
 
-  def __repr__(self):
-
-    return '##### ⎯⎯⎯ BASIC INFO ⎯⎯⎯ #####\nVersion: %s\nAuthor: %s\n##### \
-⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ #####\n' %(self.version,self.author)
-
-  def printErr(self,msg):
-    print("Error in %s: %s"%("processLog.py",msg))
-    exit(1)
+    elif what == 'summary':
+      # print("+",info,time)
+      #this is just seconds kept! (not time object like 2 objects above in dicts)
+      if info in self.time_spent_in_category_all:
+        self.time_spent_in_category_all[info] += dtc.timeToSecs(dtc.tdeltaTime(time)) 
+        # print("+",self.time_spent_in_category_all[info])
+      else:
+        self.time_spent_in_category_all[info] = dtc.timeToSecs(dtc.tdeltaTime(time))
+        # print("=",self.time_spent_in_category_all[info])
 ############## end of class LogOutputConfig ##############
 
 def printHelp():
@@ -122,15 +154,15 @@ def printHelp():
 # 2021-07-20 08:47:07 | breakfast| 0:47:22   | from:2021-07-20 07:59:44 | to:2021-07-20 08:47:07 | food
 
 def convertSecondsToDatetime(seconds):
-    days = seconds // (3600*24)
-    seconds = seconds % (3600*24)
+  seconds = int(seconds)
+  days = seconds // (3600*24)
+  seconds = seconds % (3600*24)
 
-    hours = seconds // 3600
-    minutes = (seconds % 3600) // 60
-    seconds = seconds % 60
+  hours = seconds // 3600
+  minutes = (seconds % 3600) // 60
+  seconds = seconds % 60
 
-    print( days,hours,minutes,seconds)
-    return dt.datetime(day=days,hour=hours,minute=minutes,second=seconds)
+  return days,dt.time(hour=hours,minute=minutes,second=seconds)
 
 def newData(data):
   """
@@ -157,7 +189,7 @@ def newData(data):
   if logConfig.debug_lvl >= 1:#save categories per day
     logConfig.addData("category",parsed[5],timeDeltaObj)
 
-    
+  logConfig.addData("summary",parsed[5],timeDeltaObj)
 
 def newDay(data):
   """
@@ -165,18 +197,21 @@ def newDay(data):
   prints new days with format
   """
 # '⊢ ╭'
-  data = '╭ '+data+' ⎯⎯⎯⎯⎯⎯⎯⎯⎯'
-  print(data)
+  if logConfig.debug_lvl > 0:
+    print()#newline between days
+    data = '╭ '+data+' ⎯⎯⎯⎯⎯⎯⎯⎯⎯'
+    print(data)
   pass
 
 def parserProcessor():
   with open(sys.argv[1],'r+') as log:
     print(logConfig) # call __repr__
-    logConfig.presetsShow()
     _ = log.readline() #read first line of log (which is just info for user)
+
     first = log.readline()
     first = first.split(" | ")
     newDay(first[0].replace("-","").replace('\n','').strip())
+
     for data in log.readlines():
       if data.startswith('---'):
         if(logConfig.debug_lvl>=2):
@@ -188,14 +223,15 @@ def parserProcessor():
           logConfig.printCatDay()
           logConfig.clearCatDay()
 
-        print()#newline between days
-        
         logConfig.time_spent_day = dt.time(0,0,0)
 
         data = data.split(" | ")
         newDay(data[0].replace("-","").replace('\n','').strip())
       else:
         newData(data)
+    #END OF FOR LOOP
+
+    #print last day info since its in for loop which ends before printing it out
     if(logConfig.debug_lvl>=2):
       logConfig.printActDay()
       logConfig.clearActDay()
@@ -205,6 +241,7 @@ def parserProcessor():
       logConfig.printCatDay()
       logConfig.clearCatDay()
 
+    logConfig.printSummary()
 
 if __name__ == "__main__":
   
