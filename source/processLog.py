@@ -29,6 +29,9 @@ class LogOutputConfig:
     self.author = "gauron {David Fridrich}"
 
     self.debug_lvl = debug_lvl
+    self.date_after = dt.datetime
+    self.date_before = dt.datetime
+    self.date_only_last = False
 
     # all time combined together spent in categories
     self.time_spent_day = dt.time(0,0,0)
@@ -243,20 +246,60 @@ def parserProcessor():
 
     logConfig.printSummary()
 
-if __name__ == "__main__":
+
+def parseArgs():
   
-  if len(sys.argv) >= 2:
-    if sys.argv[1].lower() in ['-h','--help','help','h']:
-      printHelp()
-
-    logConfig = LogOutputConfig()
-    if len(sys.argv) > 2 and sys.argv[2].lower() in ['-d','--debug','--debug_lvl']:
-      try:
-        logConfig.debug_lvl = int(sys.argv[3])
-      except ValueError:
-        logConfig.printErr("Debug_lvl must be a number, not '%s'" %sys.argv[3])
-      
-    parserProcessor()
-
-  else:
+  if len(sys.argv) < 2:
+    print("Not enough arguments, log file missing...")
     printHelp()
+
+  argcmd = sys.argv
+# then different arguments are possible:
+#   -d, --debug   -> change level of depth of what to print (default = 0)
+#   -a, --after   -> choose a date to start with(aka dont consider activities before)
+#   -b, --before  -> dont consider activities after this date
+#   -l, --last    -> consider only last day in log
+  skip = False
+  for i in range(2,len(sys.argv)): # skip argv[1] coz it has to be a log file
+    if skip:
+      skip = False
+      continue
+    if argcmd[i].lower() in ['-h','--help']:
+      printHelp()
+    elif argcmd[i].lower() in ['-d','--debug']:
+      try:
+        logConfig.debug_lvl = int(argcmd[i+1])
+      except IndexError:
+        print("Error: Debug_lvl (-d) argument needs a value (type=int)")
+        exit(1)
+      except ValueError:
+        print("debug_lvl (-d) value must be of type int")
+        exit(1)
+      else:
+        skip = True
+
+    elif argcmd[i].lower() in ['-a','--after']:
+      try:
+        date = argcmd[i+1]   #format is-> day-mon-year (all in numbers) [01-02-2005]
+        date = dt.datetime.strptime(date,"%d-%-d-%Y")
+      except:
+        pass
+      else:
+        if isinstance(date,dt.datetime):
+          logConfig.date_after = date
+          skip = True
+        else:
+          raise "Argument for '--after' is not datetime.datetime object after converting."
+
+        
+if __name__ == "__main__":
+
+  #class init
+  logConfig = LogOutputConfig()
+
+  #check cmd arguments a assign them if possible
+  parseArgs()
+  exit(0)
+
+  #begin process
+  parserProcessor()

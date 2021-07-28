@@ -14,21 +14,22 @@
 
 
 0. add tickbox (with text) for timer (like every 30mins to take a break etc.)
+    1. add option when user forgets to start the activity (spontanious etc. to take time from end of last act as start and end as now and add it instantly)
 1.  1. make lv4 for all; lv3 == extended activities
-    2. log statistics
+    2. keyword for sleep start/end, log in the morning takes in the one from last night and combines them
     3. add time frames
     4. add Meta category of (inside(@PC), outside)
 2. divide logs to months
-2.  1. adding activities manually (if missed or not at PC etc.)
+3.  1. adding activities manually (if missed or not at PC etc.)
     2. merge _categories _keywords for easier manipulation(adding etc.)
-3. rework visual of 'running' state of app
-4. make word wrap for Last shown activity when its too long it overflows off the window
+4. rework visual of 'running' state of app
+5. make word wrap for Last shown activity when its too long it overflows off the window
 
-4. script to make log look prettier
+6. script to make log look prettier
 
-6. think of additions to config -- add eventually
-7. make loadConfigFile() & getConfigFile() merged in filework.py
-8. Redo the innit func in timeLogger.py -- init everything in class itself and call 
+7. think of additions to config -- add eventually
+8. make loadConfigFile() & getConfigFile() merged in filework.py
+9. Redo the innit func in timeLogger.py -- init everything in class itself and call 
 only .config after (aka have only 2 funcs for operating not 3)
 
 Below is both information about specified topics and/or TODO etc.
