@@ -37,7 +37,8 @@ class DateTimeConvertor:
     if data.__class__ is list and data[0].__class__ is tuple:
       for x,y in data:
         #### TODO implement strings and what not
-        # if time is a class of datetime.time 
+        
+        # if time is a class of float 
         if y.__class__ is float:
           res += y
           pass

@@ -1,6 +1,6 @@
 .PHONY: run test help readlog config
 
-PRG_RUN=./source/timeLogger.py
+PRG_RUN=./source/main.py
 PRG_RUN_TEST=./source/tests.py
 PRG_LOG=./source/processLog.py
 LOG_FILE=log/log.log

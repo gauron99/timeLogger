@@ -1,43 +1,23 @@
 #!/usr/bin/python3
+import datetime as dtOG
 import os
 import string
 import sys
 import tkinter as tk
-import datetime as dtOG
 from datetime import datetime as dt
 
 import config as Config
 import filework as fw
 import timeDifference as td
+from timeControl import DateTimeConvertor as dtc
+from storage import _categories, _keywords
 
 # window size
 wXaxis = '500'
-wYaxis = '250'
+wYaxis = '270'
 
-
-# ------------------- ADD YOUR OWN CATEGORIES AND KEYWORDS ------------------- #
-#       -- new category -> add to _categories list
-#                       -> create keywords for said category
-#       -- new key words-> add them in _keywords list
-#                       -> pair categories & keyowrds in (GiveKeyWordGetCategory())
-#
-# --> can we I add this as config options? :thinking:
-# ------------------- ADD YOUR OWN CATEGORIES AND KEYWORDS ------------------- #
-
-
-_categories = ['gaming','programming','food','outside','hygiene','school','nothing']
-
-# list of all keaywords, they are separated by categories for better visual orientation
-# each line represents different category(add your own here & in func GiveKeyWordGetCategory()
-# so they can be asigned to given category)
-_keywords = ['rocket league','horizon zero dawn','games','gaming',
-            'coding','code','testing code','programming',
-            'lunch','breakfast','dinner','food','eating',
-            'running','exercise','workout','walk','outside',
-            'hygiene','shower',
-            'studying','school','learning',
-            'watching tv','watching twitch','watching youtube','chilling']
-
+##### WANT TO ADD CATEGORIES / KEYWORDS ? --> go to storage.py & put what you add
+##### here as well, in GiveKeyWordGetCategory(word) as means for modules to communicate
 
 def GiveKeyWordGetCategory(word):
     # person can write 2 word activity with '_' so it doesnt screw up the search
@@ -51,6 +31,8 @@ def GiveKeyWordGetCategory(word):
         return 'food'
     elif word in ['running','exercise','workout','walk','outside']:
         return 'outside'
+    elif word in ['reading','writing']:
+        return 'inside'
     elif word in ['hygiene','shower']:
         return 'hygiene'
     elif word in ['studying','school','learning']:
@@ -74,7 +56,7 @@ class MyApp:
         self.dropboxVariable = tk.StringVar()
         
 
-        self.fillerLabel = tk.Label(self.root,text='')
+        # self.fillerLabel = tk.Label(self.root,text='')
         self.inputLabel = tk.Label()
         self.lastAct = tk.Label(self.root,text='',font=('times',13,'bold'),justify=tk.LEFT,wraplength=480)
         self.runningTimeLabel = tk.Label(self.root,text='',font=('times',13,'bold'))
@@ -87,12 +69,14 @@ class MyApp:
 
         self.buttonStartStop = tk.Button()
         self.buttonLog = tk.Button()
+        self.buttonHitherto = tk.Button()
 
         #when activity is running, press this to delete it
         #instead of adding it to log(basically -> don't log this)
         self.buttonDelAct = tk.Button() 
 
         self.timeStarted = None
+        self.timeEnded = None
 
     pass
 
@@ -173,7 +157,7 @@ def pop_window_confirm_no(event):
         if ent.focus_get() != None:
             ent.destroy()
     except:
-        event.destroy()
+        event.destroy() #cheat, when event is the widget itself (because of what calls this func)
 # ~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~ #
 
 
@@ -198,6 +182,8 @@ def initWindowViewTrigger():
     app.buttonStartStop = tk.Button(app.root, text="Start Activity",font=('times',13,'bold'),relief=tk.GROOVE,command=actStartedViewTrigger,pady=15,padx=15,bg='#C4C4C4',activebackground='#9C9C9C')
     app.buttonLog = tk.Button(app.root, text="Show Log",font=('times',13,'bold'),relief=tk.GROOVE,pady=15,padx=15,command=showLog,bg='#C4C4C4',activebackground='#9C9C9C')
     app.buttonDelAct = tk.Button(app.root,text="del",font=('times',13,'italic'),relief=tk.GROOVE,command=popupDeleteConfirm,bg="#C4C4C4",activebackground="#FF2929")
+    app.buttonHitherto = tk.Button(app.root,text="Hitherto",font=('American Typewriter',9,'bold'),command=logInstant,bg='#C4C4C4',activebackground='#9C9C9C')
+
 
     # ---- PLACE WIDGETS IN THE WINDOW ---- #
     # put it up on the screen 
@@ -205,12 +191,13 @@ def initWindowViewTrigger():
     app.inputEntry.grid(row=1,padx=5)
     app.dropBoxCategory.grid(row=1,column=2)
 
-    # app.buttonStartStop.grid(row=4,padx=10,pady=45,sticky='w')
-    app.buttonStartStop.place(y=169,x=10)
-    # app.buttonLog.grid(row=4) #didnt work for some reason, cant be padded to the side or negatively(left) 
-    app.buttonLog.place(y=169,x=375) #y=169#x=375
-
     app.buttonDelAct.place(y=1,x=450)
+
+    app.buttonStartStop.place(y=200,x=10)
+    app.buttonLog.place(y=200,x=375) #y=169#x=375
+
+    app.buttonHitherto.place(y=170,x=10)
+
 
 # binds for text - easier use (select all, ctrl delete, enter press)
     app.inputEntry.bind("<Return>",return_key_pressed_on_input) #bind enter (return) to call same func as 'START' button
@@ -223,6 +210,22 @@ def initWindowViewTrigger():
     #delete BUTTON CONFIG
     app.buttonDelAct.config(state=tk.DISABLED)
 
+
+def logInstant():
+    
+    #activity has not been done before, therefore app.TimeStarted is not set yet!
+    if app.timeEnded == None:
+        print("Warning - this works only if an activity has already been made previously to this")
+        app.inputValActName.set("You must have done an activity previously")
+        app.inputLabel.config(text="Failed!")
+
+    #activty has been done before, therefore just set app.timeStarted and trigger 'STOP' button
+    else:
+        app.timeEnded = dtc.addTdelta(app.timeEnded,dtOG.timedelta(seconds=1))
+        app.timeStarted = app.timeEnded #act started should be last act ended +1 sec
+        
+        #as if STOP button was pressed
+        defWindowViewTrigger()
 
 #when del button is pressed popup confirm window appears!
 def popupDeleteConfirm():
@@ -261,7 +264,7 @@ def actDelete():
     app.inputLabel.config(text='Doing nothing')
     app.buttonStartStop.config(text='Start Activity',command=actStartedViewTrigger)
         
-    app.dropBoxCategory.config(state='normal')
+    # app.dropBoxCategory.config(state='normal')
 
     checkRunningTime()
 
@@ -302,7 +305,7 @@ def actStartedViewTrigger(): #pressed START button
     # place the label
     app.runningTimeLabel.place(y=100,x=10)
     
-    app.dropBoxCategory.config(state='disabled')
+    # app.dropBoxCategory.config(state='disabled')
 
     #invoke check if to show info about 'running activity'
     checkRunningTime()
@@ -320,6 +323,7 @@ def convertSecondsToDT_Time(seconds):
 def defWindowViewTrigger(): #pressed STOP button
 
     timeEnd = dt.now()
+    app.timeEnded = timeEnd #added because of Hitherto button
 
     #config
     app.activityIsRunning = False
@@ -330,7 +334,7 @@ def defWindowViewTrigger(): #pressed STOP button
     app.lastAct.place(y=130,x=10)
     # print(dt.now())
 
-    app.dropBoxCategory.config(state='normal')
+    # app.dropBoxCategory.config(state='normal')
 
     #invoke check for 'running' info text display or not
     checkRunningTime()
