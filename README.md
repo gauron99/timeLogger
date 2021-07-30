@@ -14,16 +14,16 @@
 
 
 0. add tickbox (with text) for timer (like every 30mins to take a break etc.)
-    1. add option when user forgets to start the activity (spontanious etc. to take time from end of last act as start and end as now and add it instantly)
+    ~~1. add option when user forgets to start the activity (spontanious etc. to take time from end of last act as start and end as now and add it instantly)
 1.  1. make lv4 for all; lv3 == extended activities
     2. keyword for sleep start/end, log in the morning takes in the one from last night and combines them
     3. add time frames
     4. add Meta category of (inside(@PC), outside)
-2. divide logs to months
+~~2. divide logs to months
 3.  1. adding activities manually (if missed or not at PC etc.)
-    2. merge _categories _keywords for easier manipulation(adding etc.)
+    ~~2. merge _categories _keywords for easier manipulation(adding etc.)
 4. rework visual of 'running' state of app
-5. make word wrap for Last shown activity when its too long it overflows off the window
+~~5. make word wrap for Last shown activity when its too long it overflows off the window
 
 6. script to make log look prettier
 
