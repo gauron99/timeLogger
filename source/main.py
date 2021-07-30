@@ -193,9 +193,9 @@ def initWindowViewTrigger():
     #delete BUTTON CONFIG
     app.buttonDelAct.config(state=tk.DISABLED)
 
-
+#TODO hitherto button just quits the app when no terminal is open(after terminal is closed)
 def logInstant():
-    
+
     #activity has not been done before, therefore app.TimeStarted is not set yet!
     if app.timeEnded == None:
         print("Warning - this works only if an activity has already been made previously to this")
@@ -204,11 +204,19 @@ def logInstant():
 
     #activty has been done before, therefore just set app.timeStarted and trigger 'stop' button
     else:
+
+        fl = open("debug","a+")
+        fl.write("hitherto button init\n")
+
         #TODO add manual starting time, if not set, use this instead (end of last +1 sec)
         app.timeEnded = dtc.addTdelta(app.timeEnded,dtOG.timedelta(seconds=1))
         app.timeStarted = app.timeEnded #act started should be last act ended +1 sec
         
+        print("hitherto in action!",app.timeStarted,app.timeEnded)
         #stop button was pressed
+        tmp = "hitherto: start: %s| end: %s\n"%(app.timeStarted,app.timeEnded)
+        fl.write(tmp)
+
         defWindowViewTrigger()
 
 #when del button is pressed popup confirm window appears!

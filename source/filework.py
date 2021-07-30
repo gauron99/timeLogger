@@ -250,6 +250,10 @@ def writeToLog(activity,tBegin,tEnd,tDiff,tNow,category):
     activity = activity.replace(" ","_").replace(",_",", ")\
         .replace("_(","(").replace("_)",")").replace("(_","(")
 
+
+    print("LOG: %s | %s | %s | from:%s | to:%s | %s\n" 
+    %(str(tNow)[:-7], activity,str(tDiff)[:-7],str(tBegin)[:-7],str(tEnd)[:-7],category))
+    
     # write into log
     fConf.log.write("%s | %s | %s | from:%s | to:%s | %s\n" 
     %(str(tNow)[:-7], activity,str(tDiff)[:-7],str(tBegin)[:-7],str(tEnd)[:-7],category))
