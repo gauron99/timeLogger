@@ -34,7 +34,8 @@ class fileConfiguration(object):
 
     def getLogFileFullPath(self):
         if(self.log_dir == '' or self.log_name == ''):
-            printErr("Not full path loaded, gotta load it first, check [def getLogFileFullPath() in filework.py] ")
+            print(">> Maybe your config is not setup? check 'config.txt'")
+            printErr("Not full path loaded, gotta load it first, check [getLogFileFullPath()]",1)
         else:
             return (self.log_dir+"/"+self.log_name)
         
@@ -52,6 +53,8 @@ class fileConfiguration(object):
         for line in file.readlines():
             if line.startswith("#"):
                 continue
+            elif line == 'log_dir=' or line == 'log_name=':
+                printErr("Please fill info in 'config.txt' before anything",1)
             elif line.startswith("log_dir="): #log_dir
                 self.log_dir = line.replace("log_dir=",'').replace("\n",'')
             elif line.startswith("log_name="):
@@ -71,60 +74,64 @@ def openActualLog():
             #try to open the actual log file
             os.system('xdg-open %s'%fConf.getLogFileFullPath())
         except:
-            printErr("Couldn't open log file, look in filework.py->openActualLog() for info")
+            printErr("Couldn't open log file, look in filework.py->openActualLog() for info or open manually")
         # webbrowser.open_new_tab(fConf.getLogFileFullPath())
+    else:
+        print("windows/mac not supported to open files")
 
 def openLog():
-    #log info is already updated locally
-    if fConf.log_dir != '' and fConf.log_name != '':
-        openActualLog()
-        
+    file,identif = getConfigFile()
+    if file == None:
+        exit(0)
+    elif identif == 0:
+        fConf.loadConfigFile(file)
+    elif identif == 1:
+        try:    
+            logFileW("Trying to generate basic config file(writing in)...")
+            log_dir="log_dir="+os.getcwd()+"\n"
+            log_name="log_name=log.log\n"
+            file.writelines([log_dir,log_name])
+
+            #keep info in Class
+            fConf.log_dir=os.getcwd()
+            fConf.log_name='log.log'
+        except:
+            printErr("Trying to write into config file failed",1)
+        logFileW("Success!")
     else:
-        file,identif = getConfigFile()
-        if file == None:
-            exit(0)
-        elif identif == 0:
-            fConf.loadConfigFile(file)
-        elif identif == 1:
-            try:    
-                logFileW("Trying to generate basic config file(writing in)...")
-                log_dir="log_dir="+os.getcwd()+"\n"
-                log_name="log_name=log.log\n"
-                file.writelines([log_dir,log_name])
-
-                #keep info in Class
-                fConf.log_dir=os.getcwd()
-                fConf.log_name='log.log'
-            except:
-                printErr("Trying to write into config file failed",1)
-            logFileW("Success!")
-        else:
-            printErr("Unknown identif value, this message shouldn't be printed ever, basically",1)
+        printErr("Unknown identif value, this message shouldn't be printed ever, basically",1)
+    
+    #check for 'auto' keyword
+    if fConf.log_name == 'auto':#<- this is a keyword for generating 'month' logs
+        dtmonth = dt.date.today()
+        fConf.log_name = str(dtmonth)[:-3]+'.log'
         
-        #open the file
+    #open the file
+    try:
+        fConf.log = open(fConf.getLogFileFullPath(),"r+")
+    except FileNotFoundError as e:
         try:
-            fConf.log = open(fConf.getLogFileFullPath(),"r+")
-        except FileNotFoundError as e:
+            print("Log File doesn't exist, wanna create it? [y][n]",end=' ')
+            tmp = input()
+            if tmp.lower() in ['yes','y','']:
+                fConf.log = open(fConf.getLogFileFullPath(),'w')
+
+            else:
+                print("Create the log file first please... ")
+                exit(0)
+        except:
+            print("Input couldn't be provided, trying to create log file...",end='')
             try:
-                print("Log File doesn't exist, wanna create it? [y][n]",end=' ')
-                tmp = input()
-                if tmp.lower() in ['yes','y','']:
-                    fConf.log = open(fConf.getLogFileFullPath(),'w')
-
-                else:
-                    print("Create the log file first please... exiting")
-                    exit(0)
+                fConf.log = open(fConf.getLogFileFullPath(),'w')
             except:
-                print("Input couldn't be provided, trying to create log file...",end='')
-                try:
-                    fConf.log = open(fConf.getLogFileFullPath(),'w')
-                except:
-                    printErr("Couldn't create/open log file",2)
-            finally:
-                print("done")
-        openActualLog()
+                print("The error was:",e)
+                printErr("Couldn't create/open log file",2)
+        finally:
+            print("done")
 
+    openActualLog()
     pass
+
 
 # returns None if program is to be exited, otherwise returns opened file for 'rw'
 #identif == 0 if file exists and has been opened successfuly

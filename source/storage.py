@@ -28,3 +28,15 @@ _keywords = ['rocket league','horizon zero dawn','games','gaming',
             'studying','school','learning',
             'watching tv','watching twitch','watching youtube','chilling']
 
+_categories_keywords = \
+  {
+  'gaming' : ['rocket league','horizon zero dawn','games','gaming'],
+  'programming' : ['coding','code','testing code','programming'],
+  'food' : ['lunch','breakfast','dinner','food','eating'],
+  'outside' : ['running','exercise','workout','walk','outside','Max walk'],
+  'inside' : ['reading','writing','board games'],
+  'hygiene' : ['hygiene','shower'],
+  'school' : ['studying','school','learning'],
+  'nothing' : ['watching tv','watching twitch','watching youtube','chilling'],
+  'other' : []
+  }
