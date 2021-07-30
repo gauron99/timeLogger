@@ -95,3 +95,27 @@ class DateTimeConvertor:
     param2 is exactly the class object (ex: str, datetime.time,...)
     """
     return DateTimeConvertor.convert(data,data.__class__,toClass)
+ 
+
+
+# "interactive method" used to calculate how long the time has been running,
+### for debug and fixing stuff basically
+### can take whole line of log as argument or two specific times you want to get
+### the difference of
+  @staticmethod
+  def getDiff(*args):
+    if len(args) == 1:
+      #get whole line from log
+      string = args[0]
+      string = string.split(" | ")
+      start = string[3].replace("from:",'')
+      end = string[4].replace("to:",'')
+    elif len(args) == 2:
+      start = args[0]
+      end = args[1]
+
+      #format: 2021-07-30 16:50:11
+    start = dt.datetime.strptime(start,"%Y-%m-%d %H:%M:%S")
+    end = dt.datetime.strptime(end,"%Y-%m-%d %H:%M:%S")
+    print(end-start)
+    return  
