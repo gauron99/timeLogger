@@ -9,4 +9,4 @@ log_dir=/home/donnovan/fun/timeLogger/log
 # as it will be rewrited)
 
 #log_name=auto
-log_name=testlog.log
+log_name=log.log

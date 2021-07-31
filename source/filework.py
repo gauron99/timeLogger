@@ -236,9 +236,10 @@ def writeToLog(activity,tBegin,tEnd,tDiff,tNow,category):
 
     fConf.log = logFile
 
+    # if file is empty, write this init line. This starts with '---' because
+    # every line starting with '---' will be ignored (its not log data,
+    # it's simply for better visual look)
     if os.stat("%s"%fConf.getLogFileFullPath()).st_size == 0:
-        # if file is empty, write this init line. This starts with '---' because
-        # every line starting with '---' will be ignored (its not log data, it's simply for better visual look)
         fConf.log.write("--- TimeOfLog       | Activity            | TimeSpent |\
  TimeBegin                | TimeEnd                | Category\n")
 
@@ -251,12 +252,13 @@ def writeToLog(activity,tBegin,tEnd,tDiff,tNow,category):
         .replace("_(","(").replace("_)",")").replace("(_","(")
 
     # this is because when terminal is closed and it tries to print something
-    # the whole app closes
+    # the whole app closes so instead go through 'except' & do nothing
     try:  
         print("LOG: %s | %s | %s | from:%s | to:%s | %s\n" 
         %(str(tNow)[:-7], activity,str(tDiff)[:-7],str(tBegin)[:-7],str(tEnd)[:-7],category))
     except:
         pass
+    
     # write into log
     fConf.log.write("%s | %s | %s | from:%s | to:%s | %s\n" 
     %(str(tNow)[:-7], activity,str(tDiff)[:-7],str(tBegin)[:-7],str(tEnd)[:-7],category))

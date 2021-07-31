@@ -56,6 +56,61 @@ class MyApp:
 
     pass
 
+
+####
+# inspiration
+# https://stackoverflow.com/questions/3221956/how-do-i-display-tooltips-in-tkinter?noredirect=1&lq=1
+####
+class ToolTip:
+    """Class for settings - pop up window (tip window) [top right cog wheel]"""
+
+    def __init__(self, widget, text='widget info'):
+        self.waittime = 500     #miliseconds
+        self.wraplength = 180   #pixels
+        self.widget = widget
+        self.text = text
+        self.widget.bind("<Enter>", self.enter)
+        self.widget.bind("<Leave>", self.leave)
+        self.widget.bind("<ButtonPress>", self.leave)
+        self.id = None #for 'after' methods
+        self.tw = None #topLevel Window
+    
+    def enter(self,event=None): #inbetween func coz of event
+        self.schedule()
+
+    def leave(self,event=None):
+        self.unschedule()
+        self.hideTip()
+
+    def schedule(self):
+        self.unschedule()
+        self.id = self.widget.after(self.waittime,self.showTip)
+    
+    def unschedule(self):
+        id = self.id
+        self.id = None
+        if id:
+            self.widget.after_cancel(id)
+
+    def showTip(self,event=None):
+        x = y = 0
+        x,y,xx,yy = self.widget.bbox("insert")
+        x += self.widget.winfo_rootx() + 25
+        y += self.widget.winfo_rooty() + 25
+        #create toplevel window
+        self.tw = tk.Toplevel(self.widget)
+        self.tw.wm_overrideredirect(True)
+        self.tw.wm_geometry("+%d+%d" % (x, y))
+        label = tk.Label(self.tw, text=self.text, justify='left',
+            background="#ffffff", relief='solid', borderwidth=1,
+            wraplength = self.wraplength)
+        label.pack(ipadx=1)
+    def hideTip(self):
+        tw = self.tw
+        self.tw = None
+        if tw:
+            tw.destroy()
+
 ##### WANT TO ADD CATEGORIES / KEYWORDS ? --> go to storage.py
 def GiveKeyWordGetCategory(word):
     # person can write 2-word activity with '_' but they are registered with ' '
@@ -69,6 +124,7 @@ def showLog():
     # go to filework module
     fw.openLog()
     pass
+
 
 def timeSpent(start,end):
 
@@ -122,8 +178,9 @@ def key_release_category_suggest(event):
     # list of lists returned, as .values is a list for each category
     matched = [i for i in _categories_keywords.values() if string in i]
     if matched:
+        #matched is a list of lists so just pick the first value and pass it
         app.dropboxVariable.set(GiveKeyWordGetCategory("".join(matched[0][0])))
-#matched is a list of lists so just pick the first value and pass it
+
 # ~~~~~~~~~~~~~~~~~~~~~ popWindow on del press binds ~~~~~~~~~~~~~~~~~~~~~ #
 def pop_window_confirm_yes(event):
     try:
@@ -142,6 +199,8 @@ def pop_window_confirm_no(event):
             ent.destroy()
     except:
         event.destroy() #cheat, when event is the widget itself (because of what calls this func)
+
+
 # ~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~ #
 
 
@@ -161,8 +220,6 @@ def initWindowViewTrigger():
     #9C9C9C dark grey
     #FF2929 light red
     #E20000 dark red
-
-    
     
     # ---- INIT PHOTOS ---- #
     #using make to run the app, cwd is the root dir (not subdir 'source' where main.py is located)
@@ -204,7 +261,9 @@ def initWindowViewTrigger():
     #delete BUTTON CONFIG
     app.buttonDelAct.config(state=tk.DISABLED)
 
-#TODO hitherto button just quits the app when no terminal is open(after terminal is closed)
+    settings_tip = ToolTip(app.buttonSettings,'Open settings window') 
+    deleteAct_tip = ToolTip(app.buttonDelAct,"Delete current running activity & don't log it")
+
 def logInstant():
 
     #activity has not been done before, therefore app.TimeStarted is not set yet!
