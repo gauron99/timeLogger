@@ -10,21 +10,11 @@ import config as Config
 import filework as fw
 import timeDifference as td
 from timeControl import DateTimeConvertor as dtc
-from storage import _categories, _keywords, _categories_keywords
+from storage import  _categories_keywords
 
 # window size
 wXaxis = '500'
 wYaxis = '270'
-
-##### WANT TO ADD CATEGORIES / KEYWORDS ? --> go to storage.py
-
-def GiveKeyWordGetCategory(word):
-    # person can write 2 word activity with '_' so it doesnt screw up the search
-    word = word.replace("_"," ")
-
-    for key in _categories_keywords:
-        if word in _categories_keywords[key]:
-            return key
 
 class MyApp:
     """
@@ -45,7 +35,7 @@ class MyApp:
         self.lastAct = tk.Label(self.root,text='',font=('times',13,'bold'),justify=tk.LEFT,wraplength=480)
         self.runningTimeLabel = tk.Label(self.root,text='',font=('times',13,'bold'))
         self.runningAproxTime = None
-        self.activityIsRunning = False
+        self.activityIsRunning = False #for interval checkup & display of how long act is running for
 
         self.inputEntry = tk.Entry()
 
@@ -63,6 +53,15 @@ class MyApp:
         self.timeEnded = None
 
     pass
+
+##### WANT TO ADD CATEGORIES / KEYWORDS ? --> go to storage.py
+def GiveKeyWordGetCategory(word):
+    # person can write 2-word activity with '_' but they are registered with ' '
+    word = word.replace("_"," ")
+
+    for key in _categories_keywords:
+        if word in _categories_keywords[key]:
+            return key
 
 def showLog():
     # go to filework module
@@ -198,24 +197,20 @@ def logInstant():
 
     #activity has not been done before, therefore app.TimeStarted is not set yet!
     if app.timeEnded == None:
-        print("Warning - this works only if an activity has already been made previously to this")
+        try:
+            print("Warning - this works only if an activity has already been made previously to this")
+        except:
+            pass
         app.inputValActName.set("You must have done an activity previously")
         app.inputLabel.config(text="Failed!")
 
     #activty has been done before, therefore just set app.timeStarted and trigger 'stop' button
     else:
 
-        fl = open("debug","a+")
-        fl.write("hitherto button init\n")
-
         #TODO add manual starting time, if not set, use this instead (end of last +1 sec)
         app.timeEnded = dtc.addTdelta(app.timeEnded,dtOG.timedelta(seconds=1))
         app.timeStarted = app.timeEnded #act started should be last act ended +1 sec
-        
-        print("hitherto in action!",app.timeStarted,app.timeEnded)
         #stop button was pressed
-        tmp = "hitherto: start: %s| end: %s\n"%(app.timeStarted,app.timeEnded)
-        fl.write(tmp)
 
         defWindowViewTrigger()
 

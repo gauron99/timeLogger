@@ -8,10 +8,14 @@ class DateTimeConvertor:
 
   @staticmethod
   def addTdelta(t, tdelta: dt.timedelta):
+
     if t.__class__ is dt.time:
       return (dt.datetime.combine(dt.date.today(),t) + tdelta).time()
     elif t.__class__ is dt.datetime:
-      print("addTdelta:",(dt.datetime.combine(t.date(),t.time())+tdelta))
+      try:
+        print("addTdelta:",(dt.datetime.combine(t.date(),t.time())+tdelta))
+      except:
+        pass
       return (dt.datetime.combine(t.date(),t.time())+tdelta)
 
   @staticmethod

@@ -7,5 +7,6 @@ log_dir=/home/donnovan/fun/timeLogger/log
 # (its gonna create logs as [YYYY-MM.log] by "today's date" ) 
 # -- MAKE SURE TO HAVE ONLY ONE LOG_NAME LINE (otherwise only last one counts
 # as it will be rewrited)
+
 #log_name=auto
-log_name=log.log
+log_name=testlog.log

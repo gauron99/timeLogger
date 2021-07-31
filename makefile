@@ -20,7 +20,7 @@ config:
 test:
 	$(PRG_RUN_TEST)
 
-# take log file and output some info to console
+# take log file and output some cool info to console
 readlog:
 	@$(PRG_LOG) $(LOG_FILE)
 

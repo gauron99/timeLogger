@@ -206,7 +206,7 @@ def newDay(data):
     print(data)
   pass
 
-def parserProcessor():
+def MainLoop():
   with open(sys.argv[1],'r+') as log:
     print(logConfig) # call __repr__
     _ = log.readline() #read first line of log (which is just info for user)
@@ -302,4 +302,4 @@ if __name__ == "__main__":
   exit(0)
 
   #begin process
-  parserProcessor()
+  MainLoop()

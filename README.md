@@ -48,3 +48,8 @@ log in processLog.py
 
 ### References
     # if needed later
+### Other
+1.  Every print has to have a try-except wrap because if terminal is closed and
+    print statement is reached by the program, its going to try and execute it
+    (aka print the message) & because no terminal window is available, its gonna
+    shut down the whole app
