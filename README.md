@@ -15,7 +15,6 @@
 
 0. add tickbox (with text) for timer (like every 30mins to take a break etc.)
     
-1. hitherto button doesnt work when terminal is closed because it acceses app.timeEnded and such i guess TODO
 1.  1. make lv4 for all; lv3 == extended activities
     2. keyword for sleep start/end, log in the morning takes in the one from last night and combines them
     3. add time frames
