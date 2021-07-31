@@ -5,6 +5,7 @@ import string
 import sys
 import tkinter as tk
 from datetime import datetime as dt
+from PIL import Image, ImageTk
 
 import config as Config
 import filework as fw
@@ -44,6 +45,7 @@ class MyApp:
         self.buttonStartStop = tk.Button()
         self.buttonLog = tk.Button()
         self.buttonHitherto = tk.Button()
+        self.buttonSettings = tk.Button()
 
         #when activity is running, press this to delete it
         #instead of adding it to log(basically -> don't log this)
@@ -160,12 +162,22 @@ def initWindowViewTrigger():
     #FF2929 light red
     #E20000 dark red
 
+    
+    
+    # ---- INIT PHOTOS ---- #
+    #using make to run the app, cwd is the root dir (not subdir 'source' where main.py is located)
+    imSettings = Image.open(os.getcwd()+"/image/settings_button2.png")
+    imSettings = imSettings.resize((26,26),Image.ANTIALIAS)
+    phSettings = ImageTk.PhotoImage(imSettings)
+    
+
     # ---- INIT BUTTONS ---- #
     app.buttonStartStop = tk.Button(app.root, text="Start Activity",font=('times',13,'bold'),relief=tk.GROOVE,command=actStartedViewTrigger,pady=15,padx=15,bg='#C4C4C4',activebackground='#9C9C9C')
     app.buttonLog = tk.Button(app.root, text="Show Log",font=('times',13,'bold'),relief=tk.GROOVE,pady=15,padx=15,command=showLog,bg='#C4C4C4',activebackground='#9C9C9C')
     app.buttonDelAct = tk.Button(app.root,text="del",font=('times',13,'italic'),relief=tk.GROOVE,command=popupDeleteConfirm,bg="#C4C4C4",activebackground="#FF2929")
     app.buttonHitherto = tk.Button(app.root,text="Hitherto",font=('American Typewriter',9,'bold'),command=logInstant,bg='#C4C4C4',activebackground='#9C9C9C',state=tk.DISABLED)
-
+    app.buttonSettings = tk.Button(app.root,image=phSettings)
+    app.buttonSettings.image = phSettings
 
     # ---- PLACE WIDGETS IN THE WINDOW ---- #
     # put it up on the screen 
@@ -179,7 +191,7 @@ def initWindowViewTrigger():
     app.buttonLog.place(y=200,x=375) #y=169#x=375
 
     app.buttonHitherto.place(y=170,x=10)
-
+    app.buttonSettings.place(y=1,x=418)
 
 # binds for text - easier use (select all, ctrl delete, enter press)
     app.inputEntry.bind("<Return>",return_key_pressed_on_input) #bind enter (return) to call same func as 'START' button
