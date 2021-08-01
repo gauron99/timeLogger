@@ -64,7 +64,7 @@ class MyApp:
 class ToolTip:
     """Class for settings - pop up window (tip window) [top right cog wheel]"""
 
-    def __init__(self, widget, text='widget info'):
+    def __init__(self, widget, text='todo: add widget info'):
         self.waittime = 500     #miliseconds
         self.wraplength = 180   #pixels
         self.widget = widget
@@ -105,11 +105,40 @@ class ToolTip:
             background="#ffffff", relief='solid', borderwidth=1,
             wraplength = self.wraplength)
         label.pack(ipadx=1)
+        
     def hideTip(self):
         tw = self.tw
         self.tw = None
         if tw:
             tw.destroy()
+# END OF CLASS ToolTip #########################################################
+
+class MenuTkinter:
+    def __init__(self,widget,*args): #args == commands
+        self.widget = widget
+        self.displayed = False
+        
+        self.widget.bind('<Button-1>',onclick)
+
+        pass
+
+    def onclick(self):
+        if self.displayed:
+            self.displayed = False
+            self.hideMenu()
+        else:
+            self.displayed = True
+            self.showMenu()
+        pass
+
+    def showMenu(self):
+        pass
+
+    def hideMenu(self):
+        pass
+
+    pass
+# END OF CLASS MenuTkinter #####################################################
 
 ##### WANT TO ADD CATEGORIES / KEYWORDS ? --> go to storage.py
 def GiveKeyWordGetCategory(word):
@@ -234,7 +263,7 @@ def initWindowViewTrigger():
     app.buttonDelAct = tk.Button(app.root,text="del",font=('times',13,'italic'),relief=tk.GROOVE,command=popupDeleteConfirm,bg="#C4C4C4",activebackground="#FF2929")
     app.buttonHitherto = tk.Button(app.root,text="Hitherto",font=('American Typewriter',9,'bold'),command=logInstant,bg='#C4C4C4',activebackground='#9C9C9C',state=tk.DISABLED)
 
-    app.buttonSettings = tk.Button(app.root,image=phSettings)
+    app.buttonSettings = tk.Button(app.root,image=phSettings,bg='#C4C4C4',activebackground='#9C9C9C')
     app.buttonSettings.image = phSettings # --> ? idk why this is here
 
     # ---- PLACE WIDGETS IN THE WINDOW ---- #
@@ -266,17 +295,25 @@ def initWindowViewTrigger():
     settings_tip = ToolTip(app.buttonSettings,'Open settings window') 
     deleteAct_tip = ToolTip(app.buttonDelAct,"Delete current running activity & don't log it")
     hitherto_tip = ToolTip(app.buttonHitherto,"Use when you want to instantly log activity starting from the end of the last activity until now")
+#END OF initWindowViewTrigger ##################################################
+
+def settingsMenu(event):
+    sett_menu_root = tk.Menu(event.widget)
+    sett_menu_root.add
+
+
+    pass
 
 def logInstant():
 
     #activity has not been done before, therefore app.TimeStarted is not set yet!
     if app.timeEnded == None:
         try:
-            print("Warning - this works only if an activity has already been made previously to this")
+            print("Warning - Hitherto works only if an activity has already been done previously to this")
         except:
             pass
         app.inputValActName.set("You must have done an activity previously")
-        app.inputLabel.config(text="Failed!")
+        app.inputLabel.config(text="failed hitherto")
 
     #activty has been done before, therefore just set app.timeStarted and trigger 'stop' button
     else:
@@ -330,7 +367,6 @@ def actDelete():
     checkRunningTime()
 
     app.inputEntry.delete(0,tk.END) #delete text inside entry
-    
 
 
 def checkRunningTime():
