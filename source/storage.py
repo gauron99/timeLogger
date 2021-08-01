@@ -22,6 +22,7 @@ _categories_keywords = \
   'inside'      : ['reading','writing','board games'],
   'hygiene'     : ['hygiene','shower'],
   'school'      : ['studying','school','learning'],
-  'nothing'     : ['watching tv','watching twitch','watching youtube','chilling'],
+  'nothing'     : ['watching tv','watching twitch','watching youtube','chilling',
+                  'chillin'],
   'other'       : []
   }

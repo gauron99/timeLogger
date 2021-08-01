@@ -299,7 +299,6 @@ if __name__ == "__main__":
 
   #check cmd arguments a assign them if possible
   parseArgs()
-  exit(0)
 
   #begin process
   MainLoop()

@@ -233,8 +233,9 @@ def initWindowViewTrigger():
     app.buttonLog = tk.Button(app.root, text="Show Log",font=('times',13,'bold'),relief=tk.GROOVE,pady=15,padx=15,command=showLog,bg='#C4C4C4',activebackground='#9C9C9C')
     app.buttonDelAct = tk.Button(app.root,text="del",font=('times',13,'italic'),relief=tk.GROOVE,command=popupDeleteConfirm,bg="#C4C4C4",activebackground="#FF2929")
     app.buttonHitherto = tk.Button(app.root,text="Hitherto",font=('American Typewriter',9,'bold'),command=logInstant,bg='#C4C4C4',activebackground='#9C9C9C',state=tk.DISABLED)
+
     app.buttonSettings = tk.Button(app.root,image=phSettings)
-    app.buttonSettings.image = phSettings
+    app.buttonSettings.image = phSettings # --> ? idk why this is here
 
     # ---- PLACE WIDGETS IN THE WINDOW ---- #
     # put it up on the screen 
@@ -261,8 +262,10 @@ def initWindowViewTrigger():
     #delete BUTTON CONFIG
     app.buttonDelAct.config(state=tk.DISABLED)
 
+    ### ----- pop up tip window text setup for buttons ----- ###
     settings_tip = ToolTip(app.buttonSettings,'Open settings window') 
     deleteAct_tip = ToolTip(app.buttonDelAct,"Delete current running activity & don't log it")
+    hitherto_tip = ToolTip(app.buttonHitherto,"Use when you want to instantly log activity starting from the end of the last activity until now")
 
 def logInstant():
 
