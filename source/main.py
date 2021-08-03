@@ -26,36 +26,43 @@ class MyApp:
         # create a window
         self.root = tk.Tk()
 
-        # variable for input text for name of activity
-        self.inputValActName = tk.StringVar()
-        self.dropboxVariable = tk.StringVar()
-        
+        ######### ######### TIMES ######### #########
+        self.timeStarted = None
+        self.timeEnded = None
 
-        # self.fillerLabel = tk.Label(self.root,text='')
-        self.inputLabel = tk.Label()
-        self.lastAct = tk.Label(self.root,text='',font=('times',13,'bold'),justify=tk.LEFT,wraplength=480)
-        self.runningTimeLabel = tk.Label(self.root,text='',font=('times',13,'bold'))
-        self.runningAproxTime = None
-        self.activityIsRunning = False #for interval checkup & display of how long act is running for
+        ######### ######### STRING VARS ######### #########    
+        self.inputValActName = tk.StringVar()#input text var for name of activity
+        self.dropboxVariable = tk.StringVar()#categories
 
-        self.inputEntry = tk.Entry()
-
-        self.dropBoxCategory = tk.OptionMenu(self.root,self.dropboxVariable,*_categories_keywords.keys())
-
+        ######### ######### BUTTONS ######### ######### 
         self.buttonStartStop = tk.Button()
         self.buttonLog = tk.Button()
         self.buttonHitherto = tk.Button()
         self.buttonSettings = tk.Button()
+        self.buttonManualLog = tk.Button()
 
         #when activity is running, press this to delete it
         #instead of adding it to log(basically -> don't log this)
         self.buttonDelAct = tk.Button() 
+    
+        ######### ######### LABELS ######### #########
+        # self.fillerLabel = tk.Label(self.root,text='')
+        self.inputLabel = tk.Label()
+        self.lastAct = tk.Label(self.root,text='',font=('times',13,'bold'),justify=tk.LEFT,wraplength=480)
+        self.runningTimeLabel = tk.Label(self.root,text='',font=('times',13,'bold'))
 
-        self.timeStarted = None
-        self.timeEnded = None
+        ######### ######### OTHER ######### #########
+        self.runningAproxTime = None
+        #for interval checkup & display of how long act is running for
+        self.activityIsRunning = False
+
+        self.inputEntry = tk.Entry()
+
+        self.dropBoxCategory = tk.OptionMenu(self.root,self.dropboxVariable,
+                                                *_categories_keywords.keys())
 
     pass
-
+# END OF class MyApp ###########################################################
 
 ####
 # inspiration
@@ -113,6 +120,7 @@ class ToolTip:
             tw.destroy()
 # END OF CLASS ToolTip #########################################################
 
+#### TODO ####
 class MenuTkinter:
     def __init__(self,widget,*args): #args == commands
         self.widget = widget
@@ -256,6 +264,9 @@ def initWindowViewTrigger():
     imSettings = imSettings.resize((26,26),Image.ANTIALIAS)
     phSettings = ImageTk.PhotoImage(imSettings)
     
+    imManualHand = Image.open(os.getcwd()+"/image/manual_hand.png")
+    imManualHand = imManualHand.resize((26,26),Image.ANTIALIAS)
+    phManualHand = ImageTk.PhotoImage(imManualHand)
 
     # ---- INIT BUTTONS ---- #
     app.buttonStartStop = tk.Button(app.root, text="Start Activity",font=('times',13,'bold'),relief=tk.GROOVE,command=actStartedViewTrigger,pady=15,padx=15,bg='#C4C4C4',activebackground='#9C9C9C')
@@ -266,19 +277,24 @@ def initWindowViewTrigger():
     app.buttonSettings = tk.Button(app.root,image=phSettings,bg='#C4C4C4',activebackground='#9C9C9C')
     app.buttonSettings.image = phSettings # --> ? idk why this is here
 
+    app.buttonManualLog = tk.Button(app.root,image=phManualHand,bg='#C4C4C4',activebackground='#9C9C9C')
+    app.buttonManualLog.image = phManualHand
+
     # ---- PLACE WIDGETS IN THE WINDOW ---- #
     # put it up on the screen 
-    app.inputLabel.grid(row=0,pady=5,sticky='ew')
+    app.inputLabel.grid(row=0,pady=5,padx=10,sticky='ew')
     app.inputEntry.grid(row=1,padx=5)
     app.dropBoxCategory.grid(row=1,column=2)
 
     app.buttonDelAct.place(y=1,x=450)
 
     app.buttonStartStop.place(y=200,x=10)
-    app.buttonLog.place(y=200,x=375) #y=169#x=375
+    app.buttonLog.place(y=200,x=375)
 
     app.buttonHitherto.place(y=170,x=10)
     app.buttonSettings.place(y=1,x=418)
+
+    app.buttonManualLog.place(y=1,x=1)
 
 # binds for text - easier use (select all, ctrl delete, enter press)
     app.inputEntry.bind("<Return>",return_key_pressed_on_input) #bind enter (return) to call same func as 'START' button
@@ -295,6 +311,7 @@ def initWindowViewTrigger():
     settings_tip = ToolTip(app.buttonSettings,'Open settings window') 
     deleteAct_tip = ToolTip(app.buttonDelAct,"Delete current running activity & don't log it")
     hitherto_tip = ToolTip(app.buttonHitherto,"Use when you want to instantly log activity starting from the end of the last activity until now")
+    manuallog_tip = ToolTip(app.buttonManualLog,"Manually log an activity")
 #END OF initWindowViewTrigger ##################################################
 
 def settingsMenu(event):
