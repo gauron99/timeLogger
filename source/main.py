@@ -12,6 +12,7 @@ import filework as fw
 import timeDifference as td
 from timeControl import DateTimeConvertor as dtc
 from storage import  _categories_keywords
+from moreWindows import SettingsMenu, ManualMenu
 
 # window size
 wXaxis = '500'
@@ -69,7 +70,7 @@ class MyApp:
 # https://stackoverflow.com/questions/3221956/how-do-i-display-tooltips-in-tkinter?noredirect=1&lq=1
 ####
 class ToolTip:
-    """Class for settings - pop up window (tip window) [top right cog wheel]"""
+    """Class for pop up windows (tip window when hovered over a button) """
 
     def __init__(self, widget, text='todo: add widget info'):
         self.waittime = 500     #miliseconds
@@ -119,34 +120,6 @@ class ToolTip:
         if tw:
             tw.destroy()
 # END OF CLASS ToolTip #########################################################
-
-#### TODO ####
-class MenuTkinter:
-    def __init__(self,widget,*args): #args == commands
-        self.widget = widget
-        self.displayed = False
-        
-        self.widget.bind('<Button-1>',onclick)
-
-        pass
-
-    def onclick(self):
-        if self.displayed:
-            self.displayed = False
-            self.hideMenu()
-        else:
-            self.displayed = True
-            self.showMenu()
-        pass
-
-    def showMenu(self):
-        pass
-
-    def hideMenu(self):
-        pass
-
-    pass
-# END OF CLASS MenuTkinter #####################################################
 
 ##### WANT TO ADD CATEGORIES / KEYWORDS ? --> go to storage.py
 def GiveKeyWordGetCategory(word):
@@ -312,14 +285,11 @@ def initWindowViewTrigger():
     deleteAct_tip = ToolTip(app.buttonDelAct,"Delete current running activity & don't log it")
     hitherto_tip = ToolTip(app.buttonHitherto,"Use when you want to instantly log activity starting from the end of the last activity until now")
     manuallog_tip = ToolTip(app.buttonManualLog,"Manually log an activity")
+
+    # SettingsMenu(app.buttonSettings) #popup window on click
+    # ManualMenu(app.buttonManualLog) #popup window on click
+
 #END OF initWindowViewTrigger ##################################################
-
-def settingsMenu(event):
-    sett_menu_root = tk.Menu(event.widget)
-    sett_menu_root.add
-
-
-    pass
 
 def logInstant():
 

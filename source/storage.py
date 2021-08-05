@@ -24,5 +24,6 @@ _categories_keywords = \
   'school'      : ['studying','school','learning'],
   'nothing'     : ['watching tv','watching twitch','watching youtube','chilling',
                   'chillin'],
+  'work'        : ['work'],
   'other'       : []
   }
