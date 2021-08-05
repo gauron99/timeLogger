@@ -13,8 +13,9 @@
 -- currently working on: highest on the list(or one of top 3)
 
 
-0. add tickbox (with text) for timer (like every 30mins to take a break etc.)
-    
+0.  1. add tickbox (with text) for timer (like every 30mins to take a break etc.)
+    2. test if cycling through everything with tab should be possible && subsequently using enter to use buttons
+        
 1.  1. make lv4 for all; lv3 == extended activities
     2. keyword for sleep start/end, log in the morning takes in the one from last night and combines them
     3. add time frames
