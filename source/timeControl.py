@@ -1,4 +1,7 @@
+#!/usr/bin/python3
+
 import datetime as dt
+import sys
 
 class DateTimeConvertor:
 
@@ -123,3 +126,11 @@ class DateTimeConvertor:
     end = dt.datetime.strptime(end,"%Y-%m-%d %H:%M:%S")
     print(end-start)
     return  
+
+if __name__ == '__main__':
+  print("this is for ease of use baby")
+  if len(sys.argv) == 2:
+    DateTimeConvertor.getDiff(sys.argv[1])
+    
+  s = input("Gimme time to calculate:\n")
+  DateTimeConvertor.getDiff(s)
