@@ -287,7 +287,7 @@ def initWindowViewTrigger():
     manuallog_tip = ToolTip(app.buttonManualLog,"Manually log an activity")
 
     # SettingsMenu(app.buttonSettings) #popup window on click
-    # ManualMenu(app.buttonManualLog) #popup window on click
+    ManualMenu(app.buttonManualLog) #popup window on click
 
 #END OF initWindowViewTrigger ##################################################
 

@@ -28,7 +28,7 @@
 7. think of additions to config -- add eventually
 8. make loadConfigFile() & getConfigFile() merged in filework.py
 9. Redo the innit func in timeLogger.py -- init everything in class itself and call 
-only .config after (aka have only 2 funcs for operating not 3)
+   only .config after (aka have only 2 funcs for operating not 3)
 
 Below is both information about specified topics and/or TODO etc.
 

@@ -23,7 +23,7 @@ import tkinter as tk
 # |                        | 
 # |                        | 
 # |                        | 
-# |  UPDATE       DISCARD  |
+# |  UPDATE       DISCARD  | 
 # |------------------------| 
 
 # no need for such class in manual log, its gonna be just values to add and log
@@ -40,7 +40,7 @@ import tkinter as tk
 # |                        | 
 # |                        | 
 # |                        | 
-# |  WRITE        DISCARD  |
+# |  WRITE        DISCARD  | 
 # |------------------------| 
 
 
@@ -74,8 +74,8 @@ class SettingsMenu:
 class ManualMenu:
   def __init__(self,widget):
     self.widget = widget
-    displayed = False
-
+    self.displayed = False
+    self.tl = None
     self.widget.bind('<Button-1>',self.onclick)
 
     pass
@@ -90,9 +90,23 @@ class ManualMenu:
     pass
 
   def showMenu(self):
-    pass
+    x = y = 0
+    x,y,xx,yy = self.widget.bbox("insert")
+
+    x += self.widget.winfo_rootx() + 25
+    y += self.widget.winfo_rooty() + 25
+    
+    self.tl = tk.Toplevel(self.widget)
+    self.tl.wm_overrideredirect(True)
+    self.tl.wm_geometry("+%d+%d" % (x, y))
+    
+    name_label = tk.Label(self.tl,text="Name:",justify='left',font=('American Typewriter',12,'bold'))
+    name_label.grid(row=0,column=0)
 
   def hideMenu(self):
+    tl = self.tl
+    self.tl = None
+    tl.destroy()
     pass
 
 ################################################################################
