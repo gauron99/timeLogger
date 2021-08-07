@@ -14,6 +14,7 @@ import operator as op  # for itemgetter
 import os
 import re
 import sys
+import string
 
 from timeControl import DateTimeConvertor as dtc
 
@@ -84,11 +85,20 @@ debug_lvl %s\n\
     sortedList = logConfig.sortDict(self.time_spent_in_category_all)
     #add all times from list to one variable
     total = dtc.sumTime(sortedList)
+
+    ls = 0
+    for a,b in sortedList:
+      if len(a) > ls:
+        ls = len(a)
+
     print("╭ SUMMARY ⎯⎯")
-    
     for name,time in sortedList:
       days,timeTmp = convertSecondsToDatetime(time)
-      print("| (%.2f%%)"%(time/total*100),name,"| spent " + str(days)+" days, "+str(timeTmp))
+      prcnt = (time/total*100)
+      if days == 0:
+        print("| (%5.2f%%)"%prcnt , "{:<{num}}".format(name,num=ls) , "| spent "+str(timeTmp))
+      else:
+        print("| (%5.2f%%)"%prcnt , "{:<{num}}".format(name,num=ls) , "| spent " + str(days)+" days, "+str(timeTmp))
       pass
 
   def clearActDay(self):

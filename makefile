@@ -33,3 +33,6 @@ readlog2:
 
 readlog3:
 	@$(PRG_LOG) $(LOG_FILE) -d 3
+
+diff:
+	@./source/timeControl.py
