@@ -77,6 +77,11 @@ class ManualMenu:
     self.displayed = False
     self.tl = None
     self.widget.bind('<Button-1>',self.onclick)
+    
+    
+
+    self.labels = []
+    self.inputs = None
 
     pass
 
@@ -89,6 +94,22 @@ class ManualMenu:
       self.showMenu()
     pass
 
+  def loadRows(self,widget,labels):
+    inputs = {}
+
+    for text in self.labels:
+      row = tk.Frame(widget)
+
+      label = tk.Label(row,text=text+":",width=10,anchor='w',font=('American Typewriter',12,'bold'))
+      entry = tk.Entry(row)
+
+      row.pack(side=tk.TOP, padx=2, pady=1)
+      label.pack(side=tk.LEFT)
+      entry.pack(side=tk.RIGHT,fill=tk.X)
+      
+
+    return inputs
+
   def showMenu(self):
     x = y = 0
     x,y,xx,yy = self.widget.bbox("insert")
@@ -96,17 +117,30 @@ class ManualMenu:
     x += self.widget.winfo_rootx() + 25
     y += self.widget.winfo_rooty() + 25
     
-    self.tl = tk.Toplevel(self.widget)
+    self.tl = tk.Toplevel(self.widget,highlightbackground='black',highlightthickness=3)
     self.tl.wm_overrideredirect(True)
     self.tl.wm_geometry("+%d+%d" % (x, y))
     
-    name_label = tk.Label(self.tl,text="Name:",justify='left',font=('American Typewriter',12,'bold'))
-    name_label.grid(row=0,column=0)
+    ###   Key catches don't work with wm_overrideredirect(True)    ### 
+     ## Therefore the window can only be opened/closed with button ## 
 
-  def hideMenu(self):
+    # <FocusOut> doesnt work with wm_overrideredirect(True)
+    # self.tl.bind("<Escape>", self.hideMenu)
+    # self.tl.bind('<FocusOut>',self.hideMenu) 
+ 
+    main_label = tk.Label(self.tl,text="Manual Log",font=('American Typewriter',13,'bold'))
+    main_label.pack(side=tk.TOP)
+    # load lines to widget
+    self.labels = ['Name','from','to','Category']
+    self.inputs = self.loadRows(self.tl,self.labels)
+  
+
+  def hideMenu(self,e=None):
+    self.widget.master.focus_get()
     tl = self.tl
     self.tl = None
-    tl.destroy()
+    if tl:
+      tl.destroy()
     pass
 
 ################################################################################

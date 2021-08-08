@@ -317,7 +317,8 @@ def popupDeleteConfirm():
     x=app.root.winfo_rootx()
     y=app.root.winfo_rooty()
 
-    popWindow = tk.Toplevel(bd=3)
+    popWindow = tk.Toplevel(highlightbackground='black',highlightthickness=3)
+    popWindow.wm_overrideredirect(True) # if this is here, window doesnt behave like a window
     popWindow.geometry("+%d+%d" %(x+285,y))
 
     # popWindow.wm_attributes('-type','splash')
