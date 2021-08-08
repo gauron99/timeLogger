@@ -72,18 +72,25 @@ class SettingsMenu:
 ################################################################################
 
 class ManualMenu:
-  def __init__(self,widget):
+  def __init__(self,widget,parent):
     self.widget = widget
+    self.parent = parent
+
     self.displayed = False
     self.tl = None
     self.widget.bind('<Button-1>',self.onclick)
-    
-    
+    self.parent.bind("<Configure>",self.sync_with_parent)
 
     self.labels = []
     self.inputs = None
 
     pass
+
+  def sync_with_parent(self,e=None):
+    if self.tl:
+      x = self.parent.winfo_x() + 26
+      y = self.parent.winfo_y() + 26
+      self.tl.geometry("+%d+%d" % (x,y))
 
   def onclick(self,event=None):
     if self.displayed:
@@ -107,15 +114,17 @@ class ManualMenu:
       label.pack(side=tk.LEFT)
       entry.pack(side=tk.RIGHT,fill=tk.X)
       
-
     return inputs
 
   def showMenu(self):
     x = y = 0
-    x,y,xx,yy = self.widget.bbox("insert")
+    
+    # x,y,xx,yy = self.widget.bbox("insert")
+    # x += self.widget.winfo_rootx() + 25
+    # y += self.widget.winfo_rooty() + 25
 
-    x += self.widget.winfo_rootx() + 25
-    y += self.widget.winfo_rooty() + 25
+    x = self.parent.winfo_x() + 26 #is set as offset from root window because of sync between windows
+    y = self.parent.winfo_y() + 26
     
     self.tl = tk.Toplevel(self.widget,highlightbackground='black',highlightthickness=3)
     self.tl.wm_overrideredirect(True)
@@ -133,7 +142,15 @@ class ManualMenu:
     # load lines to widget
     self.labels = ['Name','from','to','Category']
     self.inputs = self.loadRows(self.tl,self.labels)
-  
+
+    write_button = tk.Button(self.tl, text='Write', font=('American Typewriter',13,'bold'),
+      highlightbackground='black',highlightthickness=1,fg='green',activebackground='green')
+    write_button.pack(side=tk.LEFT,padx=2,pady=2)
+    discard_button = tk.Button(self.tl, text='Discard', font=('American Typewriter',13,'bold'),
+      highlightbackground='black',highlightthickness=1,fg='red',activebackground='red')  
+    discard_button.pack(side=tk.RIGHT,padx=2,pady=2)
+
+    # self.tl.grab_set()
 
   def hideMenu(self,e=None):
     self.widget.master.focus_get()
