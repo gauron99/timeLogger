@@ -210,6 +210,14 @@ def addNewLineForNewDayInLog(logFile,dateOfCurrLog):
             logFile.write("--- %s ---\n"% str(dateOfCurrLog).replace("-",' ')[:-16])
 
 def writeToLog(activity,tBegin,tEnd,tDiff,tNow,category):
+    """
+    activity -> (string) name of activity\n
+    tBegin -> (datetime) beginning of activity\n
+    tEnd -> (datetime) end of activity\n
+    tDiff -> () how long has the activity been running for\n
+    tNow -> (datetime) time of log (NOW)\n
+    category -> (string) name of category
+    """
 
     # print("LOG: %s | %s | %s | from:%s | to:%s " %(str(tNow)[:-7],activity,str(tDiff)[:-7],str(tBegin)[:-7],str(tEnd)[:-7]))
     if fConf.log == None:

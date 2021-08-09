@@ -1,4 +1,6 @@
 import tkinter as tk
+import datetime as dt
+import filework as fw
 
 ################################################################################
 
@@ -70,6 +72,7 @@ class SettingsMenu:
     pass
 
 ################################################################################
+_manual_log_inputs = {} #to remember entries
 
 class ManualMenu:
   def __init__(self,widget,parent):
@@ -81,10 +84,11 @@ class ManualMenu:
     self.widget.bind('<Button-1>',self.onclick)
     self.parent.bind("<Configure>",self.sync_with_parent)
 
-    self.labels = []
-    self.inputs = None
+    self.labels = ['Name','from','to','Category']
 
-    pass
+    self.inner_inputs = {}
+    for x in self.labels:
+      self.inner_inputs[x] = ''
 
   def sync_with_parent(self,e=None):
     if self.tl:
@@ -101,20 +105,26 @@ class ManualMenu:
       self.showMenu()
     pass
 
-  def loadRows(self,widget,labels):
-    inputs = {}
+  def loadRows(self):
 
     for text in self.labels:
-      row = tk.Frame(widget)
+      row = tk.Frame(self.tl)
 
       label = tk.Label(row,text=text+":",width=10,anchor='w',font=('American Typewriter',12,'bold'))
-      entry = tk.Entry(row)
+      # tv = text.lower()+'_entry'
+      entry = tk.Entry(row,font=('American Typewriter',12))#,textvariable=tv)
 
       row.pack(side=tk.TOP, padx=2, pady=1)
       label.pack(side=tk.LEFT)
       entry.pack(side=tk.RIGHT,fill=tk.X)
-      
-    return inputs
+
+      #insert into entry
+      try:
+        entry.insert(0,_manual_log_inputs[text])
+      except:
+        entry.insert(0,'')
+      finally:
+        self.inner_inputs[text] = entry
 
   def showMenu(self):
     x = y = 0
@@ -123,7 +133,7 @@ class ManualMenu:
     # x += self.widget.winfo_rootx() + 25
     # y += self.widget.winfo_rooty() + 25
 
-    x = self.parent.winfo_x() + 26 #is set as offset from root window because of sync between windows
+    x = self.parent.winfo_x() + 26 #is offset from root window because sync between windows is easier this way
     y = self.parent.winfo_y() + 26
     
     self.tl = tk.Toplevel(self.widget,highlightbackground='black',highlightthickness=3)
@@ -132,33 +142,58 @@ class ManualMenu:
     
     ###   Key catches don't work with wm_overrideredirect(True)    ### 
      ## Therefore the window can only be opened/closed with button ## 
-
     # <FocusOut> doesnt work with wm_overrideredirect(True)
     # self.tl.bind("<Escape>", self.hideMenu)
     # self.tl.bind('<FocusOut>',self.hideMenu) 
  
     main_label = tk.Label(self.tl,text="Manual Log",font=('American Typewriter',13,'bold'))
     main_label.pack(side=tk.TOP)
+    
     # load lines to widget
-    self.labels = ['Name','from','to','Category']
-    self.inputs = self.loadRows(self.tl,self.labels)
+    self.loadRows()
 
-    write_button = tk.Button(self.tl, text='Write', font=('American Typewriter',13,'bold'),
-      highlightbackground='black',highlightthickness=1,fg='green',activebackground='green')
+    #get focus for first entry
+    self.inner_inputs['Name'].focus()
+
+    write_button = tk.Button(self.tl, text='Write', font=('American Typewriter',
+    13,'bold'),highlightbackground='black',highlightthickness=1,fg='green',
+    activebackground='green', command=self.write)
+
     write_button.pack(side=tk.LEFT,padx=2,pady=2)
-    discard_button = tk.Button(self.tl, text='Discard', font=('American Typewriter',13,'bold'),
-      highlightbackground='black',highlightthickness=1,fg='red',activebackground='red')  
+
+    discard_button = tk.Button(self.tl, text='Discard', font=('American Typewriter'
+    ,13,'bold'), highlightbackground='black',highlightthickness=1,fg='red',
+    activebackground='red', command=self.discard)  
+
     discard_button.pack(side=tk.RIGHT,padx=2,pady=2)
 
-    # self.tl.grab_set()
-
   def hideMenu(self,e=None):
-    self.widget.master.focus_get()
+    self.widget.master.focus() #does this do anything? TODO
+
+    #save text written in entries
+    for key in self.inner_inputs:
+      _manual_log_inputs[key] = self.inner_inputs[key].get()
+
     tl = self.tl
     self.tl = None
     if tl:
       tl.destroy()
     pass
+    
+  def write(self):
+    now = dt.datetime.now()
+
+    print()
+    # fw.writeToLog()
+    pass
+
+  def discard(self):
+    #empty the entries
+    _manual_log_inputs.clear()
+
+    #update entries
+    for x in self.inner_inputs:
+      self.inner_inputs[x].delete(0,tk.END)
 
 ################################################################################
 
