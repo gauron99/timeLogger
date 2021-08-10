@@ -1,6 +1,8 @@
-import tkinter as tk
 import datetime as dt
+import tkinter as tk
+
 import filework as fw
+import timeControl as tc
 
 ################################################################################
 
@@ -168,7 +170,7 @@ class ManualMenu:
     discard_button.pack(side=tk.RIGHT,padx=2,pady=2)
 
   def hideMenu(self,e=None):
-    self.widget.master.focus() #does this do anything? TODO
+    self.widget.master.focus() #does this do anything? TODO DEBUG
 
     #save text written in entries
     for key in self.inner_inputs:
@@ -180,11 +182,45 @@ class ManualMenu:
       tl.destroy()
     pass
     
+  def formatDateTime(self,data : str):
+    """
+    Give string, check if is of valid datetime format, return datetime object\n
+    > Uses timeControl.py module for conversion of string to datetime
+    > All data has to be provided in numbers
+    >>> Year with century as a decimal number -- (2014, 1987 ...)\n
+    >>> Month as a zero-padded decimal number -- (01, ..., 12)\n
+    >>> Day of the month as a zero-padded decimal -- (01, ..., 31)\n
+    >>> Hour \n
+    >>> Minute \n
+    >>> Second \n
+    """
+    passed = False
+    
+    data = data.strip()
+    
+    # sequence of try-except to try to convert - if one is success, return
+    #   
+    pass
+
+
   def write(self):
     now = dt.datetime.now()
+# activity -> (string) name of activity
+# tBegin -> (datetime) beginning of activity
+# tEnd -> (datetime) end of activity
+# tDiff -> () how long has the activity been running for
+# tNow -> (datetime) time of log (NOW)
+# category -> (string) name of category
+    
+#   info taken from __init__ --> self.labels = ['Name','from','to','Category']
 
-    print()
-    # fw.writeToLog()
+    begin = self.formatDateTime(self.labels['from'])
+    end = self.formatDateTime(self.labels['to'])
+
+    spent = end - begin
+
+    print(now,self.labels['Name'],spent,begin,end,self.labels['Category'])
+    fw.writeToLog()
     pass
 
   def discard(self):

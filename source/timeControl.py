@@ -59,15 +59,24 @@ class DateTimeConvertor:
 
     return res
 
-  @staticmethod
-  def strTime(s: str):
+  @staticmethod 
+  # TODO # 
+  # more delimeters.. add random ones / meta solution for all?
+  # cut delimeter from string
+  # and subsequently use it in conversion if possible
+  def strTime(s: str): 
     #delimeter must be ":"
     try:
       return dt.datetime.strptime(s,"%H:%M:%S").time()
     except:
-      print("Error: Delimeter is probably wrong[DateTimeConvertor -> strTime()]")
+      print("Error: Delimeter is probably wrong[in DateTimeConvertor -> strTime()]")
       exit(1)
 
+# TODO DEBUG
+# inCls is useless coz all its needed to do is check the class first thing in this func
+# maybe like do inCls & outCls as optional arguments
+# if inCls is None (not provided) its gonna check what class data is
+# & if outCls is None, its just gonna return what was given since no conversion is asked for
   @classmethod
   def convert(cls,data,inCls,outCls): #in class / out class
     if inCls is outCls: #if they are the same class
@@ -78,7 +87,9 @@ class DateTimeConvertor:
       if inCls is dt.time:#TIME TO TIME DELTA
         return cls.timeTimeDelta(data)
 
-      if inCls is str: #STRING TO TIMEDELTA
+      # TODO DEBUG check what kind of string is being given 
+      # AKA could be '10:05:05' or '2021-05-16 10:05"05' -- does this matter?
+      if inCls is str: # STRING TO TIMEDELTA 
         time = cls.strTime(data)#str to time
         return cls.timeTimeDelta(time)#time to timedelta
 
@@ -103,6 +114,18 @@ class DateTimeConvertor:
     """
     return DateTimeConvertor.convert(data,data.__class__,toClass)
  
+
+  @staticmethod
+  def formatDateTime(s : str):
+    """
+    Final form will be: whatever kind of string is provided, process delimeters
+      & form of formats provided for year,month,day,hour,... and try to convert
+      string to datetime object
+    Currently supports:
+    ---
+    """
+
+    pass
 
 
 # "interactive method" used to calculate how long the time has been running,
