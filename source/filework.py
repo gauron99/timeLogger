@@ -39,15 +39,6 @@ class fileConfiguration(object):
         else:
             return (self.log_dir+"/"+self.log_name)
         
-
-    def getLogDir(self):
-        "return log dir from Class (aka it must be already loaded)"
-        return self.log_dir
-
-    def getLogName(self):
-        "return log name from Class (aka it must be already loaded)"
-        return self.log_name
-
     def loadConfigFile(self,file):
         "give opened config file, load log info into Class variables"
         for line in file.readlines():
@@ -59,6 +50,9 @@ class fileConfiguration(object):
                 self.log_dir = line.replace("log_dir=",'').replace("\n",'')
             elif line.startswith("log_name="):
                 self.log_name = line.replace("log_name=",'').replace("\n",'')
+                if self.log_name == 'auto':
+                    dtmonth = dt.date.today()
+                    self.log_name = str(dtmonth)[:-3]+'.log' # "2021-08.log"
 
 fConf = fileConfiguration()
 
@@ -101,11 +95,6 @@ def openLog():
     else:
         printErr("Unknown identif value, this message shouldn't be printed ever, basically",1)
     
-    #check for 'auto' keyword
-    if fConf.log_name == 'auto':#<- this is a keyword for generating 'month' logs
-        dtmonth = dt.date.today()
-        fConf.log_name = str(dtmonth)[:-3]+'.log'
-        
     #open the file
     try:
         fConf.log = open(fConf.getLogFileFullPath(),"r+")
@@ -126,8 +115,6 @@ def openLog():
             except:
                 print("The error was:",e)
                 printErr("Couldn't create/open log file",2)
-        finally:
-            print("done")
 
     openActualLog()
     pass
@@ -221,7 +208,6 @@ def writeToLog(activity,tBegin,tEnd,tDiff,tNow,category):
 
     # print("LOG: %s | %s | %s | from:%s | to:%s " %(str(tNow)[:-7],activity,str(tDiff)[:-7],str(tBegin)[:-7],str(tEnd)[:-7]))
     if fConf.log == None:
-        
         ### to be merged ###
         configFile,_ = getConfigFile()
         if(configFile == None):
@@ -232,16 +218,23 @@ def writeToLog(activity,tBegin,tEnd,tDiff,tNow,category):
     #open file
     try:
         logFile = open(fConf.getLogFileFullPath(),'r+')
-    except FileNotFoundError:
-        a = input("File not found, you want to create it?[y][n]")
-        if a.lower() in ['y','yes','']:
+    except FileNotFoundError as e:
+        try:
+            a = input("File not found, you want to create it?[y][n]")
+            if a.lower() in ['y','yes','']:
+                try:
+                    logFile = open(fConf.getLogFileFullPath(),'a+')
+                except:
+                    printErr("Couldn't open log file[def writeToLog]",2)
+            else:
+                exit(0)
+        except:
+            print("Input couldn't be provided, trying to create log file...",end='')
             try:
-                logFile = open(fConf.getLogFileFullPath(),'a+')
+                logFile = open(fConf.getLogFileFullPath(),'w')
             except:
-                printErr("Couldn't open log file[def writeToLog]",2)
-            finally:
-                print('done')
-
+                print("The error was:",e)
+                printErr("Couldn't create/open log file",2)
     fConf.log = logFile
 
     # if file is empty, write this init line. This starts with '---' because
