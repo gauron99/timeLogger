@@ -157,7 +157,7 @@ def printHelp():
 > reads log file of timeLogger format
 > takes one command line argument -> path to log file
 > log's format is equal to timeLogger's log format
-> unkown CL arguments will be ignored
+> unkown CL arguments will be ignored (and user informed)
   """)
   exit(0)
 
@@ -259,34 +259,34 @@ def MainLoop():
 
 def parseArgs():
   
-  if len(sys.argv) < 2:
-    print("Not enough arguments, log file missing...")
+  if len(sys.argv) < 2: #TODO use default  -- "log/log.log"
+    print("Not enough arguments, log file missing...\n")
     printHelp()
 
   argcmd = sys.argv
+
+# all arguments can be writen without '-' aka 'h' or 'help' is a valid command.
 # then different arguments are possible:
+
+#   -h. --help    -> print out help message
 #   -d, --debug   -> change level of depth of what to print (default = 0)
 #   -a, --after   -> choose a date to start with(aka dont consider activities before)
 #   -b, --before  -> dont consider activities after this date
 #   -l, --last    -> consider only last day in log
-  skip = False
-  for i in range(2,len(sys.argv)): # skip argv[1] coz it has to be a log file
-    if skip:
-      skip = False
-      continue
-    if argcmd[i].lower() in ['-h','--help']:
+
+# skipping two, because expected [0] position arg is name of file; [1] is log file
+  for i,_ in enumerate(argcmd):
+    if argcmd[i].lower() in ['-h','--help','h','help']:
       printHelp()
-    elif argcmd[i].lower() in ['-d','--debug']:
+    elif argcmd[i].lower() in ['-d','--debug','d','debug']:
       try:
-        logConfig.debug_lvl = int(argcmd[i+1])
+        logConfig.debug_lvl = int(argcmd.pop(i+1))
       except IndexError:
         print("Error: Debug_lvl (-d) argument needs a value (type=int)")
         exit(1)
       except ValueError:
         print("debug_lvl (-d) value must be of type int")
         exit(1)
-      else:
-        skip = True
 
     elif argcmd[i].lower() in ['-a','--after']:
       try:
@@ -297,11 +297,9 @@ def parseArgs():
       else:
         if isinstance(date,dt.datetime):
           logConfig.date_after = date
-          skip = True
         else:
-          raise "Argument for '--after' is not datetime.datetime object after converting."
+          raise "Argument for '--after' wasn't successfully converted"
 
-        
 if __name__ == "__main__":
 
   #class init
