@@ -214,13 +214,13 @@ class ManualMenu:
     
 #   info taken from __init__ --> self.labels = ['Name','from','to','Category']
 
-    begin = self.formatDateTime(self.labels['from'])
-    end = self.formatDateTime(self.labels['to'])
+    # begin = self.formatDateTime(self.labels['from'])
+    # end = self.formatDateTime(self.labels['to'])
 
-    spent = end - begin
+    # spent = end - begin
 
-    print(now,self.labels['Name'],spent,begin,end,self.labels['Category'])
-    fw.writeToLog()
+    # print(now,self.labels['Name'],spent,begin,end,self.labels['Category'])
+    # fw.writeToLog()
     pass
 
   def discard(self):

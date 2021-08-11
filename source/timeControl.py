@@ -5,6 +5,57 @@ import sys
 
 class DateTimeConvertor:
 
+  def __init__(self):
+    
+    pass 
+
+  @classmethod
+  def __inner_check_year(cls):
+    pass
+
+  @classmethod
+  def __inner_check_month(cls):
+    pass
+
+  @staticmethod
+  def initialCheck(cls, s : str):
+    "First check of the string [main loop: formatDateTime()]"
+
+    
+
+
+    pass
+
+
+  @staticmethod
+  def formatDateTime(s : str):
+    """
+    Final form will be: whatever kind of string is provided, process delimeters
+      & formats provided for year,month,day,hour,... and try to convert
+      string to datetime object
+    Currently supports:
+    ---
+    """
+    # decide if its gonna be datetime or date or time
+    # first, parse the string maybe char by char to get an idea of what it is
+    # divider between date and time should ALWAYS BE " "(space)
+    
+    #functions below check validity of the given string
+
+    clsObj = DateTimeConvertor()
+
+    if not initialCheck(s):
+      raise "Error in formatDateTime()... given string did not pass initialCheck(1)"        
+    
+
+
+
+    pass
+
+################################################################################
+################################################################################
+###### static methods that dont need an initiated instance of this class #######
+
   @staticmethod
   def timeToSecs(t: dt.time):
     return (dt.datetime.combine(dt.date.min,t) - dt.datetime.min).total_seconds()
@@ -77,7 +128,7 @@ class DateTimeConvertor:
 # maybe like do inCls & outCls as optional arguments
 # if inCls is None (not provided) its gonna check what class data is
 # & if outCls is None, its just gonna return what was given since no conversion is asked for
-  @classmethod
+  @classmethod # ALSO IDK WHY THIS IS CLASSMETHOD & IDK WHY THIS WORKS
   def convert(cls,data,inCls,outCls): #in class / out class
     if inCls is outCls: #if they are the same class
       return data
@@ -113,27 +164,33 @@ class DateTimeConvertor:
     param2 is exactly the class object (ex: str, datetime.time,...)
     """
     return DateTimeConvertor.convert(data,data.__class__,toClass)
- 
-
-  @staticmethod
-  def formatDateTime(s : str):
-    """
-    Final form will be: whatever kind of string is provided, process delimeters
-      & form of formats provided for year,month,day,hour,... and try to convert
-      string to datetime object
-    Currently supports:
-    ---
-    """
-
-    pass
 
 
 # "interactive method" used to calculate how long the time has been running,
-### for debug and fixing stuff basically
+### for debug and fixing stuff basically -- just returns datetime difference
 ### can take whole line of log as argument or two specific times you want to get
 ### the difference of
   @staticmethod
   def getDiff(*args):
+    """
+    You can provide either one full string as arg or 2 strings that symbolize
+    start and end of whatever activity (you provide just the times)
+
+    one full string specifically from log:
+    --- only info needed is FROM & TO (positions 3 & 4 after strip)
+    --- example: 
+    getDIff("2021-07-20 19:08:54 | dinner | 0:18:09 | from:2021-07-20 18:50:45 | to:2021-07-20 19:08:54 | food")
+    
+    begin & end separated:
+    --- just calculates difference of these two provided times(and dates)
+      @param1 - begin of activity --> string of datetime object
+      @param2 - end of activity --> string of datetime object
+    
+    --- example:
+    getDIff("from:2021-07-20 18:50:45","to:2021-07-20 19:08:54")
+    
+    """
+
     if len(args) == 1:
       #get whole line from log
       string = args[0]
