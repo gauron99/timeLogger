@@ -9,7 +9,7 @@
         -- create log/ dir for your logs
 
 ## TODO
-0.  1. add --before --after keywords for readlog
+0.  1. move debug_lvl >= 3 print (basic log print) to _decider so its unified in one place
 
 1.  1. add tickbox (with text) for timer (like every 30mins to take a break etc.)
     2. test if cycling through everything with tab should be possible && subsequently using enter to use buttons

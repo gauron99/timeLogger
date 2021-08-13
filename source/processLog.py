@@ -10,7 +10,7 @@
 # simply prints the results to console
 
 import datetime as dt
-import operator as op  # for itemgetter
+import operator as op  # for itemgetter for dictionary sorting magic
 import os
 import re
 import sys
@@ -18,6 +18,8 @@ import string
 
 from timeControl import DateTimeConvertor as dtc
 
+#change this to change default value of log; to be used when no log file is provided
+_DEFAULT_LOG_VALUE='log/log.log'
 
 class LogOutputConfig:
   def __init__(self,debug_lvl=0):
@@ -30,9 +32,8 @@ class LogOutputConfig:
     self.author = "gauron {David Fridrich}"
 
     self.debug_lvl = debug_lvl
-    self.date_after = dt.datetime
-    self.date_before = dt.datetime
-    self.date_only_last = False
+    self.date_after = None
+    self.date_before = None
 
     # all time combined together spent in categories
     self.time_spent_day = dt.time(0,0,0)
@@ -45,7 +46,10 @@ class LogOutputConfig:
     # this holds datetime.datetime values!! -> this can go above 24h therefore
     # if only datetime.time was used, it overflows and starts at 00.00 and doesnt
     # add any days, datetime.datetime can hold more than hours
-    self.time_spent_in_category_all = {}
+    self.time_spent_in_category_all = {} #dictionary
+
+    self.day_info = []  #list of every log-data in one day; is used & subsequentially
+                        # printed out when debug_lvl is >= 3
 
 #there is something wrong with '⎯' -> it shows shorter than it actually is in 
 #the output when there are multiple of '⎯' on next to each other
@@ -64,28 +68,44 @@ debug_lvl %s\n\
     print("Error in %s: %s"%("processLog.py",msg))
     exit(1)
 
-  def sortDict(self,d):
+  @staticmethod
+  def sortDict(d): #some cool sorting magic #returns list
     return sorted(d.items(),key=op.itemgetter(1),reverse=True)
 
+  def printDay(self):
+    print("===========DayInfo===========")
+    print(self.day_info)
+    print("DONE..")
+    exit(0)
   def printActDay(self):
-    sortedList = logConfig.sortDict(self.time_spent_in_activity_day)
+    sortedList = self.sortDict(self.time_spent_in_activity_day)
+    if logConfig.debug_lvl >= 3:
+      print()
     print("├ ACTIVITIES ⎯⎯⎯⎯")
     for key in sortedList:
       part, total = dtc.timeToSecs(key[1]), dtc.timeToSecs(self.time_spent_day)
       print("| (%.2f%%)"%(part/total*100),key[0],key[1])
 
+    #clear dict  
+    self.time_spent_in_activity_day.clear()
+
   def printCatDay(self):
-    sortedList = logConfig.sortDict(self.time_spent_in_category_day)
+    sortedList = self.sortDict(self.time_spent_in_category_day)
     print("├ CATEGORIES ⎯⎯⎯")
     for key in sortedList:
       part, total = dtc.timeToSecs(key[1]), dtc.timeToSecs(self.time_spent_day)
       print('| (%.2f%%)'%(part/total*100),key[0],key[1])
+    print()
+
+    #clear dict 
+    self.time_spent_in_category_day.clear()
 
   def printSummary(self):
-    sortedList = logConfig.sortDict(self.time_spent_in_category_all)
+    sortedList = self.sortDict(self.time_spent_in_category_all)
     #add all times from list to one variable
     total = dtc.sumTime(sortedList)
 
+    # get longest string and set this length to all lines in summ so it looks nicer
     ls = 0
     for a,b in sortedList:
       if len(a) > ls:
@@ -101,13 +121,14 @@ debug_lvl %s\n\
         print("| (%5.2f%%)"%prcnt , "{:<{num}}".format(name,num=ls) , "| spent " + str(days)+" days, "+str(timeTmp))
       pass
 
-  def clearActDay(self):
-    self.time_spent_in_activity_day.clear()
-  
-  def clearCatDay(self):
-    self.time_spent_in_category_day.clear()
-
   def addData(self,what,info,time):
+    """
+    @param what - identify what kind of info this is
+    @param info - info to be collected(saved to print later)
+    @param time - time of this info being logged
+    --- both info & time are simply taken from one line of log and divided to
+        variables for easier reading (look for call of addData for more information)
+    """
     #collect data together
     if "," in info:
       info = info.split(',')[0]
@@ -149,6 +170,10 @@ debug_lvl %s\n\
         # print("=",self.time_spent_in_category_all[info])
 ############## end of class LogOutputConfig ##############
 
+def printErr(s):
+  print("Error: %s" % s)
+  exit(1)
+
 def printHelp():
   print("""
       ~~~ processLog.py! ~~~
@@ -185,9 +210,14 @@ def newData(data):
   # print(data)
   parsed = data.replace("\n",'').split(" | ")
   parsed = [i.strip() for i in parsed]
+
+  # this is printed here and not in _decider so there's no need to save the whole day
+  # of log into a variable -- this might be fine actually coz it shouldnt be that
+  # much info in one day --- usually like 10 lines of text #TODO
   if(logConfig.debug_lvl >= 3):# standard log out
-    time = parsed[0].split(' ')[1]
-    print("| ",time,'-',parsed[1],"("+parsed[2]+") ["+parsed[5]+']')
+    logConfig.addData("data",parsed)
+    # time = parsed[0].split(' ')[1]
+    # print("| ",time,'-',parsed[1],"("+parsed[2]+") ["+parsed[5]+']')
 
   timeDeltaObj = dtc.convertAny(parsed[2],dt.timedelta)
 
@@ -211,13 +241,27 @@ def newDay(data):
   """
 # '⊢ ╭'
   if logConfig.debug_lvl > 0:
-    print()#newline between days
+    # print()#newline between days
     data = '╭ '+data+' ⎯⎯⎯⎯⎯⎯⎯⎯⎯'
     print(data)
   pass
 
-def MainLoop():
-  with open(sys.argv[1],'r+') as log:
+def _decider():
+  "just an inside function for MainLoop so it's easier to read & manage depth/debug lvls"
+
+  if logConfig.debug_lvl>=3:
+    logConfig.printDay()
+
+
+  if(logConfig.debug_lvl>=2):
+    logConfig.printActDay()
+    print("|") # separate ACTIVITIES & CATEGORIES in output
+
+  if(logConfig.debug_lvl>=1):
+    logConfig.printCatDay()
+
+def MainLoop(logFileHandler):
+  with open(logFileHandler,'r+') as log:
     print(logConfig) # call __repr__
     _ = log.readline() #read first line of log (which is just info for user)
 
@@ -227,14 +271,7 @@ def MainLoop():
 
     for data in log.readlines():
       if data.startswith('---'):
-        if(logConfig.debug_lvl>=2):
-          logConfig.printActDay()
-          logConfig.clearActDay()
-          print("|") # separate ACTIVITIES & CATEGORIES in output
-
-        if(logConfig.debug_lvl>=1):
-          logConfig.printCatDay()
-          logConfig.clearCatDay()
+        _decider()
 
         logConfig.time_spent_day = dt.time(0,0,0)
 
@@ -245,24 +282,14 @@ def MainLoop():
     #END OF FOR LOOP
 
     #print last day info since its in for loop which ends before printing it out
-    if(logConfig.debug_lvl>=2):
-      logConfig.printActDay()
-      logConfig.clearActDay()
-      print("|") # separate ACTIVITIES & CATEGORIES in output
-
-    if(logConfig.debug_lvl>=1):
-      logConfig.printCatDay()
-      logConfig.clearCatDay()
+    _decider()
 
     logConfig.printSummary()
 
-
 def parseArgs():
-  
-  if len(sys.argv) < 2: #TODO use default  -- "log/log.log"
-    print("Not enough arguments, log file missing...\n")
-    printHelp()
+  print("INIT_ARGS:",sys.argv) #DEBUG
 
+  log = _DEFAULT_LOG_VALUE #default value for log
   argcmd = sys.argv
 
 # all arguments can be writen without '-' aka 'h' or 'help' is a valid command.
@@ -270,15 +297,34 @@ def parseArgs():
 
 #   -h. --help    -> print out help message
 #   -d, --debug   -> change level of depth of what to print (default = 0)
-#   -a, --after   -> choose a date to start with(aka dont consider activities before)
-#   -b, --before  -> dont consider activities after this date
-#   -l, --last    -> consider only last day in log
+#       --depth   -> an alias for debug
 
-# skipping two, because expected [0] position arg is name of file; [1] is log file
-  for i,_ in enumerate(argcmd):
-    if argcmd[i].lower() in ['-h','--help','h','help']:
+# date commands are not mutually exclusive, you can use '-b 05.05.2020 -l' 
+# to print BOTH, everything before 05.05.2020 AND last day in the log
+
+#   -a, --after         -> choose a date to start with(aka dont consider activities before)
+#   -b, --before        -> dont consider activities after this date
+
+#   -t, --today         -> show only current day(latest day logged)
+#   -w, --week          -> show only current week(latest week logged)
+#   -m, --month [MONTH] -> MONTH is optional, can be number or full word(January),
+#                          if none is given, latest month in log is chosen
+
+#   -l, --last          -> this is a special optional argument, that can be added
+#   to (-t/-w/-m). Using this will show last "closed" timeframe. By closed, I mean
+#   only the timeframe, which has an opened frame after it.
+#   Example:
+#     - if you wanted to print last day, use parameters '-tl' or '-t -l' 
+
+
+  #this is just name of the file being run, dont need it
+  _ = argcmd.pop(0)
+
+  for i,x in enumerate(argcmd):
+    # print(">",i,x) #this wont show values of debug for example, because it's an argument that always follows '-d' for example, and it is poped inside the ifs & elifs
+    if argcmd[i].lower() in ['-h','--help','help']:
       printHelp()
-    elif argcmd[i].lower() in ['-d','--debug','d','debug']:
+    elif argcmd[i].lower() in ['-d','--depth','depth']:
       try:
         logConfig.debug_lvl = int(argcmd.pop(i+1))
       except IndexError:
@@ -288,25 +334,47 @@ def parseArgs():
         print("debug_lvl (-d) value must be of type int")
         exit(1)
 
-    elif argcmd[i].lower() in ['-a','--after']:
-      try:
-        date = argcmd[i+1]   #format is-> day-mon-year (all in numbers) [01-02-2005]
-        date = dt.datetime.strptime(date,"%d-%-d-%Y")
-      except:
-        pass
-      else:
-        if isinstance(date,dt.datetime):
-          logConfig.date_after = date
+    elif argcmd[i].lower() in ['-a','--after','after']:
+      if logConfig.date_after is None:
+        try:
+          date = argcmd.pop(i+1)   #format is-> day-mon-year (all in numbers) [01-02-2005]
+          date = dt.datetime.strptime(date,"%d-%-d-%Y")
+        except:
+          print("Error: Command == after; Couldn't resolve value %s" % str(date))
         else:
-          raise "Argument for '--after' wasn't successfully converted"
+          if isinstance(date,dt.datetime):
+            logConfig.date_after = date #final check & save into class var
+          else:
+            raise "Argument for '--after' wasn't successfully converted"
+      else:
+        printErr("[in parseArgs()] Can't assign 'after' parameter twice")
 
+    elif argcmd[i].lower() in ['-b','--before','before']:
+      if logConfig.date_before is None:
+        try:
+          date = argcmd.pop(i+1)
+          date = dt.datetime.strptime(date,"%d-%-d-%Y")
+        except:
+          print("Err: cmd == before; Couldn't resolve value %s" %str(date))
+      else:
+        printErr("[in parseArgs()] Can't assign 'before' parameter twice")
+
+    else: #this way the order of parameters doesnt really matter, as long as theres no wrong ones
+      if log == _DEFAULT_LOG_VALUE: #rewrite default if something is provided
+        #check what it is first
+        log = argcmd[i]
+      else: 
+        #when log was already loaded, but an argument that wasnt any parameter was
+        #still passed
+        printErr("An unknown argument was passed: %s, exiting..." %argcmd[i])
+  return log
 if __name__ == "__main__":
 
   #class init
   logConfig = LogOutputConfig()
 
   #check cmd arguments a assign them if possible
-  parseArgs()
+  log = parseArgs()
 
   #begin process
-  MainLoop()
+  MainLoop(log)
