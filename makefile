@@ -29,17 +29,17 @@ readlogall:
 	@$(PRG_LOG) $(LOG_FILE)
 
 readlog: # or just add parameter argument for processLog.py (last day + debug levels)
-	@$(PRG_LOG) $(LOG_FILE) today
+	@$(PRG_LOG) $(LOG_FILE) day
 
 readlog1:
-	@$(PRG_LOG) $(LOG_FILE) -d 1
+	@$(PRG_LOG) $(LOG_FILE) -dl 1
 	
 
 readlog2:
-	@$(PRG_LOG) $(LOG_FILE) -d 2
+	@$(PRG_LOG) $(LOG_FILE) -dl 2
 
 readlog3:
-	@$(PRG_LOG) $(LOG_FILE) -d 3
+	@$(PRG_LOG) $(LOG_FILE) -dl 3
 
 diff:
 	@./source/timeControl.py

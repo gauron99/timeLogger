@@ -1,12 +1,13 @@
+#everything starting with '#' is ignored
 #everything up to '=' is to be catched including '=' -> rest of the line is used
-#therefore there cannot be anything else on these lines (such as comments)
+#therefore make sure theres no spaces etc. ("log_name = auto" IS BAD)
 
 log_dir=/home/donnovan/fun/timeLogger/log
 
 # set log_name to 'auto' in order to have logs sorted by months
-# (its gonna create logs as [YYYY-MM.log] by "today's date" ) 
+# (its gonna create log files as [YYYY-MM.log] by "today's date" ) 
 # -- MAKE SURE TO HAVE ONLY ONE LOG_NAME LINE (otherwise only last one counts
-# as it will be rewrited)
+# as it will rewrite all previous ones)
 
 #log_name=auto
 log_name=log.log

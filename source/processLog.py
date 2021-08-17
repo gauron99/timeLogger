@@ -72,11 +72,37 @@ debug_lvl %s\n\
   def sortDict(d): #some cool sorting magic #returns list
     return sorted(d.items(),key=op.itemgetter(1),reverse=True)
 
-  def printDay(self):
-    print("===========DayInfo===========")
-    print(self.day_info)
-    print("DONE..")
-    exit(0)
+  """
+  TODO - what can be done here is in self.day_info there can be time of log
+  passed as well which will serve one purpose and that is to perhaps separate
+  all the info which now looks like this:
+
+  ╭ 2021 08 11 ⎯⎯⎯⎯⎯⎯⎯⎯⎯
+  |  breakfast 1:14:48 (food)
+  |  shower 0:25:29 (hygiene)
+  |  coding 1:30:37 (programming)
+  |  Max_walk 1:23:48 (outside)
+  |  shower 0:04:51 (hygiene)
+  |  lunch 1:49:25 (food)
+  |  work 8:49:21 (work)
+
+  but it could look something like this:
+
+  ╭ 2021 08 11 ⎯⎯⎯⎯⎯⎯⎯⎯⎯
+  |  breakfast 1:14:48 (food)
+  |  shower 0:25:29 (hygiene)
+  |  coding 1:30:37 (programming)
+  |--12PM--
+  |  Max_walk 1:23:48 (outside)
+  |  shower 0:04:51 (hygiene)
+  |  lunch 1:49:25 (food)
+  |  work 8:49:21 (work)
+  """
+  def printDay(self): 
+    for line in self.day_info:
+      print("| %s %s (%s)"%(line[0],line[1],line[2]))
+    self.day_info.clear()
+
   def printActDay(self):
     sortedList = self.sortDict(self.time_spent_in_activity_day)
     if logConfig.debug_lvl >= 3:
@@ -118,14 +144,17 @@ debug_lvl %s\n\
       if days == 0:
         print("| (%5.2f%%)"%prcnt , "{:<{num}}".format(name,num=ls) , "| spent "+str(timeTmp))
       else:
-        print("| (%5.2f%%)"%prcnt , "{:<{num}}".format(name,num=ls) , "| spent " + str(days)+" days, "+str(timeTmp))
+        if days == 1:
+          print("| (%5.2f%%)"%prcnt , "{:<{num}}".format(name,num=ls) , "| spent " + str(days)+" day, "+str(timeTmp))
+        else:
+          print("| (%5.2f%%)"%prcnt , "{:<{num}}".format(name,num=ls) , "| spent " + str(days)+" days, "+str(timeTmp))
       pass
 
   def addData(self,what,info,time):
     """
-    @param what - identify what kind of info this is
-    @param info - info to be collected(saved to print later)
-    @param time - time of this info being logged
+    @param what - identify what kind of info this is\n
+    @param info - info to be collected(saved to print later)\n
+    @param time - time of this info being logged\n
     --- both info & time are simply taken from one line of log and divided to
         variables for easier reading (look for call of addData for more information)
     """
@@ -137,7 +166,10 @@ debug_lvl %s\n\
     if "(" in info:
       info = info.split("(")[0]
 
-    info = info.lower() #info is activity/category -- determined by 'what'
+    try:
+      info = info.lower() #info is activity/category etc. -- determined by 'what'
+    except:
+      info[1] = info[1].lower()
 
     if what == "activity":
       if info in self.time_spent_in_activity_day:
@@ -168,6 +200,9 @@ debug_lvl %s\n\
       else:
         self.time_spent_in_category_all[info] = dtc.timeToSecs(dtc.tdeltaTime(time))
         # print("=",self.time_spent_in_category_all[info])
+    
+    elif what == 'data':
+      self.day_info.append(info)
 ############## end of class LogOutputConfig ##############
 
 def printErr(s):
@@ -210,12 +245,17 @@ def newData(data):
   # print(data)
   parsed = data.replace("\n",'').split(" | ")
   parsed = [i.strip() for i in parsed]
-
-  # this is printed here and not in _decider so there's no need to save the whole day
-  # of log into a variable -- this might be fine actually coz it shouldnt be that
-  # much info in one day --- usually like 10 lines of text #TODO
+  
   if(logConfig.debug_lvl >= 3):# standard log out
-    logConfig.addData("data",parsed)
+    tmp = parsed.copy() #make a copy of parsed[list] so it doesnt change with pops
+    tmp.pop(3)
+    tmp.pop(3)
+    tmp.pop(0) 
+    # ^ coz when something is popped, it removes it from the list right,
+    # so therefore im removing items on indexes 3 & 4 which are 'from' time and
+    # 'to' time.
+
+    logConfig.addData("data",tmp,parsed[0])
     # time = parsed[0].split(' ')[1]
     # print("| ",time,'-',parsed[1],"("+parsed[2]+") ["+parsed[5]+']')
 
@@ -242,7 +282,7 @@ def newDay(data):
 # '⊢ ╭'
   if logConfig.debug_lvl > 0:
     # print()#newline between days
-    data = '╭ '+data+' ⎯⎯⎯⎯⎯⎯⎯⎯⎯'
+    data = '╭ '+data+' ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯'
     print(data)
   pass
 
@@ -295,9 +335,9 @@ def parseArgs():
 # all arguments can be writen without '-' aka 'h' or 'help' is a valid command.
 # then different arguments are possible:
 
-#   -h. --help    -> print out help message
-#   -d, --debug   -> change level of depth of what to print (default = 0)
-#       --depth   -> an alias for debug
+#   -h.   --help      -> print out help message
+#   -dl,  --debug_lvl -> change level of depth of what to print (default = 0)
+#         --depth     -> an alias for debug
 
 # date commands are not mutually exclusive, you can use '-b 05.05.2020 -l' 
 # to print BOTH, everything before 05.05.2020 AND last day in the log
@@ -305,14 +345,19 @@ def parseArgs():
 #   -a, --after         -> choose a date to start with(aka dont consider activities before)
 #   -b, --before        -> dont consider activities after this date
 
-#   -t, --today         -> show only current day(latest day logged)
+#   -d, --day           -> show only current day(latest day logged)
 #   -w, --week          -> show only current week(latest week logged)
 #   -m, --month [MONTH] -> MONTH is optional, can be number or full word(January),
 #                          if none is given, latest month in log is chosen
 
-#   -l, --last          -> this is a special optional argument, that can be added
-#   to (-t/-w/-m). Using this will show last "closed" timeframe. By closed, I mean
-#   only the timeframe, which has an opened frame after it.
+#   -p, --previous          -> this is a special optional argument, that can be added
+#   to (-d/-w/-m). Using this will show last "closed" timeframe. Closed timeframe,
+#   meaning if today is Wednesday, that means the week is not over yet AKA its not closed.
+#   Therefore if using parameters '-wp' (--week + --previous) it will show last week
+#   because last week is fully done, from Monday to Sunday (is complete / closed)
+#   This is checked by whether or not there is a log AFTER Sunday in new week.
+#   Similarly will work --day and --month 
+#
 #   Example:
 #     - if you wanted to print last day, use parameters '-tl' or '-t -l' 
 
@@ -324,7 +369,7 @@ def parseArgs():
     # print(">",i,x) #this wont show values of debug for example, because it's an argument that always follows '-d' for example, and it is poped inside the ifs & elifs
     if argcmd[i].lower() in ['-h','--help','help']:
       printHelp()
-    elif argcmd[i].lower() in ['-d','--depth','depth']:
+    elif argcmd[i].lower() in ['-dl','--depth','depth','--debug_lvl']:
       try:
         logConfig.debug_lvl = int(argcmd.pop(i+1))
       except IndexError:
@@ -337,8 +382,9 @@ def parseArgs():
     elif argcmd[i].lower() in ['-a','--after','after']:
       if logConfig.date_after is None:
         try:
-          date = argcmd.pop(i+1)   #format is-> day-mon-year (all in numbers) [01-02-2005]
-          date = dt.datetime.strptime(date,"%d-%-d-%Y")
+          date = argcmd.pop(i+1)   
+          #format is-> day-mon-year (all in numbers) [01-02-2005] all zero padded
+          date = dt.datetime.strptime(date,"%d-%m-%Y")
         except:
           print("Error: Command == after; Couldn't resolve value %s" % str(date))
         else:
@@ -353,9 +399,15 @@ def parseArgs():
       if logConfig.date_before is None:
         try:
           date = argcmd.pop(i+1)
-          date = dt.datetime.strptime(date,"%d-%-d-%Y")
+          #format is-> day-mon-year (all in numbers) "01-02-2005" all zero padded
+          date = dt.datetime.strptime(date,"%d-%m-%Y")
         except:
-          print("Err: cmd == before; Couldn't resolve value %s" %str(date))
+          printErr("cmd == before; Couldn't resolve value %s" %str(date))
+        else:
+          if isinstance(date,dt.datetime):
+            logConfig.date_before = date
+          else:
+            raise "Argument for '--before' wasn't successfully converted"
       else:
         printErr("[in parseArgs()] Can't assign 'before' parameter twice")
 
@@ -368,6 +420,7 @@ def parseArgs():
         #still passed
         printErr("An unknown argument was passed: %s, exiting..." %argcmd[i])
   return log
+
 if __name__ == "__main__":
 
   #class init
@@ -375,6 +428,6 @@ if __name__ == "__main__":
 
   #check cmd arguments a assign them if possible
   log = parseArgs()
-
   #begin process
   MainLoop(log)
+  print (logConfig.date_before)
