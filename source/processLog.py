@@ -28,7 +28,7 @@ class LogOutputConfig:
     # - lvl 1 = categories (see category-time in each day + lvl 0)
     # lvl 0 = statistics (most compressed one - just overall info)
     # each level up contains the previous lvl info + it's new (0 is least info)
-    self.version = "1.0"
+    self.version = "1.1"
     self.author = "gauron {David Fridrich}"
 
     self.debug_lvl = debug_lvl

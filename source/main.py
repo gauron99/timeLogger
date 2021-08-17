@@ -210,6 +210,11 @@ def pop_window_confirm_no(event):
     except:
         event.destroy() #cheat, when event is the widget itself (because of what calls this func)
 
+def btn_startstop_return_press(event):
+    if app.activityIsRunning:
+        defWindowViewTrigger()
+    else:
+        actStartedViewTrigger()
 
 # ~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~ #
 
@@ -269,6 +274,7 @@ def initWindowViewTrigger():
 
     app.buttonManualLog.place(y=1,x=1)
 
+    # ---- BIND KEYS AND CLICKS ---- #
 # binds for text - easier use (select all, ctrl delete, enter press)
     app.inputEntry.bind("<Return>",return_key_pressed_on_input) #bind enter (return) to call same func as 'START' button
     app.inputEntry.bind("<Control-KeyRelease-a>",select_all_text_on_input)
@@ -276,6 +282,8 @@ def initWindowViewTrigger():
     app.inputEntry.bind("<KeyRelease>",key_release_category_suggest)
 
     app.root.bind("<Control-e>",ctrl_e_bring_focus_on_input)
+
+    app.buttonStartStop.bind("<Return>",btn_startstop_return_press)
 
     #delete BUTTON CONFIG
     app.buttonDelAct.config(state=tk.DISABLED)
@@ -293,13 +301,13 @@ def initWindowViewTrigger():
 
 def logInstant():
 
-    #activity has not been done before, therefore app.TimeStarted is not set yet!
+    #activity has not been done before, therefore app.TimeStarted & timeEnded is not set yet!
     if app.timeEnded == None:
         try:
             print("Warning - Hitherto works only if an activity has already been done previously to this")
         except:
             pass
-        app.inputValActName.set("You must have done an activity previously")
+        app.inputValActName.set("You have to do an activity previously")
         app.inputLabel.config(text="failed hitherto")
 
     #activty has been done before, therefore just set app.timeStarted and trigger 'stop' button
