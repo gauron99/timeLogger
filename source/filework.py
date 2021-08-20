@@ -132,7 +132,7 @@ def getConfigFile():
         logFileW("warning: If you get this message you might've run the program from subdir - use make commands in main dir")
         try:
             file = open(fToOpen, 'r+')
-            return file
+            return file,0
 
         except:
             printErr("Config file 'config.txt' not found. Did you maybe try to run TL from /source subdir?",2)
@@ -171,7 +171,7 @@ def changeLogDir(newdir):
     pass
 
 
-def addNewLineForNewDayInLog(logFile,dateOfCurrLog):
+def addNewLineForNewDayInLog(logFile,dateOfCurrLog, dateBegin : dt.datetime):
     """param: logFile -- valid opened log file
        
        returns: nothing
@@ -187,13 +187,17 @@ def addNewLineForNewDayInLog(logFile,dateOfCurrLog):
     try:
         lastLineLog = logFile.readlines()
         lastLineLog = lastLineLog[-1]
+
         lastDateStringLog = lastLineLog.split(" | ")[0]      #2021-07-14 13:35:02 
         lastDateLog = dt.datetime.strptime(lastDateStringLog,'%Y-%m-%d %H:%M:%S')
     except (IndexError, ValueError) as e:
         #file is empty and/or there is only initial line
         logFile.write("--- %s ---\n"% str(dateOfCurrLog).replace("-",' ')[:-16])
     else: #no errors were raised
-        if lastDateLog.date() != dateOfCurrLog.date():
+        print("lastDayDate",lastDateLog.date())
+        print("dateCurrent",dateOfCurrLog.date())
+        print("dateBegin",dateBegin.date())
+        if lastDateLog.date() != dateOfCurrLog.date() and dateOfCurrLog.date() == dateBegin.date():
             logFile.write("--- %s ---\n"% str(dateOfCurrLog).replace("-",' ')[:-16])
 
 def writeToLog(activity,tBegin,tEnd,tDiff,tNow,category):
@@ -244,8 +248,9 @@ def writeToLog(activity,tBegin,tEnd,tDiff,tNow,category):
         fConf.log.write("--- TimeOfLog       | Activity            | TimeSpent |\
  TimeBegin                | TimeEnd                | Category\n")
 
-    #check if new day
-    addNewLineForNewDayInLog(fConf.log,tNow)
+    #check if new day -- pass "time when activity began" for the special case
+    #when activity begins on the "previous day" aka goes over 0000
+    addNewLineForNewDayInLog(fConf.log,tNow,tBegin)
 
     # its possible to write an activity by 2 words, just replace spaces for '_' 
     # for easier manipulation (& its possible to have multiple activities, divided by ',')

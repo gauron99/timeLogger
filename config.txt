@@ -1,6 +1,6 @@
-#everything starting with '#' is ignored
-#everything up to '=' is to be catched including '=' -> rest of the line is used
-#therefore make sure theres no spaces etc. ("log_name = auto" IS BAD)
+# everything starting with '#' is ignored
+# everything up to '=' is to be catched including '=' -> rest of the line is used
+# therefore make sure there's no spaces etc. ("log_name = auto" IS BAD)
 
 log_dir=/home/donnovan/fun/timeLogger/log
 

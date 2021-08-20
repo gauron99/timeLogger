@@ -35,6 +35,13 @@ class LogOutputConfig:
     self.date_after = None
     self.date_before = None
 
+    self.param_day = False
+    self.param_week = False
+    self.param_month = False
+    self.param_month_optional = None
+
+    self.special_param_prev = False
+
     # all time combined together spent in categories
     self.time_spent_day = dt.time(0,0,0)
 
@@ -104,27 +111,31 @@ debug_lvl %s\n\
     self.day_info.clear()
 
   def printActDay(self):
-    sortedList = self.sortDict(self.time_spent_in_activity_day)
-    if logConfig.debug_lvl >= 3:
-      print()
-    print("├ ACTIVITIES ⎯⎯⎯⎯")
-    for key in sortedList:
-      part, total = dtc.timeToSecs(key[1]), dtc.timeToSecs(self.time_spent_day)
-      print("| (%.2f%%)"%(part/total*100),key[0],key[1])
+    if self.time_spent_in_activity_day:
+      sortedList = self.sortDict(self.time_spent_in_activity_day)
+      if logConfig.debug_lvl >= 3:
+        print()
+      print("├ ACTIVITIES ⎯⎯⎯⎯")
+      for key in sortedList:
+        part, total = dtc.timeToSecs(key[1]), dtc.timeToSecs(self.time_spent_day)
+        print("| (%.2f%%)"%(part/total*100),key[0],key[1])
 
-    #clear dict  
-    self.time_spent_in_activity_day.clear()
+      print("|") # separate ACTIVITIES & CATEGORIES in output
+      
+      #clear dict  
+      self.time_spent_in_activity_day.clear()
 
   def printCatDay(self):
-    sortedList = self.sortDict(self.time_spent_in_category_day)
-    print("├ CATEGORIES ⎯⎯⎯")
-    for key in sortedList:
-      part, total = dtc.timeToSecs(key[1]), dtc.timeToSecs(self.time_spent_day)
-      print('| (%.2f%%)'%(part/total*100),key[0],key[1])
-    print()
+    if self.time_spent_in_category_day:  
+      sortedList = self.sortDict(self.time_spent_in_category_day)
+      print("├ CATEGORIES ⎯⎯⎯")
+      for key in sortedList:
+        part, total = dtc.timeToSecs(key[1]), dtc.timeToSecs(self.time_spent_day)
+        print('| (%.2f%%)'%(part/total*100),key[0],key[1])
+      print()
 
-    #clear dict 
-    self.time_spent_in_category_day.clear()
+      #clear dict 
+      self.time_spent_in_category_day.clear()
 
   def printSummary(self):
     sortedList = self.sortDict(self.time_spent_in_category_all)
@@ -237,6 +248,36 @@ def convertSecondsToDatetime(seconds):
 
   return days,dt.time(hour=hours,minute=minutes,second=seconds)
 
+def getValidMonth(s : str):
+  res = None
+  s = s.lower()
+  _months = ['january','fabruary','march','april','may','june','july','august','september','october','november','december',
+             'jan'    ,'fab'     ,'mar'  ,'apr'  ,'may','jun' ,'jul' ,'aug'   ,'sep'      ,'oct'    ,'nov'     ,'dec']
+
+  # month is in letter form
+  if s in _months:
+    tmp = [i for i,x in enumerate(_months) if s == x]
+    if len(tmp) != 1:
+      raise "String provided for [MONTH] not recognized"
+    res = tmp[0]
+  else:
+    res = s
+
+  #now all variations have to be a number
+  try:
+    if int(res) > 12 or int(res) <= 0:
+      printErr("There's only 12 months. That's interval of <1,12>. Provided: %s"%res)
+  except:
+    printErr("Argument [MONTH] couldn't be resolved (probably is not a valid month indicator)")
+
+  res = str(res)
+  if len(res) == 1:
+    res = '0' + res
+    
+  return res
+    
+
+
 def newData(data):
   """
   If debug_info is >=3 print standard log & save info
@@ -286,16 +327,22 @@ def newDay(data):
     print(data)
   pass
 
+
+def _special_controler(log):
+  print("---------special_log---------")
+
+  exit(0)
+
+
+
 def _decider():
   "just an inside function for MainLoop so it's easier to read & manage depth/debug lvls"
 
   if logConfig.debug_lvl>=3:
     logConfig.printDay()
 
-
   if(logConfig.debug_lvl>=2):
     logConfig.printActDay()
-    print("|") # separate ACTIVITIES & CATEGORIES in output
 
   if(logConfig.debug_lvl>=1):
     logConfig.printCatDay()
@@ -303,21 +350,29 @@ def _decider():
 def MainLoop(logFileHandler):
   with open(logFileHandler,'r+') as log:
     print(logConfig) # call __repr__
-    _ = log.readline() #read first line of log (which is just info for user)
 
-    first = log.readline()
-    first = first.split(" | ")
-    newDay(first[0].replace("-","").replace('\n','').strip())
+    log_data = log.readlines()
 
-    for data in log.readlines():
-      if data.startswith('---'):
+    #checks if special parameters are given & prepares for them
+    # _special_controler(log_data)
+
+    # first = log_data[1]
+
+    # first = log.readline()
+    # first = first.split(" | ")
+    # newDay(first[0].replace("-","").replace('\n','').strip())
+
+    for data in log_data:
+      if data.startswith('###'): #ignore these lines
+        continue
+      elif data.startswith('---'): #this is line with new day
         _decider()
 
         logConfig.time_spent_day = dt.time(0,0,0)
 
         data = data.split(" | ")
         newDay(data[0].replace("-","").replace('\n','').strip())
-      else:
+      else: #everything else is data, there can't be any errors
         newData(data)
     #END OF FOR LOOP
 
@@ -353,7 +408,7 @@ def parseArgs():
 #   -p, --previous          -> this is a special optional argument, that can be added
 #   to (-d/-w/-m). Using this will show last "closed" timeframe. Closed timeframe,
 #   meaning if today is Wednesday, that means the week is not over yet AKA its not closed.
-#   Therefore if using parameters '-wp' (--week + --previous) it will show last week
+#   Therefore if using parameters '-w -p' (--week + --previous) it will show last week
 #   because last week is fully done, from Monday to Sunday (is complete / closed)
 #   This is checked by whether or not there is a log AFTER Sunday in new week.
 #   Similarly will work --day and --month 
@@ -366,7 +421,8 @@ def parseArgs():
   _ = argcmd.pop(0)
 
   for i,x in enumerate(argcmd):
-    # print(">",i,x) #this wont show values of debug for example, because it's an argument that always follows '-d' for example, and it is poped inside the ifs & elifs
+    # print(">",i,x) #this wont show values of debug for example, because it's 
+    # an argument that always follows '-d' for example, and it is poped inside the ifs & elifs
     if argcmd[i].lower() in ['-h','--help','help']:
       printHelp()
     elif argcmd[i].lower() in ['-dl','--depth','depth','--debug_lvl']:
@@ -410,6 +466,21 @@ def parseArgs():
             raise "Argument for '--before' wasn't successfully converted"
       else:
         printErr("[in parseArgs()] Can't assign 'before' parameter twice")
+    elif argcmd[i].lower() in ['-d','--day','day']:
+      logConfig.param_day = True
+    elif argcmd[i].lower() in ['-w','--week','week']:
+      logConfig.param_week = True
+    elif argcmd[i].lower() in ['-m','--month','month']:
+      logConfig.param_month = True
+      
+      #check if '-m' was provided with additional argument
+      tmp = getValidMonth(argcmd[i+1])
+      if tmp != None:
+        logConfig.param_month_optional = tmp
+        argcmd.pop(i+1) #arg is loaded, get rid of it
+
+    elif argcmd[i].lower() in ['-p','--previous','previous']:
+      logConfig.special_param_prev = True
 
     else: #this way the order of parameters doesnt really matter, as long as theres no wrong ones
       if log == _DEFAULT_LOG_VALUE: #rewrite default if something is provided
@@ -430,4 +501,3 @@ if __name__ == "__main__":
   log = parseArgs()
   #begin process
   MainLoop(log)
-  print (logConfig.date_before)

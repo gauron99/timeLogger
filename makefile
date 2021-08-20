@@ -43,3 +43,7 @@ readlog3:
 
 diff:
 	@./source/timeControl.py
+
+#ONLY CASE USING testLog.py! no need for variable
+testlog:
+	@./source/testLog.py

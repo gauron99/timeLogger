@@ -12,6 +12,7 @@
 0.  1. make activities log after midnight to log into the "previous day" because
     if its started before midnight AKA previous day, it "belongs" to the previous day
     AKA its an activity before i go to sleep and in this regard it's part of said day
+    --- works already?? needs testing
 
 1.  1. add tickbox (with text) for timer (like every 30mins to take a break etc.)
     2. test if cycling through everything with tab should be possible && subsequently using enter to use buttons
@@ -54,4 +55,4 @@ log in processLog.py
 1.  Every print has to have a try-except wrap because if terminal is closed and
     print statement is reached by the program, its going to try and execute it
     (aka print the message) & because no terminal window is available, its gonna
-    shut down the whole app
+    shut down the whole app -- how to see some error messages? - print output to file or something
