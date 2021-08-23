@@ -8,6 +8,7 @@ PRG_LOG=./source/processLog.py
 
 #LOG FILE CONSIDERED FOR READING *using readlog
 LOG_FILE=log/log.log
+# LOG_FILE=log/testlog.log
 
 run:
 	rm -f __pycache__ ; $(PRG_RUN) &

@@ -18,6 +18,10 @@ from moreWindows import SettingsMenu, ManualMenu
 wXaxis = '500'
 wYaxis = '270'
 
+#### **** COLORS **** ####
+# app-background #d9d9d9
+
+
 class MyApp:
     """
     All variables needed by functions are saved in a class for easier manipulation
@@ -45,7 +49,9 @@ class MyApp:
         #when activity is running, press this to delete it
         #instead of adding it to log(basically -> don't log this)
         self.buttonDelAct = tk.Button() 
-    
+
+        self.breakCheck = tk.Label()
+
         ######### ######### LABELS ######### #########
         # self.fillerLabel = tk.Label(self.root,text='')
         self.inputLabel = tk.Label()
@@ -56,6 +62,8 @@ class MyApp:
         self.runningAproxTime = None
         #for interval checkup & display of how long act is running for
         self.activityIsRunning = False
+
+        self.delWindIsAct = False
 
         self.inputEntry = tk.Entry()
 
@@ -198,17 +206,21 @@ def pop_window_confirm_yes(event):
         if ent.focus_get() != None:
             actDelete()
             ent.destroy()
+            app.delWindIsAct = False
     except:
         actDelete()
         event.destroy()
+        app.delWindIsAct = False
 
 def pop_window_confirm_no(event):
     try:
         ent = event.widget
         if ent.focus_get() != None:
             ent.destroy()
+            app.delWindIsAct = False
     except:
         event.destroy() #cheat, when event is the widget itself (because of what calls this func)
+        app.delWindIsAct = False
 
 def btn_startstop_return_press(event):
     if app.activityIsRunning:
@@ -246,6 +258,18 @@ def initWindowViewTrigger():
     imManualHand = imManualHand.resize((26,26),Image.ANTIALIAS)
     phManualHand = ImageTk.PhotoImage(imManualHand)
 
+    # imBreakCheck_on = Image.open(os.getcwd()+'/image/checkbox_on.png')
+    # imBreakCheck_on = imBreakCheck_on.resize((26,26),Image.ANTIALIAS)
+    # phBreakCheck_on = ImageTk.PhotoImage(imBreakCheck_on)
+
+    imBreakCheck_off = Image.open(os.getcwd()+"/image/outter_circle_2.png")
+    imBreakCheck_off = imBreakCheck_off.resize((24,24),Image.ANTIALIAS)
+    phBreakCheck_off = ImageTk.PhotoImage(imBreakCheck_off)
+
+    imBreakCheck_on = Image.open(os.getcwd()+"/image/full_circle.png")
+    imBreakCheck_on = imBreakCheck_on.resize((24,24),Image.ANTIALIAS)
+    phBreakCheck_on = ImageTk.PhotoImage(imBreakCheck_on)
+
     # ---- INIT BUTTONS ---- #
     app.buttonStartStop = tk.Button(app.root, text="Start Activity",font=('times',13,'bold'),relief=tk.GROOVE,command=actStartedViewTrigger,pady=15,padx=15,bg='#C4C4C4',activebackground='#9C9C9C')
     app.buttonLog = tk.Button(app.root, text="Show Log",font=('times',13,'bold'),relief=tk.GROOVE,pady=15,padx=15,command=showLog,bg='#C4C4C4',activebackground='#9C9C9C')
@@ -253,10 +277,17 @@ def initWindowViewTrigger():
     app.buttonHitherto = tk.Button(app.root,text="Hitherto",font=('American Typewriter',9,'bold'),command=logInstant,bg='#C4C4C4',activebackground='#9C9C9C',state=tk.DISABLED)
 
     app.buttonSettings = tk.Button(app.root,image=phSettings,bg='#C4C4C4',activebackground='#9C9C9C')
-    app.buttonSettings.image = phSettings # --> ? idk why this is here
+    app.buttonSettings.image = phSettings #this line is neeeded for the picture to actually show up
 
     app.buttonManualLog = tk.Button(app.root,image=phManualHand,bg='#C4C4C4',activebackground='#9C9C9C')
     app.buttonManualLog.image = phManualHand
+
+    app.breakCheck = tk.Checkbutton(app.root,image=phBreakCheck_off,selectimage=phBreakCheck_on,
+        indicatoron=False,text="Break",compound="left",font=('American Typewriter',11,'bold'),
+        borderwidth=0,selectcolor='#d9d9d9')#activebackground='#d9d9d9'
+    #ATTENTION - IMPORTANT -- this always needs to be added for some reason separately -- picture doesnt show up without these lines
+    app.breakCheck.image = phBreakCheck_off #this line is neeeded for the picture to actually show up
+    app.breakCheck.selectimage = phBreakCheck_on #this line is neeeded for the picture to actually show up
 
     # ---- PLACE WIDGETS IN THE WINDOW ---- #
     # put it up on the screen 
@@ -273,6 +304,8 @@ def initWindowViewTrigger():
     app.buttonSettings.place(y=1,x=418)
 
     app.buttonManualLog.place(y=1,x=1)
+
+    app.breakCheck.place(y=80,x=400)
 
     # ---- BIND KEYS AND CLICKS ---- #
 # binds for text - easier use (select all, ctrl delete, enter press)
@@ -296,11 +329,11 @@ def initWindowViewTrigger():
 
     # SettingsMenu(app.buttonSettings) #popup window on click
     ManualMenu(app.buttonManualLog,app.root) #popup window on click
-
+    
 #END OF initWindowViewTrigger ##################################################
 
 def logInstant():
-
+  
     #activity has not been done before, therefore app.TimeStarted & timeEnded is not set yet!
     if app.timeEnded == None:
         try:
@@ -322,32 +355,34 @@ def logInstant():
 
 #when del button is pressed popup confirm window appears!
 def popupDeleteConfirm():
-    x=app.root.winfo_rootx()
-    y=app.root.winfo_rooty()
+    if not app.delWindIsAct:
+        app.delWindIsAct = True
+        x=app.root.winfo_rootx()
+        y=app.root.winfo_rooty()
 
-    popWindow = tk.Toplevel(highlightbackground='black',highlightthickness=3)
-    popWindow.wm_overrideredirect(True) # if this is here, window doesnt behave like a window
-    popWindow.geometry("+%d+%d" %(x+285,y))
+        popWindow = tk.Toplevel(highlightbackground='black',highlightthickness=3)
+        popWindow.wm_overrideredirect(True) # if this is here, window doesnt behave like a window
+        popWindow.geometry("+%d+%d" %(x+285,y))
 
-    # popWindow.wm_attributes('-type','splash')
+        # popWindow.wm_attributes('-type','splash')
 
-    popLabel = tk.Label(popWindow,text='Delete this activity?',font=('times',13,'bold'))
-    popLabel.grid(row=0,pady=8,padx=12,columnspan = 2)
+        popLabel = tk.Label(popWindow,text='Sure?',font=('times',13,'bold'))
+        popLabel.grid(row=0,pady=8,padx=12,columnspan = 2)
 
-    popButtonYes = tk.Button(popWindow,text='Yes',font=('times',13,'bold'),
-        bg='green',activebackground="green",padx=20,pady=10,command=lambda: pop_window_confirm_yes(popWindow))
+        popButtonYes = tk.Button(popWindow,text='Yes',font=('times',13,'bold'),
+            bg='green',activebackground="green",padx=20,pady=10,command=lambda: pop_window_confirm_yes(popWindow))
 
-    popButtonYes.grid(row=1,column=0)
+        popButtonYes.grid(row=1,column=0)
 
-    popButtonNo = tk.Button(popWindow,text='No',font=('times',13,'bold'),bg='red',
-        activebackground="red",padx=20,pady=10,command=lambda: pop_window_confirm_no(popWindow))
+        popButtonNo = tk.Button(popWindow,text='No',font=('times',13,'bold'),bg='red',
+            activebackground="red",padx=20,pady=10,command=lambda: pop_window_confirm_no(popWindow))
 
-    popButtonNo.grid(row=1,column=1)
+        popButtonNo.grid(row=1,column=1)
 
-    popWindow.bind("<Return>",pop_window_confirm_yes)
-
-    popWindow.bind("<Escape>",pop_window_confirm_no)
-    popWindow.bind("<FocusOut>",lambda e: popWindow.destroy())
+        ####does nothing because of overrideredict()
+        # popWindow.bind("<Return>",pop_window_confirm_yes)
+        # popWindow.bind("<Escape>",pop_window_confirm_no)
+        # popWindow.bind("<FocusOut>",lambda e: popWindow.destroy())
 
 
 # delete current activity, and DON'T log it
@@ -358,6 +393,7 @@ def actDelete():
     app.inputLabel.config(text='Doing nothing')
     app.buttonStartStop.config(text='Start Activity',command=actStartedViewTrigger)
         
+    app.buttonDelAct.config(state=tk.DISABLED)
     # app.dropBoxCategory.config(state='normal')
 
     checkRunningTime()

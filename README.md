@@ -9,7 +9,6 @@
         -- create log/ dir for your logs
 
 ## TODO
-0.  0. FIX PRINT
 0.  1. make activities log after midnight to log into the "previous day" because
     if its started before midnight AKA previous day, it "belongs" to the previous day
     AKA its an activity before i go to sleep and in this regard it's part of said day

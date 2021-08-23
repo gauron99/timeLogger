@@ -194,9 +194,12 @@ def addNewLineForNewDayInLog(logFile,dateOfCurrLog, dateBegin : dt.datetime):
         #file is empty and/or there is only initial line
         logFile.write("--- %s ---\n"% str(dateOfCurrLog).replace("-",' ')[:-16])
     else: #no errors were raised
-        print("lastDayDate",lastDateLog.date())
-        print("dateCurrent",dateOfCurrLog.date())
-        print("dateBegin",dateBegin.date())
+        try:#no terminal window?
+            print("lastDayDate",lastDateLog.date())
+            print("dateCurrent",dateOfCurrLog.date())
+            print("dateBegin",dateBegin.date())
+        except:
+            pass
         if lastDateLog.date() != dateOfCurrLog.date() and dateOfCurrLog.date() == dateBegin.date():
             logFile.write("--- %s ---\n"% str(dateOfCurrLog).replace("-",' ')[:-16])
 
