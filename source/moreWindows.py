@@ -55,9 +55,16 @@ class SettingsMenu:
       self.displayed = False
       
       self.widget.bind('<Button-1>',self.onclick)
+      self.parent.bind("<Configure>",self.sync_with_parent)
 
       pass
 
+  def sync_with_parent(self,e=None):
+    if self.tl:
+      x = self.parent.winfo_x() + 26
+      y = self.parent.winfo_y() + 26
+      self.tl.geometry("+%d+%d" % (x,y))
+      
   def onclick(self,event=None):
     if self.displayed:
       self.displayed = False

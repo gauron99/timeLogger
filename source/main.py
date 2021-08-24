@@ -19,8 +19,12 @@ wXaxis = '500'
 wYaxis = '270'
 
 #### **** COLORS **** ####
-# app-background #d9d9d9
-
+#d9d9d9 app-background
+#1BEE14 green (in del button)
+#C4C4C4 light grey (button default)
+#9C9C9C dark grey (button when hovered over)
+#FF2929 light red (in del button)
+#E20000 dark red (in del button)
 
 class MyApp:
     """
@@ -31,15 +35,17 @@ class MyApp:
         # create a window
         self.root = tk.Tk()
 
+        self.popWindow = None #for DEL pop-up window
+
         ######### ######### TIMES ######### #########
         self.timeStarted = None
         self.timeEnded = None
 
         ######### ######### STRING VARS ######### #########    
-        self.inputValActName = tk.StringVar()#input text var for name of activity
-        self.dropboxVariable = tk.StringVar()#categories
+        self.inputValActName = tk.StringVar() #input text var for name of activity
+        self.dropboxVariable = tk.StringVar() #categories
 
-        ######### ######### BUTTONS ######### ######### 
+        ######### ######### BUTTONS ######### #########
         self.buttonStartStop = tk.Button()
         self.buttonLog = tk.Button()
         self.buttonHitherto = tk.Button()
@@ -50,7 +56,6 @@ class MyApp:
         #instead of adding it to log(basically -> don't log this)
         self.buttonDelAct = tk.Button() 
 
-        self.breakCheck = tk.Label()
 
         ######### ######### LABELS ######### #########
         # self.fillerLabel = tk.Label(self.root,text='')
@@ -70,6 +75,8 @@ class MyApp:
         self.dropBoxCategory = tk.OptionMenu(self.root,self.dropboxVariable,
                                                 *_categories_keywords.keys())
 
+        self.breakCheck = tk.Label()
+        self.breakCheck_var = tk.BooleanVar() #value for checkbutton (0/1 -> if is selected or not)
     pass
 # END OF class MyApp ###########################################################
 
@@ -78,7 +85,7 @@ class MyApp:
 # https://stackoverflow.com/questions/3221956/how-do-i-display-tooltips-in-tkinter?noredirect=1&lq=1
 ####
 class ToolTip:
-    """Class for pop up windows (tip window when hovered over a button) """
+    """Class for pop up windows (tip window when hovered over a button)"""
 
     def __init__(self, widget, text='todo: add widget info'):
         self.waittime = 500     #miliseconds
@@ -230,7 +237,6 @@ def btn_startstop_return_press(event):
 
 # ~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~ #
 
-
 # call this at the beginning of the program to set up a window
 def initWindowViewTrigger():
 
@@ -241,12 +247,6 @@ def initWindowViewTrigger():
     # create a label widget for text input
     app.inputLabel = tk.Label(app.root, text="Write your activity here!", font=('American Typewriter',13,'bold'))
     app.inputEntry = tk.Entry(app.root,textvariable = app.inputValActName,font=('times',15,'normal'),width=35,bd=3)
-
-    #1BEE14 green
-    #C4C4C4 light grey
-    #9C9C9C dark grey
-    #FF2929 light red
-    #E20000 dark red
     
     # ---- INIT PHOTOS ---- #
     #using make to run the app, cwd is the root dir (not subdir 'source' where main.py is located)
@@ -257,10 +257,6 @@ def initWindowViewTrigger():
     imManualHand = Image.open(os.getcwd()+"/image/manual_hand.png")
     imManualHand = imManualHand.resize((26,26),Image.ANTIALIAS)
     phManualHand = ImageTk.PhotoImage(imManualHand)
-
-    # imBreakCheck_on = Image.open(os.getcwd()+'/image/checkbox_on.png')
-    # imBreakCheck_on = imBreakCheck_on.resize((26,26),Image.ANTIALIAS)
-    # phBreakCheck_on = ImageTk.PhotoImage(imBreakCheck_on)
 
     imBreakCheck_off = Image.open(os.getcwd()+"/image/outter_circle_2.png")
     imBreakCheck_off = imBreakCheck_off.resize((24,24),Image.ANTIALIAS)
@@ -282,9 +278,12 @@ def initWindowViewTrigger():
     app.buttonManualLog = tk.Button(app.root,image=phManualHand,bg='#C4C4C4',activebackground='#9C9C9C')
     app.buttonManualLog.image = phManualHand
 
+
+
     app.breakCheck = tk.Checkbutton(app.root,image=phBreakCheck_off,selectimage=phBreakCheck_on,
-        indicatoron=False,text="Break",compound="left",font=('American Typewriter',11,'bold'),
-        borderwidth=0,selectcolor='#d9d9d9')#activebackground='#d9d9d9'
+        indicatoron=False,text="Breaks",compound="left",font=('American Typewriter',11,'bold'),
+        borderwidth=0,selectcolor='#d9d9d9',onvalue=True,offvalue=False,
+        variable=app.breakCheck_var,command=optionBreaksPress)
     #ATTENTION - IMPORTANT -- this always needs to be added for some reason separately -- picture doesnt show up without these lines
     app.breakCheck.image = phBreakCheck_off #this line is neeeded for the picture to actually show up
     app.breakCheck.selectimage = phBreakCheck_on #this line is neeeded for the picture to actually show up
@@ -315,6 +314,8 @@ def initWindowViewTrigger():
     app.inputEntry.bind("<KeyRelease>",key_release_category_suggest)
 
     app.root.bind("<Control-e>",ctrl_e_bring_focus_on_input)
+    app.root.bind("<Configure>",main_window_moving)
+
 
     app.buttonStartStop.bind("<Return>",btn_startstop_return_press)
 
@@ -329,8 +330,17 @@ def initWindowViewTrigger():
 
     # SettingsMenu(app.buttonSettings) #popup window on click
     ManualMenu(app.buttonManualLog,app.root) #popup window on click
+    # optionBreaksPress() might need to call this to inicialize the timer or 
+    # something depending on how i implement it
     
 #END OF initWindowViewTrigger ##################################################
+
+def optionBreaksPress():
+    if app.breakCheck_var.get(): #if value is selected -> apply break system
+        pass
+    else: #stop break system a restart timer
+        pass
+    pass
 
 def logInstant():
   
@@ -353,29 +363,36 @@ def logInstant():
 
         defWindowViewTrigger()
 
+def main_window_moving(e):
+    print("moving main window")
+    pw = app.popWindow #if this is not done, it closes parent as well :shrug:
+    app.popWindow = None
+
+    if pw:
+        pw.destroy()
+
 #when del button is pressed popup confirm window appears!
 def popupDeleteConfirm():
-    if not app.delWindIsAct:
-        app.delWindIsAct = True
+    if  app.popWindow is None:
         x=app.root.winfo_rootx()
         y=app.root.winfo_rooty()
 
-        popWindow = tk.Toplevel(highlightbackground='black',highlightthickness=3)
-        popWindow.wm_overrideredirect(True) # if this is here, window doesnt behave like a window
-        popWindow.geometry("+%d+%d" %(x+285,y))
+        app.popWindow = tk.Toplevel(highlightbackground='black',highlightthickness=3)
+        app.popWindow.wm_overrideredirect(True) # if this is here, window doesnt behave like a window
+        app.popWindow.geometry("+%d+%d" %(x+285,y))
 
         # popWindow.wm_attributes('-type','splash')
 
-        popLabel = tk.Label(popWindow,text='Sure?',font=('times',13,'bold'))
+        popLabel = tk.Label(app.popWindow,text='Sure?',font=('times',13,'bold'))
         popLabel.grid(row=0,pady=8,padx=12,columnspan = 2)
 
-        popButtonYes = tk.Button(popWindow,text='Yes',font=('times',13,'bold'),
-            bg='green',activebackground="green",padx=20,pady=10,command=lambda: pop_window_confirm_yes(popWindow))
+        popButtonYes = tk.Button(app.popWindow,text='Yes',font=('times',13,'bold'),
+            bg='green',activebackground="green",padx=20,pady=10,command=lambda: pop_window_confirm_yes(app.popWindow))
 
         popButtonYes.grid(row=1,column=0)
 
-        popButtonNo = tk.Button(popWindow,text='No',font=('times',13,'bold'),bg='red',
-            activebackground="red",padx=20,pady=10,command=lambda: pop_window_confirm_no(popWindow))
+        popButtonNo = tk.Button(app.popWindow,text='No',font=('times',13,'bold'),bg='red',
+            activebackground="red",padx=20,pady=10,command=lambda: pop_window_confirm_no(app.popWindow))
 
         popButtonNo.grid(row=1,column=1)
 
@@ -383,7 +400,6 @@ def popupDeleteConfirm():
         # popWindow.bind("<Return>",pop_window_confirm_yes)
         # popWindow.bind("<Escape>",pop_window_confirm_no)
         # popWindow.bind("<FocusOut>",lambda e: popWindow.destroy())
-
 
 # delete current activity, and DON'T log it
 def actDelete():

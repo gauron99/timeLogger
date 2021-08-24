@@ -200,7 +200,7 @@ def addNewLineForNewDayInLog(logFile,dateOfCurrLog, dateBegin : dt.datetime):
             print("dateBegin",dateBegin.date())
         except:
             pass
-        if lastDateLog.date() != dateOfCurrLog.date() and dateOfCurrLog.date() == dateBegin.date():
+        if dateOfCurrLog.date() == dateBegin.date():
             logFile.write("--- %s ---\n"% str(dateOfCurrLog).replace("-",' ')[:-16])
 
 def writeToLog(activity,tBegin,tEnd,tDiff,tNow,category):
