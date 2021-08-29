@@ -81,6 +81,7 @@ class SettingsMenu:
     pass
 
 ################################################################################
+
 _manual_log_inputs = {} #to remember entries
 
 class ManualMenu:
@@ -94,7 +95,9 @@ class ManualMenu:
     self.parent.bind("<Configure>",self.sync_with_parent)
 
     self.labels = ['Name','from','to','Category']
+    self.main_label = None
 
+    #init entries to empty strings ("if something was written and not submited, its loaded in loadRows(self)")
     self.inner_inputs = {}
     for x in self.labels:
       self.inner_inputs[x] = ''
@@ -127,7 +130,7 @@ class ManualMenu:
       label.pack(side=tk.LEFT)
       entry.pack(side=tk.RIGHT,fill=tk.X)
 
-      #insert into entry
+      #insert into entry if something was already there, not submitted - and only this mini window was closed
       try:
         entry.insert(0,_manual_log_inputs[text])
       except:
@@ -155,8 +158,8 @@ class ManualMenu:
     # self.tl.bind("<Escape>", self.hideMenu)
     # self.tl.bind('<FocusOut>',self.hideMenu) 
  
-    main_label = tk.Label(self.tl,text="Manual Log",font=('American Typewriter',13,'bold'))
-    main_label.pack(side=tk.TOP)
+    self.main_label = tk.Label(self.tl,text="Manual Log",font=('American Typewriter',13,'bold'))
+    self.main_label.pack(side=tk.TOP)
     
     # load lines to widget
     self.loadRows()
@@ -176,12 +179,16 @@ class ManualMenu:
 
     discard_button.pack(side=tk.RIGHT,padx=2,pady=2)
 
-  def hideMenu(self,e=None):
-    self.widget.master.focus() #does this do anything? TODO DEBUG
-
+  def getInfo(self):
     #save text written in entries
     for key in self.inner_inputs:
       _manual_log_inputs[key] = self.inner_inputs[key].get()
+
+
+  def hideMenu(self,e=None):
+    self.widget.master.focus() #does this do anything? TODO DEBUG
+
+    self.getInfo()
 
     tl = self.tl
     self.tl = None
@@ -192,8 +199,8 @@ class ManualMenu:
   def formatDateTime(self,data : str):
     """
     Give string, check if is of valid datetime format, return datetime object\n
-    > Uses timeControl.py module for conversion of string to datetime
-    > All data has to be provided in numbers
+    > Uses timeControl.py module for conversion of string to datetime\n
+    > All data has to be provided in numbers\n
     >>> Year with century as a decimal number -- (2014, 1987 ...)\n
     >>> Month as a zero-padded decimal number -- (01, ..., 12)\n
     >>> Day of the month as a zero-padded decimal -- (01, ..., 31)\n
@@ -206,20 +213,46 @@ class ManualMenu:
     data = data.strip()
     
     # sequence of try-except to try to convert - if one is success, return
-    #   
+    now = dt.datetime.now()
+    year, month, day = now.year, now.month, now.day
+    if data.lower().endswith('pm') or data.lower().endswith('am'):
+      tmp = dt.datetime.strptime(data,"%p")
+      print(tmp)
+
     pass
 
 
+  def _return_label_back(self):
+    self.main_label.config(text="Manual Log",font=('American Typewriter',13,'bold'),foreground='black')
+
+
   def write(self):
+    # tNow -> (datetime) time of log (NOW)
+    # activity -> (string) name of activity
+    # tDiff -> () how long has the activity been running for
+    # tBegin -> (datetime) beginning of activity
+    # tEnd -> (datetime) end of activity
+    # category -> (string) name of category
+    ## NEW ##
+    # extra -> (string) some special info (like that its a manually logged)
+
     now = dt.datetime.now()
-# activity -> (string) name of activity
-# tBegin -> (datetime) beginning of activity
-# tEnd -> (datetime) end of activity
-# tDiff -> () how long has the activity been running for
-# tNow -> (datetime) time of log (NOW)
-# category -> (string) name of category
-    
-#   info taken from __init__ --> self.labels = ['Name','from','to','Category']
+    extra = "Manual"
+
+    self.getInfo()
+    for key in _manual_log_inputs:
+      print(key,_manual_log_inputs[key],_manual_log_inputs[key].__class__)
+
+      #check if none of the entries are empty
+      if _manual_log_inputs[key] is None or _manual_log_inputs[key] == '':
+        self.main_label.config(text="'%s' is empty!"%key,foreground='red')
+        self.main_label.after(3000,self._return_label_back)
+
+        pass 
+      
+      if key == 'from' or key == 'to':
+        self.formatDateTime(_manual_log_inputs[key])
+
 
     # begin = self.formatDateTime(self.labels['from'])
     # end = self.formatDateTime(self.labels['to'])

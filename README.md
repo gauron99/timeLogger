@@ -9,24 +9,21 @@
         -- create log/ dir for your logs
 
 ## TODO
-0.  1. make activities log after midnight to log into the "previous day" because
+0.  can you catch running apps and start activities automatically?  
+    
+1.  make activities log after midnight to log into the "previous day" because
     if its started before midnight AKA previous day, it "belongs" to the previous day
     AKA its an activity before i go to sleep and in this regard it's part of said day
     --- works already?? needs testing
 
 1.  1. add tickbox (with text) for timer (like every 30mins to take a break etc.)
-    2. test if cycling through everything with tab should be possible && subsequently using enter to use buttons
     3. add 12PM or some devidor for sole purpose of better looking output of readlog
     look in processLog.py -> printDay()
 
-2.  1. make lv4 for all; lv3 == extended activities
-    2. keyword for sleep start/end, log in the morning takes in the one from last night and combines them
-    3. add time frames
-    4. add Meta category of (inside(@PC), outside)
+2.  1. add time frames
+    2. add Meta category of (inside(@PC), outside)
 3. adding activities manually (if missed or not at PC etc.)
 4. rework visual of 'running' state of app
-
-6. script to make log look prettier
 
 7. think of additions to config -- add eventually
 8. make loadConfigFile() & getConfigFile() merged in filework.py

@@ -316,17 +316,18 @@ def initWindowViewTrigger():
     app.root.bind("<Control-e>",ctrl_e_bring_focus_on_input)
     app.root.bind("<Configure>",main_window_moving)
 
-
     app.buttonStartStop.bind("<Return>",btn_startstop_return_press)
 
     #delete BUTTON CONFIG
     app.buttonDelAct.config(state=tk.DISABLED)
 
     ### ----- pop up tip window text setup for buttons ----- ###
-    settings_tip = ToolTip(app.buttonSettings,'Open settings window') 
-    deleteAct_tip = ToolTip(app.buttonDelAct,"Delete current running activity & don't log it")
-    hitherto_tip = ToolTip(app.buttonHitherto,"Use when you want to instantly log activity starting from the end of the last activity until now")
+    settings_tip = ToolTip(app.buttonSettings,  "Open settings window") 
+    deleteAct_tip = ToolTip(app.buttonDelAct,   "Delete current running activity & don't log it")
+    hitherto_tip = ToolTip(app.buttonHitherto,  "Use when you want to instantly log activity starting from the end of the last activity until now")
     manuallog_tip = ToolTip(app.buttonManualLog,"Manually log an activity")
+    optBreakCheck_tip = ToolTip(app.breakCheck, "When enabled, alerts when certain time has passed (like: It's time for a break)")
+
 
     # SettingsMenu(app.buttonSettings) #popup window on click
     ManualMenu(app.buttonManualLog,app.root) #popup window on click
